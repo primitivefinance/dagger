@@ -8,7 +8,7 @@ function Home() {
       <div className="container mx-auto my-8">
         <div className="flex flex-row items-center w-full justify-between">
           <h2>Active pools</h2>
-          <button className="p-2 bg-[#000000] text-white">Create pool</button>
+          <a href="/create-pool" className="p-2 bg-[#000000] text-white">Create pool</a>
         </div>
         <table>
           <thead>
