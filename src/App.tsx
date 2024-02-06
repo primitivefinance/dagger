@@ -40,7 +40,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
+      <RainbowKitProvider chains={chains} initialChain={optimismSepolia}>
         <RouterProvider router={router} />
       </RainbowKitProvider>
     </WagmiConfig>
