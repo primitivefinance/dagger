@@ -19,11 +19,15 @@ function Home() {
 
   return (
     <>
-      <div className="container mx-auto my-8">
-        <h1>Dagger</h1>
-        <p>An online non-custodial asset management platform built on top of DFMM.</p>
+      <div className="container mx-auto my-8 max-w-6xl">
+        <div className="max-w-md gap-4 flex flex-col">
+          <h1 className="leading-none">Manage your funds lorem strategies.</h1>
+          <p className="leading-tight">
+            When you add liquidity to a pool, you can receive a share of its trading volume and potentially snag extra rewards when there are incentives involved!
+          </p>
+        </div>
       </div>
-      <div className="container mx-auto my-8">
+      <div className="container mx-auto my-8 max-w-6xl">
         <div className="flex flex-row items-center w-full justify-between">
           <h2>Active pools</h2>
           <a href="/create-pool" className="p-2 bg-[#000000] text-white">Create pool</a>
