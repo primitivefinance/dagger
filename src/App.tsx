@@ -4,6 +4,7 @@ import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { optimismSepolia } from 'viem/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 
+import Header from './components/header';
 import Home from './pages/home';
 import CreatePool from './pages/create-pool';
 
@@ -41,6 +42,7 @@ function App() {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains} initialChain={optimismSepolia}>
+        <Header />
         <RouterProvider router={router} />
       </RainbowKitProvider>
     </WagmiConfig>
