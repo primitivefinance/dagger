@@ -7,6 +7,7 @@ import { alchemyProvider } from 'wagmi/providers/alchemy';
 import Header from './components/header';
 import Home from './pages/home';
 import CreatePool from './pages/create-pool';
+import Pool from './pages/pool';
 
 const { chains, publicClient } = configureChains(
   [optimismSepolia],
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
     path: '/create-pool',
     element: <CreatePool />,
   },
+  {
+    path: '/pool/:id',
+    element: <Pool />,
+  }
 ]);
 
 function App() {
