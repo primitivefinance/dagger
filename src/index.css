@@ -20,10 +20,12 @@ html {
 
   h2 {
     @apply text-xl;
+    @apply font-bold;
   }
 
   h3 {
     @apply text-lg;
+    @apply font-bold;
   }
 
   h4 {}
@@ -48,6 +50,16 @@ html {
 
   button:hover {
     @apply opacity-50;
+  }
+
+  input {
+    @apply bg-transparent;
+    @apply text-dagger4;
+    @apply outline-none;
+  }
+
+  input::placeholder {
+    @apply text-dagger3;
   }
 
   a {
