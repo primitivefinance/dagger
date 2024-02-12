@@ -7,16 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        'dagger0': 'rgb(23, 23, 23)', // '#0e0e11', // '#000000',
-        'dagger1': 'rgb(38, 38, 38)', // '#1d1c20', // '#0c0c0c',
-        'dagger2': 'rgb(64, 64, 64)', // 'rgba(255,255,255,.08)', // 'rgba(255, 255, 255, 0.07)',
-        'dagger3': '#a3a3a3', // '#a9a9a9', // 'rgba(255, 255, 255, 0.48)',
+        'dagger0': '#171717',
+        'dagger1': '#262626',
+        'dagger2': '#404040',
+        'dagger3': '#a3a3a3',
         'dagger4': '#f5f5f5',
       },
       fontWeight: {
-        light: 300,
-        normal: 400,
-        bold: 700,
+        normal: 500,
+        bold: 600,
       },
       fontFamily: {
         sans: ['Suisse Intl', 'sans-serif'],
