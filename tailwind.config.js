@@ -7,16 +7,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        'dagger0': '#171717',
-        'dagger1': '#262626',
-        'dagger2': '#404040',
-        'dagger3': '#a3a3a3',
-        'dagger4': '#f5f5f5',
+        'dagger0': '#131722', // '#171717',
+        'dagger1': '#161D29', // '#262626',
+        'dagger2': '#1A222E', // '#404040',
+        'dagger3': '#999999', // '#a3a3a3',
+        'dagger4': '#FFFFFF', // '#f5f5f5',
       },
       fontWeight: {
         normal: 500,
         bold: 600,
       },
+      /*
+
+      fontSize: {
+        xs: '14px',
+        sm: '16px',
+        md: '18px'
+      },
+      */
       fontFamily: {
         sans: ['Suisse Intl', 'sans-serif'],
       },
