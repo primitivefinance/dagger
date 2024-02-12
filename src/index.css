@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -font-smoothing: antialiased;
+}
+
 @layer base {
   * {
     @apply text-dagger4;
@@ -34,9 +40,14 @@
     @apply rounded-lg;
   }
 
-  a {}
+  a {
+    @apply text-blue-600;
+  }
 
-  a:hover {}
+  a:hover {
+    @apply underline;
+    @apply opacity-50;
+  }
 
   table {
     @apply w-full;
@@ -45,7 +56,8 @@
   th {
     @apply p-4;
     @apply text-dagger3;
-    @apply text-sm;
+    @apply text-xs;
+    @apply font-bold;
   }
 
   tbody tr {
