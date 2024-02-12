@@ -35,9 +35,19 @@ html {
   }
 
   button {
-    @apply bg-white;
-    @apply text-black;
-    @apply rounded-lg;
+    @apply text-dagger4;
+    @apply bg-dagger1;
+    @apply border;
+    @apply border-solid;
+    @apply border-dagger2;
+    @apply rounded-xl;
+    @apply text-xs;
+    @apply px-4;
+    @apply py-2;
+  }
+
+  button:hover {
+    @apply opacity-50;
   }
 
   a {
