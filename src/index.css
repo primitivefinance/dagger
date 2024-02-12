@@ -2,164 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @layer base {
+  * {
+    @apply text-dagger4;
+  }
+
   h1 {
-    @apply text-3xl leading-none font-bold;
+    @apply text-5xl;
+    @apply font-bold;
   }
 
   h2 {
-    @apply text-2xl font-semibold;
+    @apply text-xl;
   }
 
   h3 {
-    @apply text-xl font-semibold;
+    @apply text-lg;
   }
 
-  h4 {
-    @apply text-xl font-semibold;
-  }
+  h4 {}
 
-  h5 {
-    @apply text-xl font-semibold;
-  }
-
-  a {
-    @apply text-base;
-    @apply text-black;
-    @apply opacity-90;
-  }
-
-  a:hover {
-    text-decoration: underline;
-    cursor: pointer;
-  }
+  h5 {}
 
   p {
     @apply text-base;
-    @apply text-gray-800;
   }
 
-  small {
-    @apply text-xs;
-    @apply text-gray-700;
+  button {
+    @apply bg-white;
+    @apply text-black;
+    @apply rounded-lg;
   }
 
-  .disclaimer {
-    @apply text-xs;
-    @apply text-gray-400;
-  }
+  a {}
+
+  a:hover {}
 
   table {
-    @apply min-w-full divide-y-2 divide-black mt-4;
+    @apply w-full;
   }
 
   th {
-    @apply pl-2 text-left font-medium font-semibold uppercase tracking-wider overflow-auto;
+    @apply p-4;
+    @apply text-dagger3;
+    @apply text-sm;
   }
 
   tbody tr {
-    @apply hover:bg-gray-200 hover:bg-opacity-80 hover:cursor-pointer;
+    @apply border-t;
+    @apply border-dagger2;
+    @apply border-solid;
+    @apply cursor-pointer;
+  }
+
+  tbody tr:hover {
+    @apply bg-dagger2;
   }
 
   td {
-    @apply pl-2 px-6 py-3 whitespace-nowrap text-gray-800 overflow-hidden;
+    @apply p-4;
   }
 
-  tbody {
-    @apply divide-y divide-gray-200;
-  }
+  tbody {}
 
-  @screen md {
-    h1 {
-      @apply text-3xl leading-tight;
-    }
+  @screen md {}
 
-    h2 {
-      @apply text-2xl;
-    }
+  @screen lg {}
 
-    h3 {
-      @apply text-base;
-    }
-  }
-
-  @screen lg {
-    h1 {
-      @apply text-5xl;
-    }
-
-    h2 {
-      @apply text-4xl;
-    }
-
-    h3 {
-      @apply text-xl;
-    }
-
-    p {
-      @apply text-lg;
-    }
-  }
-
-  @screen xl {
-    h1 {
-      @apply text-6xl;
-    }
-
-    h2 {
-      @apply text-5xl;
-    }
-
-    h3 {
-      @apply text-2xl;
-    }
-  }
-}
-
-body,
-html {
-  background-color: #f9f9f9;
-}
-
-@media screen and (min-width: 1024px) {
-  .container {
-    @apply px-1;
-  }
-}
-
-img {
-  user-select: none;
-  pointer-events: none;
-}
-
-.fade-in {
-  animation: fadein 1.5s;
-}
-
-.fade-out {
-  animation: fadeout 1.5s;
-}
-
-@keyframes fadein {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeout {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
+  @screen xl {}
 }
