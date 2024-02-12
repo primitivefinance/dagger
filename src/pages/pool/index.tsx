@@ -1,11 +1,16 @@
+import { useState, useRef } from 'react';
+
 const LinkIcon = () => (
   <svg className="w-3 h-3 self-center" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-    <path className="text-blue-600" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 14v4.8a1.2 1.2 0 0 1-1.2 1.2H5.2A1.2 1.2 0 0 1 4 18.8V7.2A1.2 1.2 0 0 1 5.2 6h4.6m4.4-2H20v5.8m-7.9 2L20 4.2" />
+    <path className="text-blue-600" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 14v4.8a1.2 1.2 0 0 1-1.2 1.2H5.2A1.2 1.2 0 0 1 4 18.8V7.2A1.2 1.2 0 0 1 5.2 6h4.6m4.4-2H20v5.8m-7.9 2L20 4.2" />
   </svg>
 );
 
-
 function Pool() {
+  const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true);
+  const ref = useRef(null);
+  const [range, setRange] = useState<number>(0);
+
   return (
     <div className="container mx-auto max-w-4xl my-8">
       <div className="flex flex-col gap-2">
@@ -22,7 +27,7 @@ function Pool() {
             <div className="self-center bg-purple-600 px-2 rounded-full text-[14px]">G3M</div>
           </div>
         </div>
-        <div className="flex flex-row items-center gap-3">
+        <div className="flex flex-row items-center gap-5">
           <div className="flex gap-1 items-center">
             <p className="font-bold">WETH</p>
             <a href="#" className="flex flex-row gap-1 text-sm">0x1234...1234 <LinkIcon /></a>
@@ -32,7 +37,7 @@ function Pool() {
             <a href="#" className="flex flex-row gap-1 text-sm">0x1234...1234 <LinkIcon /></a>
           </div>
           <div className="flex gap-1 items-center">
-            <p className="font-bold">G3M</p>
+            <p className="font-bold">WETH/USDC</p>
             <a href="#" className="flex flex-row gap-1 text-sm">0x1234...1234 <LinkIcon /></a>
           </div>
         </div>
@@ -76,7 +81,7 @@ function Pool() {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col">
               <p className="text-lg font-bold">My Position</p>
-              <p className="text-dagger3 text-xs">Lorem ipsum at dolor simet.</p>
+              <p className="text-dagger3 text-xs">$7,043.41</p>
             </div>
             <div className="flex flex-col">
               <div className="flex flex-row gap-1 items-center">
@@ -93,8 +98,8 @@ function Pool() {
               <p className="font-bold">3,252.24 USDC <span className="text-xs font-normal text-dagger3">($3,535.64)</span></p>
             </div>
             <div className="flex flex-col">
-              <p className="text-xs text-dagger3 ">Total Deposited</p>
-              <p className="font-bold">$7,043.41</p>
+              <p className="text-xs text-dagger3">Total Liquidity</p>
+              <p className="font-bold">7,043.41</p>
             </div>
           </div>
         </div>
@@ -102,32 +107,113 @@ function Pool() {
       <div className="grid grid-cols-2 my-8 gap-8">
         <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4">
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col">
-              <p className="text-lg font-bold">Manage</p>
-              <p className="text-dagger3 text-xs">Manage your position.</p>
+            <div className="grid grid-cols-2 border-solid border border-dagger2 w-full rounded-xl">
+              <button
+                className={`border-0 ${isAddLiquidity ? 'bg-dagger2' : 'border-0'}`}
+                onClick={() => setIsAddLiquidity(true)}
+              >
+                <div className="flex flex-row items-center gap-1 justify-center">
+                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 7.8v8.4M7.8 12h8.4m4.8 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+                  Add liquidity
+                </div>
+              </button>
+              <button
+                className={`border-0 ${isAddLiquidity ? 'border-0' : 'bg-dagger2'}`}
+                onClick={() => setIsAddLiquidity(false)}
+              >
+                <div className="flex flex-row items-center gap-1 justify-center">
+                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14" />
+                  </svg>
+                  Remove liquidity
+                </div>
+              </button>
             </div>
-            <div className="flex flex-row border-solid border-dagger2 border rounded-lg">
-              <button>Add</button>
-              <button>Remove</button>
-            </div>
-            <div className="flex flex-col">
-              <div className="flex flex-row gap-1 items-center">
-                <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                <p className="text-xs text-dagger3">WETH</p>
+            {isAddLiquidity ? (
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
+                  <p className="text-lg font-bold">Add Liquidity</p>
+                  <p className="text-dagger3 text-xs">Increase your position by adding liquidity into the pool.</p>
+                </div>
+                <div className="grid grid-cols-2 border border-solid border-dagger2 p-3 rounded-xl gap-2">
+                  <input className="text-lg" placeholder="0.0" />
+                  <div className="flex flex-row gap-1 items-center justify-end">
+                    <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
+                    <p className="text-dagger4">WETH</p>
+                  </div>
+                  <p className="text-sm text-dagger3">$0.0</p>
+                  <button className="p-0 border-0 hover:opacity-100">
+                    <div className="flex flex-row gap-1 justify-end items-center">
+                      <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path className="text-dagger3 hover:text-dagger4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8H5m12 0c.6 0 1 .4 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1Z" />
+                      </svg>
+                      <p className="text-sm text-dagger3 hover:text-dagger4">
+                        1.525 WETH
+                      </p>
+                    </div>
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 border border-solid border-dagger2 p-3 rounded-xl gap-2">
+                  <input className="text-lg" placeholder="0.0" />
+                  <div className="flex flex-row gap-1 items-center justify-end">
+                    <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
+                    <p className="text-dagger4">WETH</p>
+                  </div>
+                  <p className="text-sm text-dagger3">$0.0</p>
+                  <button className="p-0 border-0 hover:opacity-100  hover:text-dagger4">
+                    <div className="flex flex-row gap-1 justify-end items-center">
+                      <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path className="text-dagger3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8H5m12 0c.6 0 1 .4 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1Z" />
+                      </svg>
+                      <p className="text-sm text-dagger3">
+                        3,525.52 USDC
+                      </p>
+                    </div>
+                  </button>
+                </div>
               </div>
-              <p className="font-bold">1.44 WETH <span className="text-xs font-normal text-dagger3">($3,535.24)</span></p>
-            </div>
-            <div className="flex flex-col">
-              <div className="flex flex-row gap-1 items-center">
-                <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-4" />
-                <p className="text-xs text-dagger3">USDC</p>
+            ) : (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col">
+                  <p className="text-lg font-bold">Remove Liquidity</p>
+                  <p className="text-dagger3 text-xs">Decrease your position by removing liquidity from the pool.</p>
+                </div>
+                <div className="flex flex-row justify-between items-center">
+                  <p className="text-xl">
+                    {range}%
+                  </p>
+                  <div className="flex flex-row gap-2">
+                    <button onClick={() => setRange(25)}>25%</button>
+                    <button onClick={() => setRange(50)}>50%</button>
+                    <button onClick={() => setRange(75)}>75%</button>
+                    <button onClick={() => setRange(100)}>MAX</button>
+                  </div>
+                </div>
+                <input
+                  ref={ref}
+                  type="range"
+                  className="col-span-2 appearance-none bg-dagger2 rounded-full cursor-pointer h-1 w-full"
+                  step={1}
+                  min={0}
+                  max={100}
+                  onChange={(e) => setRange(parseInt(e.target.value, 10))}
+                  value={range}
+                />
+                <div className="flex flex-row gap-1 items-center justify-end">
+                  <p className="text-dagger3 text-xs">You'll receive at least</p>
+                  <p className="text-dagger4 text-sm">1.42</p>
+                  <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
+                  <p className="text-dagger4 text-sm">WETH</p>
+                  <p className="text-dagger3 text-xs">and</p>
+                  <p className="text-dagger4 text-sm">2,415.24</p>
+                  <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-4" />
+                  <p className="text-dagger4 text-sm">USDC<span className="text-dagger3">.</span></p>
+                </div>
               </div>
-              <p className="font-bold">3,252.24 USDC <span className="text-xs font-normal text-dagger3">($3,535.64)</span></p>
-            </div>
-            <div className="flex flex-col">
-              <p className="text-xs text-dagger3 ">Total Deposited</p>
-              <p className="font-bold">$7,043.41</p>
-            </div>
+            )}
+            <button>Connect Wallet</button>
           </div>
         </div>
       </div>
