@@ -6,21 +6,39 @@ function Header() {
   const { openConnectModal } = useConnectModal();
 
   return (
-    <nav className="flex flex-row items-center justify-between py-2 px-5 border-b border-black border-solid">
-      <div className="flex-grow w-full flex-row flex gap-4">
-        <a href="/">
+    <nav className="flex flex-row items-center justify-between py-1 px-5 border-b border-dagger2 border-solid">
+      <div className="flex-grow w-full flex-row flex gap-8 items-center">
+        <a href="/" className="hover:no-underline">
           🗡️
         </a>
-        <a href="/">
+        <a href="/" className="text-sm text-dagger4 hover:no-underline">
           Pools
         </a>
-        <a href="#responsive-header">
+        <a href="/" className="text-sm text-dagger4 hover:no-underline">
+          More
+        </a>
+        <a href="/" className="text-sm text-dagger4 hover:no-underline">
+          Again
+        </a>
+        <a href="/" className="text-sm text-dagger4 hover:no-underline">
           FAQs
         </a>
       </div>
-      <div className="flex-grow w-full flex-row-reverse flex gap-4">
-        <button className="p-2" onClick={openConnectModal}>Connect Wallet</button>
-        <button className="p-2">Ethereum</button>
+      <div className="flex-grow w-full flex-row-reverse flex gap-4 items-center">
+        <button onClick={openConnectModal}>
+          <div className="flex flex-row gap-1 items-center">
+            <svg className="w-4 h-4 text-dagger4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0c.6 0 1 .4 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1Z" />
+            </svg>
+            Connect Wallet
+          </div>
+        </button>
+        <button>
+          <div className="flex flex-row gap-1 items-center">
+            <img src="https://info.uniswap.org/static/media/optimism.34412af263c903b58c43a243c4a21d56.svg" alt="OP" className="rounded-full size-4" />
+            Optimism
+          </div>
+        </button>
       </div>
     </nav>
   );
