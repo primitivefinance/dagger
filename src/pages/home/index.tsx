@@ -26,9 +26,7 @@ const FakePool = () => (
 function Home() {
   return (
     <>
-      <div
-        className="w-full py-16"
-      >
+      <div className="w-full py-16">
         <div className="container mx-auto max-w-4xl">
           <div className="max-w-md gap-4 flex flex-col">
             <h1>Manage your funds lorem strategies.</h1>
@@ -41,7 +39,7 @@ function Home() {
       <div className="container mx-auto max-w-4xl gap-2 flex flex-col">
         <div className="flex flex-row items-center w-full justify-between">
           <h3>All pools (42)</h3>
-          <button className="p-2">
+          <button className="p-2" onClick={() => location.href = '/create-pool'}>
             <div className="flex flex-row items-center gap-1">
               <svg className="w-4 h-3 text-dagger4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14m-7 7V5" />
