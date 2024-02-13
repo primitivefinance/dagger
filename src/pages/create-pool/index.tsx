@@ -4,7 +4,6 @@ function CreatePool() {
   const [strategy, setStrategy] = useState<string>('G3M');
   const [weight, setWeight] = useState<number>(50);
   const [feeRate, setFeeRate] = useState<number>(0.3);
-  const ref = useRef(null);
 
   return (
     <div className="py-16 container mx-auto max-w-4xl gap-14 flex flex-col">
@@ -154,37 +153,48 @@ function CreatePool() {
           <p className="text-dagger3 text-xs">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
         </div>
 
-        <div>
-          <div className="w-full h-3 bg-white rounded-full">
-            <div className="h-full bg-dagger1" style={{ width: `${weight}%` }} />
-          </div>
-          <div className="flex flex-row justify-between items-center">
-            <div className="flex flex-row gap-1">
-              <input placeholder="50" />
-              <p className="font-bold">% WETH</p>
+        <div className="flex flex-row gap-4 items-center">
+          <div
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 20 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            onClick={() => setWeight(20)}
+          >
+            <div className="flex flex-row items-center justify-between">
+              <p className="text-sm font-bold">20/80%</p>
+              {weight === 20 && (
+                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                  <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd" />
+                </svg>
+              )}
             </div>
-            <div className="flex flex-row gap-1">
-              <input placeholder="50" />
-              <p className="font-bold">% USDC</p>
-            </div>
+            <p className="text-dagger3 text-xs">Best for very stable pairs.</p>
           </div>
-          <div className="grid grid-cols-2">
-            <p className="font-bold">
-              {weight}% WETH
-            </p>
-            <p className="font-bold text-right">
-              {100 - weight}% USDC
-            </p>
-            <input
-              ref={ref}
-              type="range"
-              className="col-span-2 appearance-none bg-dagger2 rounded-full cursor-pointer h-1 w-full"
-              step={1}
-              min={1}
-              max={99}
-              onChange={(e) => setWeight(parseInt(e.target.value, 10))}
-              value={weight}
-            />
+          <div
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 30 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            onClick={() => setWeight(30)}
+          >
+            <div className="flex flex-row items-center justify-between">
+              <p className="text-sm font-bold">30/70%</p>
+              {weight === 30 && (
+                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                  <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <p className="text-dagger3 text-xs">Best for stable pairs.</p>
+          </div>
+          <div
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 50 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            onClick={() => setWeight(50)}
+          >
+            <div className="flex flex-row items-center justify-between">
+              <p className="text-sm font-bold">50/50%</p>
+              {weight === 50 && (
+                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                  <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <p className="text-dagger3 text-xs">Best for most pairs.</p>
           </div>
         </div>
 
@@ -193,12 +203,12 @@ function CreatePool() {
           <p className="text-dagger3 text-xs">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
         </div>
 
-        <div className="flex flex-col justify-end">
+        <div className="flex flex-col">
           <input
             className="border border-solid border-dagger2 text-sm p-3 w-full rounded-xl"
             placeholder="Use an Ethereum address or an ENS..."
           />
-          <button className="bg-transparent border-0">Use my current wallet (0xbeef...cafe)</button>
+          <button className="flex justify-end bg-transparent border-0">Use my current wallet (0xbeef...cafe)</button>
         </div>
 
 
