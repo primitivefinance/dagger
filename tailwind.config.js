@@ -8,8 +8,8 @@ export default {
     extend: {
       colors: {
         'dagger0': '#131722', // '#171717',
-        'dagger1': '#161D29', // '#262626',
-        'dagger2': '#1A222E', // '#404040',
+        'dagger1': '#1D2635', // '#262626',
+        'dagger2': '#253041', // '#404040',
         'dagger3': '#999999', // '#a3a3a3',
         'dagger4': '#FFFFFF', // '#f5f5f5',
       },
