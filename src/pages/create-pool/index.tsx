@@ -204,10 +204,13 @@ function CreatePool() {
         </div>
 
         <div className="flex flex-col">
-          <input
-            className="border border-solid border-dagger2 text-sm p-3 w-full rounded-xl"
-            placeholder="Use an Ethereum address or an ENS..."
-          />
+          <div className="flex flex-row justify-between items-center bg-dagger1 border border-solid border-dagger2 text-sm p-3 w-full rounded-xl">
+            <input className="flex-grow" placeholder="Use an Ethereum address or an ENS..." />
+            <svg className="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18 18 6m0 12L6 6" />
+            </svg>
+          </div>
+
           <button className="flex justify-end bg-transparent border-0">Use my current wallet (0xbeef...cafe)</button>
         </div>
 
@@ -274,7 +277,13 @@ function CreatePool() {
               </div>
             </button>
           </div>
+          <div className="flex flex-col justify-end text-right w-full">
+            <p className="text-sm">Future price based on the pool parameters:</p>
 
+            <p className="text-base font-bold">
+              1,242 USDC <span className="text-xs font-normal">per ETH, </span> 0.0008 ETH <span className="text-xs font-normal">per USDC.</span>
+            </p>
+          </div>
         </div>
 
       </div>
