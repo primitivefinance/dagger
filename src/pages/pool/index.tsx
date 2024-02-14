@@ -12,7 +12,8 @@ function Pool() {
   const [range, setRange] = useState<number>(0);
 
   return (
-    <div className="container mx-auto max-w-4xl my-8">
+    <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
+
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
           <div className="flex flex-row items-center">
@@ -43,7 +44,26 @@ function Pool() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 my-8 gap-8">
+      <div className="flex flex-row gap-4">
+        <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
+          <img
+            src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png"
+            alt="WETH"
+            className="rounded-full size-6"
+          />
+          <p className="text-sm">2,414 USDC <span className="text-xs">per ETH</span></p>
+        </div>
+        <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
+          <img
+            src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+            alt="WETH"
+            className="rounded-full size-6"
+          />
+          <p className="text-sm">0.00085 ETH <span className="text-xs">per USDC</span></p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-8">
 
         <div className="flex flex-col gap-8">
 
