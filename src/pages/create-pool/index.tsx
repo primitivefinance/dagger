@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { balanceOf } from '../../lib/erc20';
 import { useAccount } from 'wagmi';
 import { isAddress } from 'viem';
+
+import { balanceOf } from '../../lib/erc20';
+import TokenAmountInput from '../../components/TokenAmountInput';
+import { computeAndFormatPrice } from '../../lib/g3m';
 
 function CreatePool() {
   const { address } = useAccount();
@@ -12,18 +15,18 @@ function CreatePool() {
   const [weight, setWeight] = useState<number>(50);
   const [feeRate, setFeeRate] = useState<number>(0.3);
   const [controller, setController] = useState<string>('');
-  const [reserveX, setReserveX] = useState<number>(0);
-  const [reserveY, setReserveY] = useState<number>(0);
+  const [reserveX, setReserveX] = useState<string>('');
+  const [reserveY, setReserveY] = useState<string>('');
   const [pricePerX, setPricePerX] = useState<number>(0);
   const [pricePerY, setPricePerY] = useState<number>(0);
-  const [balanceOfX, setBalanceOfX] = useState<number>(0);
-  const [balanceOfY, setBalanceOfY] = useState<number>(0);
+  const [tokenXBalance, setTokenXBalance] = useState<number>(0);
+  const [tokenYBalance, setTokenYBalance] = useState<number>(0);
 
   useEffect(() => {
     (async () => {
       if (address) {
         const balance = await balanceOf(tokenX, address);
-        console.log(balance);
+        setTokenXBalance(balance);
       }
     })();
   }, [address, tokenX]);
@@ -32,7 +35,7 @@ function CreatePool() {
     (async () => {
       if (address) {
         const balance = await balanceOf(tokenY, address);
-        console.log(balance);
+        setTokenYBalance(balance);
       }
     })();
   }, [address, tokenY]);
@@ -265,73 +268,42 @@ function CreatePool() {
 
         <div className="flex flex-col gap-4 items-start">
 
-          <div className="grid grid-cols-2 border border-solid border-dagger2 p-3 rounded-xl gap-2 w-full">
-            <input className="text-lg" placeholder="0.0" />
-            <div className="flex flex-row items-center justify-end">
-              <button>
-                <div className="flex flex-row gap-2 items-center">
-                  <div className="flex flex-row gap-1 items-center">
-                    <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                    <span className="text-sm font-bold">WETH</span>
-                  </div>
-                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m19 9-7 7-7-7" />
-                  </svg>
-                </div>
-              </button>
-            </div>
-            <p className="text-sm text-dagger3">$0.0</p>
-            <button className="p-0 border-0 hover:opacity-100 bg-transparent">
-              <div className="flex flex-row gap-1 justify-end items-center group">
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <path className="text-dagger3 group-hover:text-dagger4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 8H5m12 0c.6 0 1 .4 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1Z" />
-                </svg>
-                <p className="text-sm text-dagger3 group-hover:text-dagger4">
-                  1.525 WETH
-                </p>
-              </div>
-            </button>
-          </div>
+          <TokenAmountInput
+            tokenAddress="0x9E4c7F96C883994ad0D6Ed690B68B2c53EF60048"
+            tokenSymbol="WETH"
+            tokenBalance={tokenXBalance}
+            amount={reserveX}
+            setAmount={setReserveX}
+            tokenPrice={2700}
+            tokenLogo={"https://assets.smold.app/api/token/1/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo-128.png"}
+          />
 
-          <div className="grid grid-cols-2 border border-solid border-dagger2 p-3 rounded-xl gap-2 w-full">
-            <input className="text-lg" placeholder="0.0" />
-            <div className="flex flex-row items-center justify-end">
-              <button>
-                <div className="flex flex-row gap-2 items-center">
-                  <div className="flex flex-row gap-1 items-center">
-                    <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="WETH" className="rounded-full size-4" />
-                    <span className="text-sm font-bold">USDC</span>
-                  </div>
-                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m19 9-7 7-7-7" />
-                  </svg>
-                </div>
-              </button>
-            </div>
-            <p className="text-sm text-dagger3">$0.0</p>
-            <button className="p-0 border-0 hover:opacity-100 bg-transparent">
-              <div className="flex flex-row gap-1 justify-end items-center group">
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <path className="text-dagger3 group-hover:text-dagger4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 8H5m12 0c.6 0 1 .4 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1Z" />
-                </svg>
-                <p className="text-sm text-dagger3 group-hover:text-dagger4">
-                  2,415.52 USDC
-                </p>
-              </div>
-            </button>
-          </div>
-          <div className="flex flex-col justify-end text-right w-full">
+          <TokenAmountInput
+            tokenAddress="0x935B7D29B20Fad7DF00eDE0D7F80Dc70F0AA8B75"
+            tokenSymbol="USDC"
+            tokenBalance={tokenYBalance}
+            amount={reserveY}
+            setAmount={setReserveY}
+            tokenPrice={1}
+            tokenLogo={"https://assets.smold.app/api/token/1/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo-128.png"}
+          />
+
+          <div className="flex flex-col justify-end text-right w-full px-3">
             <p className="text-sm">Future price based on the pool parameters:</p>
 
             <p className="text-base font-bold">
-              1,242 USDC <span className="text-xs font-normal">per ETH, </span> 0.0008 ETH <span className="text-xs font-normal">per USDC.</span>
+              {computeAndFormatPrice(parseFloat(reserveX), parseFloat(reserveY), weight / 100, (100 - weight) / 100)} USDC <span className="text-xs font-normal">per ETH, </span> {computeAndFormatPrice(parseFloat(reserveY), parseFloat(reserveX), (100 - weight) / 100, weight / 100)} ETH <span className="text-xs font-normal">per USDC.</span>
             </p>
           </div>
         </div>
 
       </div>
 
-      <button className="w-full text-base bg-brand border-0 p-4 font-bold text-dagger0">Connect Wallet</button>
+      <button
+        className="w-full text-base bg-brand border-0 p-4 font-bold text-dagger0"
+      >
+        Connect Wallet
+      </button>
     </div>
   );
 }
