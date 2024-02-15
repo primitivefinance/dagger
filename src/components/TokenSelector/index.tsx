@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { tokens } from '../../data/tokens';
+import { tokens, tokens2 } from '../../data/tokens';
 
 type TokenSelectorProps = {
   tokenLogo: string;
@@ -9,6 +9,7 @@ type TokenSelectorProps = {
 
 function TokenSelector(props: TokenSelectorProps) {
   const [isOpen, toggle] = useState(false);
+  const [search, setSearch] = useState<string>('');
 
   function close() {
     document.body.style.overflow = 'auto';
@@ -33,8 +34,19 @@ function TokenSelector(props: TokenSelectorProps) {
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18 18 6m0 12L6 6" />
               </svg>
             </div>
-            <p className="text-sm">Select a token from our default list or search for a token by symbol or address.</p>
-            <div className="flex flex-row gap-4 items-center">
+            <div className="flex flex-row gap-2 bg-dagger1 border-dagger2 border border-solid p-2 rounded-lg items-center">
+              <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path className="text-dagger3" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search by symbol or address"
+                className="flex-grow"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-row gap-4 items-center flex-wrap">
               {tokens.map((token) => (
                 <div
                   key={token.address}
@@ -46,6 +58,24 @@ function TokenSelector(props: TokenSelectorProps) {
                 >
                   <img src={token.logo} alt={token.symbol} className="rounded-full size-4" />
                   <span className="text-sm">{token.symbol}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-col justify-center overflow-auto max-h-96" style={{ scrollbarWidth: 'none' }}>
+              {tokens2.filter((token) => token.name.includes(search) || token.symbol.includes(search)).map((token) => (
+                <div
+                  key={token.address}
+                  className="flex flew-row gap-3 items-center cursor-pointer border border-transparent hover:border-dagger2 hover:border border-solid p-2 rounded-xl"
+                  onClick={() => {
+                    props.setToken(token.address);
+                    close();
+                  }}
+                >
+                  <img src={token.logo} alt={token.symbol} className="rounded-full size-10" />
+                  <div className="flex flex-col">
+                    <p className="text-left">{token.symbol}</p>
+                    <p className="text-left text-dagger3 text-sm">{token.name}</p>
+                  </div>
                 </div>
               ))}
             </div>
