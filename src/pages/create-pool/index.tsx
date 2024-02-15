@@ -43,6 +43,9 @@ function CreatePool() {
     })();
   }, [address, tokenY]);
 
+  const _tokenX = tokens.find((token) => token.address === tokenX)!;
+  const _tokenY = tokens.find((token) => token.address === tokenY)!;
+
   return (
     <div className="py-16 container mx-auto max-w-4xl gap-14 flex flex-col">
 
@@ -200,7 +203,7 @@ function CreatePool() {
             tokenBalance={tokenXBalance}
             amount={reserveX}
             setAmount={setReserveX}
-            tokenPrice={1}
+            tokenPrice={tokens.find((token) => token.address === tokenX)!.price!}
             tokenLogo={tokens.find((token) => token.address === tokenX)!.logo}
           />
 
@@ -210,7 +213,7 @@ function CreatePool() {
             tokenBalance={tokenYBalance}
             amount={reserveY}
             setAmount={setReserveY}
-            tokenPrice={1}
+            tokenPrice={tokens.find((token) => token.address === tokenY)!.price!}
             tokenLogo={tokens.find((token) => token.address === tokenY)!.logo}
           />
 
@@ -218,7 +221,7 @@ function CreatePool() {
             <p className="text-sm">Price based on the given pool parameters:</p>
 
             <p className="text-base font-bold">
-              {computeAndFormatPrice(parseFloat(reserveX), parseFloat(reserveY), weight / 100, (100 - weight) / 100)} USDC <span className="text-xs font-normal">per ETH, </span> {computeAndFormatPrice(parseFloat(reserveY), parseFloat(reserveX), (100 - weight) / 100, weight / 100)} ETH <span className="text-xs font-normal">per USDC.</span>
+              {computeAndFormatPrice(parseFloat(reserveX), parseFloat(reserveY), weight / 100, (100 - weight) / 100)} {_tokenY.symbol} <span className="text-xs font-normal">per {_tokenX.symbol}, </span> {computeAndFormatPrice(parseFloat(reserveY), parseFloat(reserveX), (100 - weight) / 100, weight / 100)} {_tokenX.symbol} <span className="text-xs font-normal">per {_tokenY.symbol}.</span>
             </p>
           </div>
         </div>
