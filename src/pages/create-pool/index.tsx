@@ -54,7 +54,7 @@ function CreatePool() {
 
         <div className="flex flex-row gap-4 items-center">
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${strategy === 'G3M' ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${strategy === 'G3M' ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setStrategy('G3M')}
           >
             <div className="flex flex-row items-center justify-between">
@@ -68,7 +68,7 @@ function CreatePool() {
             <p className="text-dagger3 text-xs">Select the strategy you want to use with for this new pool.</p>
           </div>
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${strategy === 'LogNormal' ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${strategy === 'LogNormal' ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setStrategy('LogNormal')}
           >
             <div className="flex flex-row items-center justify-between">
@@ -90,7 +90,7 @@ function CreatePool() {
 
         <div className="flex flex-row gap-4 items-center">
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.01 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.01 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setFeeRate(0.01)}
           >
             <div className="flex flex-row items-center justify-between">
@@ -104,7 +104,7 @@ function CreatePool() {
             <p className="text-dagger3 text-xs">Best for very stable pairs.</p>
           </div>
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.05 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.05 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setFeeRate(0.05)}
           >
             <div className="flex flex-row items-center justify-between">
@@ -118,7 +118,7 @@ function CreatePool() {
             <p className="text-dagger3 text-xs">Best for stable pairs.</p>
           </div>
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.3 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.3 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setFeeRate(0.3)}
           >
             <div className="flex flex-row items-center justify-between">
@@ -132,7 +132,7 @@ function CreatePool() {
             <p className="text-dagger3 text-xs">Best for most pairs.</p>
           </div>
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 1 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 1 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setFeeRate(1)}
           >
             <div className="flex flex-row items-center justify-between">
@@ -155,7 +155,7 @@ function CreatePool() {
 
         <div className="flex flex-row gap-4 items-center">
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 20 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 20 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setWeight(20)}
           >
             <div className="flex flex-row items-center justify-between">
@@ -169,7 +169,7 @@ function CreatePool() {
             <p className="text-dagger3 text-xs">Best for very stable pairs.</p>
           </div>
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 30 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 30 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setWeight(30)}
           >
             <div className="flex flex-row items-center justify-between">
@@ -183,7 +183,7 @@ function CreatePool() {
             <p className="text-dagger3 text-xs">Best for stable pairs.</p>
           </div>
           <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 50 ? 'bg-dagger1 border-dagger2' : 'bg-dagger0 border-dagger2'}`}
+            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 50 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
             onClick={() => setWeight(50)}
           >
             <div className="flex flex-row items-center justify-between">
