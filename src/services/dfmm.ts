@@ -1,5 +1,5 @@
 import { readContract } from 'wagmi/actions';
-import { dfmmABI } from './dfmmABI';
+import { dfmmABI } from './abis/dfmm';
 
 export async function getNonce(): Promise<bigint> {
   try {
