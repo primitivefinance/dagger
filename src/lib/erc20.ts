@@ -1,6 +1,7 @@
-import { multicall } from 'wagmi/actions';
-import { erc20Abi, formatUnits } from 'viem';
+import { multicall, writeContract } from 'wagmi/actions';
+import { erc20Abi, formatUnits, parseUnits } from 'viem';
 import { config } from '../App';
+import { mockERC20Abi } from './abis/mockERC20';
 
 export async function balanceOf(token: `0x${string}`, account: `0x${string}`): Promise<number> {
   try {
@@ -24,5 +25,20 @@ export async function balanceOf(token: `0x${string}`, account: `0x${string}`): P
   } catch (e) {
     console.error(e);
     throw new Error('Failed to fetch balance');
+  }
+}
+
+export async function mint(token: `0x${string}`, account: `0x${string}`, amount: number, decimals: number): Promise<void> {
+  try {
+    const result = await writeContract(config, {
+      address: token,
+      abi: mockERC20Abi,
+      functionName: 'mint',
+      args: [account, parseUnits(amount.toString(), decimals)],
+    });
+    console.log(result);
+  } catch (e) {
+    console.error(e);
+    throw new Error('Failed to mint');
   }
 }
