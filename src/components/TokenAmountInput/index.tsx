@@ -25,7 +25,7 @@ function TokenAmountInput(props: TokenAmountInputProps) {
           </div>
         </button>
       </div>
-      <p className="text-sm text-dagger3">${props.tokenPrice * props.tokenBalance}</p>
+      <p className="text-sm text-dagger3">${isNaN(parseFloat(props.amount)) ? '0.0' : (props.tokenPrice * parseFloat(props.amount)).toLocaleString(undefined)}</p>
       <button className="p-0 border-0 hover:opacity-100 bg-transparent">
         <div className="flex flex-row gap-1 justify-end items-center group">
           <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
