@@ -166,7 +166,7 @@ function CreatePool() {
 
         <div className="flex flex-col">
           <div className="flex flex-row justify-between items-center bg-dagger1 border border-solid border-dagger2 text-sm p-3 w-full rounded-xl">
-            <input value={controller} onChange={(e) => setController(e.target.value)} className="flex-grow" placeholder="Use an Ethereum address or an ENS..." />
+            <input value={controller} onChange={(e) => setController(e.target.value)} className="flex-grow" placeholder="Use an Ethereum address or an ENS name..." />
             {isAddress(controller) ? (
               <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="green" viewBox="0 0 24 24">
                 <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
@@ -182,7 +182,7 @@ function CreatePool() {
             className="flex justify-end bg-transparent border-0"
             onClick={() => setController(address !== undefined ? address : '')}
           >
-            Use my current wallet
+            Use my current wallet address
           </button>
         </div>
 
@@ -215,7 +215,7 @@ function CreatePool() {
           />
 
           <div className="flex flex-col justify-end text-right w-full px-3">
-            <p className="text-sm">Future price based on the pool parameters:</p>
+            <p className="text-sm">Price based on the given pool parameters:</p>
 
             <p className="text-base font-bold">
               {computeAndFormatPrice(parseFloat(reserveX), parseFloat(reserveY), weight / 100, (100 - weight) / 100)} USDC <span className="text-xs font-normal">per ETH, </span> {computeAndFormatPrice(parseFloat(reserveY), parseFloat(reserveX), (100 - weight) / 100, weight / 100)} ETH <span className="text-xs font-normal">per USDC.</span>
