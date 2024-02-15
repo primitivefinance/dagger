@@ -13,14 +13,14 @@ function Header() {
         <a href="/" className="text-sm text-dagger4 hover:no-underline">
           Pools
         </a>
-        <a href="/" className="text-sm text-dagger4 hover:no-underline">
-          More
+        <a href="/create-pool" className="text-sm text-dagger4 hover:no-underline">
+          Create
         </a>
-        <a href="/" className="text-sm text-dagger4 hover:no-underline">
-          Again
+        <a href="/dashboard" className="text-sm text-dagger4 hover:no-underline">
+          Dashboard
         </a>
-        <a href="/" className="text-sm text-dagger4 hover:no-underline">
-          FAQs
+        <a href="/faucet" className="text-sm text-dagger4 hover:no-underline">
+          Faucet
         </a>
       </div>
       <div className="flex-grow w-full flex-row-reverse flex gap-4 items-center">
