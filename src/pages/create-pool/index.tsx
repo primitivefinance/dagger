@@ -15,8 +15,8 @@ function CreatePool() {
   const { connectors, connect } = useConnect();
 
   const [strategy, setStrategy] = useState<'G3M' | 'LogNormal'>('G3M');
-  const [tokenX, setTokenX] = useState<`0x${string}`>('0x9E4c7F96C883994ad0D6Ed690B68B2c53EF60048');
-  const [tokenY, setTokenY] = useState<`0x${string}`>('0x935B7D29B20Fad7DF00eDE0D7F80Dc70F0AA8B75');
+  const [tokenX, setTokenX] = useState<`0x${string}`>(tokens[0].address);
+  const [tokenY, setTokenY] = useState<`0x${string}`>(tokens[1].address);
   const [weight, setWeight] = useState<number>(50);
   const [feeRate, setFeeRate] = useState<number>(0.3);
   const [controller, setController] = useState<string>('');
@@ -195,23 +195,23 @@ function CreatePool() {
         <div className="flex flex-col gap-4 items-start">
 
           <TokenAmountInput
-            tokenAddress="0x9E4c7F96C883994ad0D6Ed690B68B2c53EF60048"
-            tokenSymbol="WETH"
+            tokenAddress={tokens.find((token) => token.address === tokenX)!.address}
+            tokenSymbol={tokens.find((token) => token.address === tokenX)!.symbol}
             tokenBalance={tokenXBalance}
             amount={reserveX}
             setAmount={setReserveX}
-            tokenPrice={2700}
-            tokenLogo={"https://assets.smold.app/api/token/1/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo-128.png"}
+            tokenPrice={1}
+            tokenLogo={tokens.find((token) => token.address === tokenX)!.logo}
           />
 
           <TokenAmountInput
-            tokenAddress="0x935B7D29B20Fad7DF00eDE0D7F80Dc70F0AA8B75"
-            tokenSymbol="USDC"
+            tokenAddress={tokens.find((token) => token.address === tokenY)!.address}
+            tokenSymbol={tokens.find((token) => token.address === tokenY)!.symbol}
             tokenBalance={tokenYBalance}
             amount={reserveY}
             setAmount={setReserveY}
             tokenPrice={1}
-            tokenLogo={"https://assets.smold.app/api/token/1/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo-128.png"}
+            tokenLogo={tokens.find((token) => token.address === tokenY)!.logo}
           />
 
           <div className="flex flex-col justify-end text-right w-full px-3">
