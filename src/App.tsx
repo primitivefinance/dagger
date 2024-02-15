@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { http, createConfig, WagmiProvider } from 'wagmi';
 import { optimismSepolia } from 'wagmi/chains';
@@ -39,6 +40,14 @@ const router = createBrowserRouter([
 const queryClient = new QueryClient();
 
 function App() {
+  useEffect(() => {
+    document.onkeyup = (e) => {
+      if (e.code === 'Space') {
+        document.querySelector("html")?.setAttribute("data-theme", 'variant2');
+      }
+    };
+  }, []);
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
