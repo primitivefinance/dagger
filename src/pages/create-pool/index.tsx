@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useConnect } from 'wagmi';
 import { isAddress } from 'viem';
 
 import { balanceOf } from '../../lib/erc20';
@@ -12,6 +12,7 @@ import { tokens } from '../../data/tokens';
 
 function CreatePool() {
   const { address } = useAccount();
+  const { connectors, connect } = useConnect();
 
   const [strategy, setStrategy] = useState<'G3M' | 'LogNormal'>('G3M');
   const [tokenX, setTokenX] = useState<`0x${string}`>('0x9E4c7F96C883994ad0D6Ed690B68B2c53EF60048');
@@ -21,8 +22,6 @@ function CreatePool() {
   const [controller, setController] = useState<string>('');
   const [reserveX, setReserveX] = useState<string>('');
   const [reserveY, setReserveY] = useState<string>('');
-  const [pricePerX, setPricePerX] = useState<number>(0);
-  const [pricePerY, setPricePerY] = useState<number>(0);
   const [tokenXBalance, setTokenXBalance] = useState<number>(0);
   const [tokenYBalance, setTokenYBalance] = useState<number>(0);
 
@@ -228,8 +227,15 @@ function CreatePool() {
 
       <button
         className="w-full text-base bg-brand border-0 p-4 font-bold text-dagger0"
+        onClick={async () => {
+          if (address === undefined) {
+            connect({ connector: connectors[0] });
+          } else {
+            // Create pool
+          }
+        }}
       >
-        Connect Wallet
+        {address === undefined ? 'Connect Wallet' : 'Create Pool'}
       </button>
     </div>
   );
