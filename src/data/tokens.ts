@@ -5,6 +5,7 @@ type Token = {
   symbol: string;
   name: string;
   faucet?: number;
+  price?: number;
 }
 
 export const tokens: Token[] = [
@@ -15,6 +16,7 @@ export const tokens: Token[] = [
     decimals: 18,
     logo: "https://assets.smold.app/api/token/1/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo-128.png",
     faucet: 10,
+    price: 2840.43
   },
   {
     address: '0x71C03954a0078a102d14A78e60a8E5CD5e5A1F3C',
@@ -23,6 +25,7 @@ export const tokens: Token[] = [
     symbol: 'USDC',
     name: 'USD Coin',
     faucet: 10000,
+    price: 1,
   },
   {
     address: '0x1815EdF2Da311B42794F8b55990D7D2539073e64',
@@ -31,6 +34,7 @@ export const tokens: Token[] = [
     symbol: 'USDT',
     name: 'Tether USD',
     faucet: 10000,
+    price: 1,
   },
   {
     address: '0x2b624C9C1E2cDc79639811Caa92C5c796a908166',
@@ -39,6 +43,7 @@ export const tokens: Token[] = [
     decimals: 18,
     logo: 'https://assets.smold.app/api/token/10/0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1/logo-128.png',
     faucet: 10000,
+    price: 1,
   },
   {
     address: '0xd694F704a835BfaF22b2709C2150A7957096412B',
@@ -47,6 +52,7 @@ export const tokens: Token[] = [
     decimals: 18,
     logo: 'https://assets.smold.app/api/token/10/0x68f180fcCe6836688e9084f035309E29Bf0A2095/logo-128.png',
     faucet: 5,
+    price: 52631.87
   },
 ];
 
