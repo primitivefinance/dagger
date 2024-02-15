@@ -5,7 +5,7 @@ import { optimismSepolia } from 'wagmi/chains';
 import { injected, safe, walletConnect } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import Header from './components/header';
+import Header from './components/_Header';
 import Home from './pages/home';
 import CreatePool from './pages/create-pool';
 import Pool from './pages/pool';
