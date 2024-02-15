@@ -1,3 +1,5 @@
+const { createThemes } = require('tw-colors');
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -6,30 +8,58 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        'dagger0': '#131722', // '#171717',
-        'dagger1': '#1D2635', // '#262626',
-        'dagger2': '#253041', // '#404040',
-        'dagger3': '#999999', // '#a3a3a3',
-        'dagger4': '#FFFFFF', // '#f5f5f5',
-      },
       fontWeight: {
         normal: 500,
         bold: 600,
       },
-      /*
-
-      fontSize: {
-        xs: '14px',
-        sm: '16px',
-        md: '18px'
-      },
-      */
       fontFamily: {
         sans: ['Suisse Intl', 'sans-serif'],
       },
     },
   },
-  plugins: [],
+  plugins: [
+    createThemes({
+      variant1: {
+        'brand': '#9872ff',
+        'dagger0': '#101119',
+        'dagger1': '#181A25',
+        'dagger2': '#494E6F',
+        'dagger3': '#F3F3F766',
+        'dagger4': '#F3F3F7',
+      },
+      variant2: {
+        'brand': '#6933ff',
+        'dagger0': '#000000',
+        'dagger1': '#0c0c0c',
+        'dagger2': '#222222',
+        'dagger3': '#666666',
+        'dagger4': '#ffffff',
+      },
+      variant22: {
+        'brand': '#d7ff37',
+        'dagger0': '#000000',
+        'dagger1': '#0c0c0c',
+        'dagger2': '#ffffff0d',
+        'dagger3': '#ffffff7a',
+        'dagger4': '#ffffff',
+      },
+      variant3: {
+        'brand': '#7000ff',
+        'dagger0': '#111111',
+        'dagger1': '#1c1c1c',
+        'dagger2': '#444444',
+        'dagger3': '#777777',
+        'dagger4': '#ffffff',
+      },
+      variant4: {
+        'brand': '#2c5ee8',
+        'dagger0': '#000000',
+        'dagger1': '#111111cc',
+        'dagger2': '#ffffff1a',
+        'dagger3': '#999999',
+        'dagger4': '#ffffff',
+      },
+    }, { defaultTheme: 'variant22' })
+  ],
 }
 
