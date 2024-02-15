@@ -1,9 +1,41 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
+import { balanceOf } from '../../lib/erc20';
+import { useAccount } from 'wagmi';
+import { isAddress } from 'viem';
 
 function CreatePool() {
-  const [strategy, setStrategy] = useState<string>('G3M');
+  const { address } = useAccount();
+
+  const [strategy, setStrategy] = useState<'G3M' | 'LogNormal'>('G3M');
+  const [tokenX, setTokenX] = useState<`0x${string}`>('0x9E4c7F96C883994ad0D6Ed690B68B2c53EF60048');
+  const [tokenY, setTokenY] = useState<`0x${string}`>('0x935B7D29B20Fad7DF00eDE0D7F80Dc70F0AA8B75');
   const [weight, setWeight] = useState<number>(50);
   const [feeRate, setFeeRate] = useState<number>(0.3);
+  const [controller, setController] = useState<string>('');
+  const [reserveX, setReserveX] = useState<number>(0);
+  const [reserveY, setReserveY] = useState<number>(0);
+  const [pricePerX, setPricePerX] = useState<number>(0);
+  const [pricePerY, setPricePerY] = useState<number>(0);
+  const [balanceOfX, setBalanceOfX] = useState<number>(0);
+  const [balanceOfY, setBalanceOfY] = useState<number>(0);
+
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        const balance = await balanceOf(tokenX, address);
+        console.log(balance);
+      }
+    })();
+  }, [address, tokenX]);
+
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        const balance = await balanceOf(tokenY, address);
+        console.log(balance);
+      }
+    })();
+  }, [address, tokenY]);
 
   return (
     <div className="py-16 container mx-auto max-w-4xl gap-14 flex flex-col">
@@ -205,13 +237,24 @@ function CreatePool() {
 
         <div className="flex flex-col">
           <div className="flex flex-row justify-between items-center bg-dagger1 border border-solid border-dagger2 text-sm p-3 w-full rounded-xl">
-            <input className="flex-grow" placeholder="Use an Ethereum address or an ENS..." />
-            <svg className="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18 18 6m0 12L6 6" />
-            </svg>
+            <input value={controller} onChange={(e) => setController(e.target.value)} className="flex-grow" placeholder="Use an Ethereum address or an ENS..." />
+            {isAddress(controller) ? (
+              <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="green" viewBox="0 0 24 24">
+                <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke="red" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18 18 6m0 12L6 6" />
+              </svg>
+            )}
           </div>
 
-          <button className="flex justify-end bg-transparent border-0">Use my current wallet (0xbeef...cafe)</button>
+          <button
+            className="flex justify-end bg-transparent border-0"
+            onClick={() => setController(address !== undefined ? address : '')}
+          >
+            Use my current wallet
+          </button>
         </div>
 
 
