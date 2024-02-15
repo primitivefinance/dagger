@@ -4,6 +4,7 @@ import { tokens } from '../../data/tokens';
 type TokenSelectorProps = {
   tokenLogo: string;
   tokenSymbol: string;
+  setToken: (token: `0x${string}`) => void;
 };
 
 function TokenSelector(props: TokenSelectorProps) {
@@ -17,7 +18,7 @@ function TokenSelector(props: TokenSelectorProps) {
   return (
     <>
       {isOpen && (
-        <div className="top-0 left-0 absolute bg-dagger0 z-10 w-screen h-screen flex justify-center items-center">
+        <div className="transition top-0 left-0 absolute bg-dagger0 z-10 w-screen h-screen flex justify-center items-center">
           <div className="flex flex-col gap-4 bg-dagger1 border-dagger2 border border-solid p-4 rounded-lg max-w-md">
             <div className="flex flex-row justify-between items-center">
               <p className="font-bold text-base">Select a token</p>
@@ -35,7 +36,14 @@ function TokenSelector(props: TokenSelectorProps) {
             <p className="text-sm">Select a token from our default list or search for a token by symbol or address.</p>
             <div className="flex flex-row gap-4 items-center">
               {tokens.map((token) => (
-                <div className="flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3">
+                <div
+                  key={token.address}
+                  className="cursor-pointer flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3 hover:opacity-50"
+                  onClick={() => {
+                    props.setToken(token.address);
+                    close();
+                  }}
+                >
                   <img src={token.logo} alt={token.symbol} className="rounded-full size-4" />
                   <span className="text-sm">{token.symbol}</span>
                 </div>
