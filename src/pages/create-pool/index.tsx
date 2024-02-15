@@ -288,7 +288,7 @@ function CreatePool() {
 
       </div>
 
-      <button className="w-full text-base">Connect Wallet</button>
+      <button className="w-full text-base bg-brand border-0 p-4 font-bold text-dagger0">Connect Wallet</button>
     </div>
   );
 }
