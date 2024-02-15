@@ -1,31 +1,25 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-import { optimismSepolia } from 'viem/chains';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { http, createConfig, WagmiProvider } from 'wagmi';
+import { optimismSepolia } from 'wagmi/chains';
+import { injected, safe, walletConnect } from 'wagmi/connectors';
 
 import Header from './components/header';
 import Home from './pages/home';
 import CreatePool from './pages/create-pool';
 import Pool from './pages/pool';
 
-const { chains, publicClient } = configureChains(
-  [optimismSepolia],
-  [
-    alchemyProvider({ apiKey: 'wzhgRGq_Z2cxhGkBnSTcfsGRSHr9FHKM' }),
+const projectId = '42c7317ebec6e24c881a534d1d6b3ba0';
+
+export const config = createConfig({
+  chains: [optimismSepolia],
+  connectors: [
+    injected(),
+    walletConnect({ projectId }),
+    safe(),
   ],
-);
-
-const { connectors } = getDefaultWallets({
-  chains,
-  appName: 'Dagger',
-  projectId: '42c7317ebec6e24c881a534d1d6b3ba0',
-});
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
+  transports: {
+    [optimismSepolia.id]: http(),
+  },
 });
 
 const router = createBrowserRouter([
@@ -45,12 +39,10 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains} initialChain={optimismSepolia}>
-        <Header />
-        <RouterProvider router={router} />
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <WagmiProvider config={config}>
+      <Header />
+      <RouterProvider router={router} />
+    </WagmiProvider>
   );
 }
 
