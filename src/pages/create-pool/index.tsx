@@ -6,6 +6,9 @@ import { balanceOf } from '../../lib/erc20';
 import TokenAmountInput from '../../components/TokenAmountInput';
 import Card from '../../components/Card';
 import { computeAndFormatPrice } from '../../lib/g3m';
+import TokenSelector from '../../components/TokenSelector';
+
+import { tokens } from '../../data/tokens';
 
 function CreatePool() {
   const { address } = useAccount();
@@ -59,28 +62,16 @@ function CreatePool() {
         </div>
 
         <div className="flex flex-row gap-4 items-center">
-          <button>
-            <div className="flex flex-row gap-2 items-center">
-              <div className="flex flex-row gap-1 items-center">
-                <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                <span className="text-base">WETH</span>
-              </div>
-              <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m19 9-7 7-7-7" />
-              </svg>
-            </div>
-          </button>
-          <button>
-            <div className="flex flex-row gap-2 items-center">
-              <div className="flex flex-row gap-1 items-center">
-                <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-4" />
-                <span className="text-base">USDC</span>
-              </div>
-              <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m19 9-7 7-7-7" />
-              </svg>
-            </div>
-          </button>
+          <TokenSelector
+            tokenLogo={tokens.find((token) => token.address === tokenX)?.logo || ''}
+            tokenSymbol={tokens.find((token) => token.address === tokenX)?.symbol || ''}
+            setToken={setTokenX}
+          />
+          <TokenSelector
+            tokenLogo={tokens.find((token) => token.address === tokenY)?.logo || ''}
+            tokenSymbol={tokens.find((token) => token.address === tokenY)?.symbol || ''}
+            setToken={setTokenY}
+          />
         </div>
 
         <div className="flex flex-col">
@@ -182,7 +173,7 @@ function CreatePool() {
                 <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
               </svg>
             ) : (
-              <svg className="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <path stroke="red" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18 18 6m0 12L6 6" />
               </svg>
             )}
