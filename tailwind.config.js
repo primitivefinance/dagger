@@ -52,14 +52,22 @@ export default {
         'dagger4': '#ffffff',
       },
       variant4: {
-        'brand': '#2c5ee8',
+        'brand': '#d7ff37', // '#2c5ee8',
         'dagger0': '#000000',
         'dagger1': '#111111cc',
         'dagger2': '#ffffff1a',
         'dagger3': '#999999',
         'dagger4': '#ffffff',
       },
-    }, { defaultTheme: 'variant22' })
+      light: {
+        'brand': '#2c5ee8', // '#2c5ee8',
+        'dagger0': '#ffffff',
+        'dagger1': '#eeeeeecc',
+        'dagger2': '#1111111a',
+        'dagger3': '#777777',
+        'dagger4': '#000000',
+      },
+    }, { defaultTheme: 'variant4' })
   ],
 }
 
