@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { http, createConfig, WagmiProvider } from 'wagmi';
 import { optimismSepolia } from 'wagmi/chains';
 import { injected, safe, walletConnect } from 'wagmi/connectors';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Header from './components/header';
 import Home from './pages/home';
@@ -14,8 +15,6 @@ export const config = createConfig({
   chains: [optimismSepolia],
   connectors: [
     injected(),
-    walletConnect({ projectId }),
-    safe(),
   ],
   transports: {
     [optimismSepolia.id]: http(),
@@ -37,11 +36,15 @@ const router = createBrowserRouter([
   }
 ]);
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
     <WagmiProvider config={config}>
-      <Header />
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <Header />
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </WagmiProvider>
   );
 }
