@@ -4,6 +4,7 @@ import { isAddress } from 'viem';
 
 import { balanceOf } from '../../lib/erc20';
 import TokenAmountInput from '../../components/TokenAmountInput';
+import Card from '../../components/Card';
 import { computeAndFormatPrice } from '../../lib/g3m';
 
 function CreatePool() {
@@ -88,34 +89,18 @@ function CreatePool() {
         </div>
 
         <div className="flex flex-row gap-4 items-center">
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${strategy === 'G3M' ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+          <Card
+            isSelected={strategy === 'G3M'}
             onClick={() => setStrategy('G3M')}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-base font-bold">G3M</p>
-              {strategy === 'G3M' && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Select the strategy you want to use with for this new pool.</p>
-          </div>
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${strategy === 'LogNormal' ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+            title="G3M"
+            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
+          />
+          <Card
+            isSelected={strategy === 'LogNormal'}
             onClick={() => setStrategy('LogNormal')}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-base font-bold">LogNormal</p>
-              {strategy === 'LogNormal' && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Select the strategy you want to use with for this new pool.</p>
-          </div>
+            title="LogNormal"
+            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
+          />
         </div>
 
         <div className="flex flex-col">
@@ -124,62 +109,34 @@ function CreatePool() {
         </div>
 
         <div className="flex flex-row gap-4 items-center">
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.01 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+          <Card
+            isSelected={feeRate === 0.01}
             onClick={() => setFeeRate(0.01)}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-sm font-bold">0.01%</p>
-              {feeRate === 0.01 && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Best for very stable pairs.</p>
-          </div>
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.05 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+            title="0.01%"
+            description="Best for very stable pairs."
+            smallTitle
+          />
+          <Card
+            isSelected={feeRate === 0.05}
             onClick={() => setFeeRate(0.05)}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-sm font-bold">0.05%</p>
-              {feeRate === 0.05 && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Best for stable pairs.</p>
-          </div>
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 0.3 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+            title="0.05%"
+            description="Best for stable pairs."
+            smallTitle
+          />
+          <Card
+            isSelected={feeRate === 0.3}
             onClick={() => setFeeRate(0.3)}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-sm font-bold">0.30%</p>
-              {feeRate === 0.3 && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Best for most pairs.</p>
-          </div>
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${feeRate === 1 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+            title="0.30%"
+            description="Best for most pairs."
+            smallTitle
+          />
+          <Card
+            isSelected={feeRate === 1}
             onClick={() => setFeeRate(1)}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-sm font-bold">1.00%</p>
-              {feeRate === 1 && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Best for exotic pairs.</p>
-          </div>
+            title="1.00%"
+            description="Best for exotic pairs."
+            smallTitle
+          />
         </div>
 
 
@@ -189,48 +146,27 @@ function CreatePool() {
         </div>
 
         <div className="flex flex-row gap-4 items-center">
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 20 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+          <Card
+            isSelected={weight === 20}
             onClick={() => setWeight(20)}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-sm font-bold">20/80%</p>
-              {weight === 20 && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Best for very stable pairs.</p>
-          </div>
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 30 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+            title="20/80%"
+            description="Best for very stable pairs."
+            smallTitle
+          />
+          <Card
+            isSelected={weight === 30}
             onClick={() => setWeight(30)}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-sm font-bold">30/70%</p>
-              {weight === 30 && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Best for stable pairs.</p>
-          </div>
-          <div
-            className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 ${weight === 50 ? 'bg-dagger1 border-brand' : 'bg-dagger0 border-dagger2'}`}
+            title="30/70%"
+            description="Best for stable pairs."
+            smallTitle
+          />
+          <Card
+            isSelected={weight === 50}
             onClick={() => setWeight(50)}
-          >
-            <div className="flex flex-row items-center justify-between">
-              <p className="text-sm font-bold">50/50%</p>
-              {weight === 50 && (
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <p className="text-dagger3 text-xs">Best for most pairs.</p>
-          </div>
+            title="50/50%"
+            description="Best for most pairs."
+            smallTitle
+          />
         </div>
 
         <div className="flex flex-col">
