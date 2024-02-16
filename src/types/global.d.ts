@@ -15,7 +15,7 @@ type Token = {
   name: string;
   symbol: string;
   decimals: number;
-  address: `0x${string}`
+  id: `0x${string}`
 }
 
 type G3MParameters = {
