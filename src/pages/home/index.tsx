@@ -18,7 +18,7 @@ function Home() {
       </div>
       <div className="container mx-auto max-w-4xl gap-2 flex flex-col">
         <div className="flex flex-row items-center w-full justify-between">
-          <h3>All pools (42)</h3>
+          <h3>All pools ({pools.length})</h3>
           <button className="p-2" onClick={() => location.href = '/create-pool'}>
             <div className="flex flex-row items-center gap-1">
               <svg className="w-4 h-3 text-dagger4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -61,8 +61,8 @@ function Home() {
                       <div className="flex flex-col font-bold">
                         {pool.tokenX.symbol}/{pool.tokenY.symbol}
                         <div className="flex flex-row gap-2">
-                          <div className="bg-blue-600 px-2 rounded-full text-xs">0.005%</div>
-                          <div className="bg-purple-600 px-2 rounded-full text-xs">G3M</div>
+                          <div className="bg-blue-600 px-2 rounded-full text-xs">{pool.parameters.swapFee}%</div>
+                          <div className="bg-purple-600 px-2 rounded-full text-xs">{pool.strategy.name}</div>
                         </div>
                       </div>
                     </div>
