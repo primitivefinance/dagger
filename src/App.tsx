@@ -5,6 +5,8 @@ import { optimismSepolia } from 'wagmi/chains';
 import { injected, safe, walletConnect } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+import { IndexerProvider } from './store/IndexerContext';
+
 import Header from './components/Header';
 import Home from './pages/home';
 import CreatePool from './pages/create-pool';
@@ -56,8 +58,10 @@ function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <Header />
-        <RouterProvider router={router} />
+        <IndexerProvider>
+          <Header />
+          <RouterProvider router={router} />
+        </IndexerProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
