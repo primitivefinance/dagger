@@ -3,9 +3,9 @@ import { dfmmABI } from './abis/dfmm';
 import { config } from '../App';
 import { getInitialPoolData } from './g3m';
 
-export const DFMM = '0x5482ca07ac79d0Ca9F495e1c0Ea8A16780C64731';
-export const G3M = '0x67f6C0c97ac803A64B56bd7c9479a259aC959B4a';
-export const LogNormal = '0xA63e861915c4627e994031dc35E642FAfE018b33';
+export const DFMM = '0x1FEbA1856976c9bBfaEA9A731fF5F4Dc2B49ae9d';
+export const G3M = '0x89405925eDFD3743FFdEE2538A7FeeC07d534FD3';
+export const LogNormal = '0x3AeA2E89DF75865A908C1BC838afae95a479b3F4';
 
 export async function weth(): Promise<`0x${string}`> {
   try {
