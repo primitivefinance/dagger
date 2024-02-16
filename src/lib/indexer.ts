@@ -24,14 +24,34 @@ export async function getPools(): Promise<Pool[]> {
                 id
                 name
               }
-              parameters
               liquidity
               lpToken
               name
-              reserveX
               reserveY
-              strategy
               timestamp
+              reserveXWad
+              reserveYWad
+              parameters {
+                controller
+                swapFee
+                swapFeeWad
+                weightX
+                weightXWad
+                weightY
+                weightYWad
+              }
+              reserveX
+              strategyId
+              strategy {
+                name
+              }
+              positions {
+                items {
+                  accountId
+                  liquidity
+                  liquidityWad
+                }
+              }
             }
           }
         }
@@ -44,5 +64,36 @@ export async function getPools(): Promise<Pool[]> {
   } catch (e) {
     console.error(e);
     throw new Error('Failed to fetch pools');
+  }
+}
+
+export async function getUserPositions(account: `0x${string}`): Promise<Position[]> {
+  try {
+    const query = await fetch('http://localhost:42069', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+        query MyQuery {
+          positions(limit: 10, where: {accountId: "${account}"}) {
+            items {
+              liquidity
+              liquidityWad
+              poolId
+            }
+          }
+        }
+        `
+      }),
+    });
+
+    const json = await query.json();
+    return json.data.positions.items;
+  } catch (e) {
+    console.error(e);
+    throw new Error('Failed to fetch positions');
   }
 }
