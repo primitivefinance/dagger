@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAccount } from 'wagmi';
+import { useAccount, useConnect } from 'wagmi';
 
 import { useIndexer } from '../../store/IndexerContext';
 import { tokens } from '../../data/tokens';
 import { shortAddress } from '../../utils/address';
-import { computePrice } from '../../lib/g3m';
+import { computePrice, allocateGivenX, deallocateGivenX } from '../../lib/g3m';
 import TokenAmountInput from '../../components/TokenAmountInput';
 import { balanceOf } from '../../lib/erc20';
+import { parseEther } from 'viem';
+import { allocate, deallocate } from '../../lib/dfmm';
 
 const LinkIcon = () => (
   <svg className="w-3 h-3 self-center" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -19,6 +21,8 @@ function Pool() {
   const { pools } = useIndexer();
   const { id } = useParams();
   const { address } = useAccount();
+  const { connectors, connect } = useConnect();
+
   const [balanceX, setBalanceX] = useState<number>(0);
   const [balanceY, setBalanceY] = useState<number>(0);
 
@@ -38,11 +42,10 @@ function Pool() {
     }
   }, [address, pool]);
 
-  let userPosition;
+  let userPosition: Position;
 
   if (pool && address) {
     userPosition = pool.positions.items.find(position => position.accountId.toLowerCase() === address?.toLocaleLowerCase())!;
-    console.log(userPosition);
   }
 
   const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true);
@@ -137,7 +140,7 @@ function Pool() {
                   />
                   <p className="text-xs text-dagger3">{pool.tokenX.symbol}</p>
                 </div>
-                <p className="font-bold">{userPosition ? userPosition.liquidity / pool.liquidity * pool.reserveX : '0.0'} {pool.tokenX.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
+                <p className="font-bold">{userPosition! ? userPosition.liquidity / pool.liquidity * pool.reserveX : '0.0'} {pool.tokenX.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
               </div>
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
@@ -148,11 +151,11 @@ function Pool() {
                   />
                   <p className="text-xs text-dagger3">{pool.tokenY.symbol}</p>
                 </div>
-                <p className="font-bold">{userPosition ? (userPosition.liquidity / pool.liquidity * pool.reserveY).toLocaleString(undefined) : '0.0'} {pool.tokenY.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
+                <p className="font-bold">{userPosition! ? (userPosition.liquidity / pool.liquidity * pool.reserveY).toLocaleString(undefined) : '0.0'} {pool.tokenY.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Total Liquidity</p>
-                <p className="font-bold">{userPosition ? userPosition.liquidity.toLocaleString(undefined) : '0.0'}</p>
+                <p className="font-bold">{userPosition! ? userPosition.liquidity.toLocaleString(undefined) : '0.0'}</p>
               </div>
             </div>
           </div>
@@ -238,7 +241,7 @@ function Pool() {
                   />
                   <div className="flex flex-row gap-1 items-center justify-end">
                     <p className="text-dagger3 text-xs">You'll receive at least</p>
-                    <p className="text-dagger4 text-sm">{userPosition ? ((userPosition.liquidity / pool.liquidity * pool.reserveX) * range / 100).toLocaleString(undefined) : '0.0'}</p>
+                    <p className="text-dagger4 text-sm">{userPosition! ? ((userPosition.liquidity / pool.liquidity * pool.reserveX) * range / 100).toLocaleString(undefined) : '0.0'}</p>
                     <img
                       src={tokenXLogo}
                       alt={pool.tokenX.symbol}
@@ -246,7 +249,7 @@ function Pool() {
                     />
                     <p className="text-dagger4 text-sm">{pool.tokenX.symbol}</p>
                     <p className="text-dagger3 text-xs">and</p>
-                    <p className="text-dagger4 text-sm">{userPosition ? ((userPosition.liquidity / pool.liquidity * pool.reserveY) * range / 100).toLocaleString(undefined) : '0.0'}</p>
+                    <p className="text-dagger4 text-sm">{userPosition! ? ((userPosition.liquidity / pool.liquidity * pool.reserveY) * range / 100).toLocaleString(undefined) : '0.0'}</p>
                     <img
                       src={tokenYLogo}
                       alt={pool.tokenY.symbol}
@@ -256,7 +259,24 @@ function Pool() {
                   </div>
                 </div>
               )}
-              <button>Connect Wallet</button>
+              <button
+                onClick={async () => {
+                  if (address === undefined) {
+                    connect({ connector: connectors[0] });
+                  } else {
+                    if (isAddLiquidity) {
+                      const data = await allocateGivenX(pool.id, parseEther(amountX));
+                      await allocate(pool.id, data[0], data[1], data[2]);
+                    } else {
+                      const x = userPosition.liquidity / pool.liquidity * pool.reserveX;
+                      const data = await deallocateGivenX(pool.id, parseEther((x * range / 100).toString()));
+                      await deallocate(pool.id, data[0], data[1], data[2]);
+                    }
+                  }
+                }}
+              >
+                {address === undefined ? 'Connect Wallet' : 'Confirm'}
+              </button>
             </div>
           </div>
 
