@@ -1,9 +1,9 @@
-import { parseEther } from "viem";
+import { ReadContractReturnType, parseEther } from "viem";
 import { config } from "../App";
 import { readContract } from "wagmi/actions";
 import { g3mSolverAbi } from "./abis/g3mSolver";
 
-const G3MSolver = '0xbbaA2acB8F2f23ecfd8A3dF3b263Bb513F26a582';
+const G3MSolver = '0x05792cA1459699A3DA6e6E7Af295E3C792D5e038';
 
 export function computePrice(reserveX: number, reserveY: number, weightX: number, weightY: number): number {
   return (reserveY / weightY) / (reserveX / weightX);
@@ -41,5 +41,33 @@ export function getInitialPoolData(reserveX: bigint, S: bigint, wX: bigint, swap
   } catch (e) {
     console.error(e);
     throw new Error('Failed to fetch initial pool data');
+  }
+}
+
+export async function allocateGivenX(poolId: bigint, x: bigint): Promise<any> {
+  try {
+    return readContract(config, {
+      abi: g3mSolverAbi,
+      address: G3MSolver,
+      functionName: 'allocateGivenX',
+      args: [poolId, x],
+    });
+  } catch (e) {
+    console.error(e);
+    throw new Error('Failed to call allocate given X');
+  }
+}
+
+export async function deallocateGivenX(poolId: bigint, x: bigint): Promise<any> {
+  try {
+    return readContract(config, {
+      abi: g3mSolverAbi,
+      address: G3MSolver,
+      functionName: 'deallocateGivenX',
+      args: [poolId, x],
+    });
+  } catch (e) {
+    console.error(e);
+    throw new Error('Failed to call deallocate given X');
   }
 }
