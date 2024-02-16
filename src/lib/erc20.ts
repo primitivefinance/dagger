@@ -1,5 +1,5 @@
-import { multicall, writeContract } from 'wagmi/actions';
-import { erc20Abi, formatUnits, parseUnits } from 'viem';
+import { multicall, readContract, writeContract } from 'wagmi/actions';
+import { erc20Abi, formatUnits, maxUint256, parseUnits } from 'viem';
 import { config } from '../App';
 import { mockERC20Abi } from './abis/mockERC20';
 
@@ -25,6 +25,37 @@ export async function balanceOf(token: `0x${string}`, account: `0x${string}`): P
   } catch (e) {
     console.error(e);
     throw new Error('Failed to fetch balance');
+  }
+}
+
+export async function allowance(token: `0x${string}`, owner: `0x${string}`, spender: `0x${string}`): Promise<number> {
+  try {
+    const result = await readContract(config, {
+      abi: erc20Abi,
+      address: token,
+      functionName: 'allowance',
+      args: [owner, spender],
+    });
+
+    return parseFloat(result.toString());
+  } catch (e) {
+    console.error(e);
+    throw new Error('Failed to fetch allowance');
+  }
+}
+
+export async function approve(token: `0x${string}`, spender: `0x${string}`): Promise<void> {
+  try {
+    const result = await writeContract(config, {
+      address: token,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: [spender, maxUint256],
+    });
+    console.log(result);
+  } catch (e) {
+    console.error(e);
+    throw new Error('Failed to approve');
   }
 }
 
