@@ -1,4 +1,12 @@
 import { useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAccount } from 'wagmi';
+
+import { useIndexer } from '../../store/IndexerContext';
+import { tokens } from '../../data/tokens';
+import { shortAddress } from '../../utils/address';
+import { computePrice } from '../../lib/g3m';
+import TokenAmountInput from '../../components/TokenAmountInput';
 
 const LinkIcon = () => (
   <svg className="w-3 h-3 self-center" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -7,9 +15,26 @@ const LinkIcon = () => (
 );
 
 function Pool() {
+  const { pools } = useIndexer();
+  const { id } = useParams();
+  const { address } = useAccount();
+
+  const pool = pools.find(pool => pool.id.toString() === id)!;
+
+  let userPosition;
+
+  if (pool && address) {
+    userPosition = pool.positions.items.find(position => position.accountId.toLowerCase() === address?.toLocaleLowerCase())!;
+    console.log(userPosition);
+  }
+
   const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true);
   const ref = useRef(null);
   const [range, setRange] = useState<number>(0);
+
+  if (pool === undefined) {
+    return (<></>);
+  }
 
   return (
     <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
@@ -17,29 +42,39 @@ function Pool() {
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
           <div className="flex flex-row items-center">
-            <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-8" style={{ zIndex: 1 }} />
-            <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-8" style={{ marginLeft: '-8px' }} />
+            <img
+              src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+              alt={pool.tokenX.symbol}
+              className="rounded-full size-8"
+              style={{ zIndex: 1 }}
+            />
+            <img
+              src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+              alt={pool.tokenY.symbol}
+              className="rounded-full size-8"
+              style={{ marginLeft: '-8px' }}
+            />
           </div>
           <h1>
-            WETH/USDC
+            {pool?.tokenX.symbol}/{pool?.tokenY.symbol}
           </h1>
           <div className="flex flex-initial flex-row gap-2">
-            <div className="self-center bg-blue-600 px-2 rounded-full text-[14px]">0.03%</div>
-            <div className="self-center bg-purple-600 px-2 rounded-full text-[14px]">G3M</div>
+            <div className="self-center bg-blue-600 px-2 rounded-full text-[14px]">{pool.parameters.swapFee}%</div>
+            <div className="self-center bg-purple-600 px-2 rounded-full text-[14px]">{pool.strategy.name}</div>
           </div>
         </div>
         <div className="flex flex-row items-center gap-5">
           <div className="flex gap-1 items-center">
-            <p className="font-bold">WETH</p>
-            <a href="#" className="flex flex-row gap-1 text-sm">0x1234...1234 <LinkIcon /></a>
+            <p className="font-bold">{pool.tokenX.symbol}</p>
+            <a href={`https://sepolia-optimistic.etherscan.io/address/${pool.tokenX.id}`} className="flex flex-row gap-1 text-sm">{shortAddress(pool.tokenX.id)} <LinkIcon /></a>
           </div>
           <div className="flex gap-1 items-center">
-            <p className="font-bold">USDC</p>
-            <a href="#" className="flex flex-row gap-1 text-sm">0x1234...1234 <LinkIcon /></a>
+            <p className="font-bold">{pool.tokenY.symbol}</p>
+            <a href={`https://sepolia-optimistic.etherscan.io/address/${pool.tokenY.id}`} className="flex flex-row gap-1 text-sm">{shortAddress(pool.tokenY.id)} <LinkIcon /></a>
           </div>
           <div className="flex gap-1 items-center">
-            <p className="font-bold">WETH/USDC</p>
-            <a href="#" className="flex flex-row gap-1 text-sm">0x1234...1234 <LinkIcon /></a>
+            <p className="font-bold">{pool.name}</p>
+            <a href={`https://sepolia-optimistic.etherscan.io/address/${pool.lpToken}`} className="flex flex-row gap-1 text-sm">{shortAddress(pool.lpToken)} <LinkIcon /></a>
           </div>
         </div>
       </div>
@@ -47,19 +82,19 @@ function Pool() {
       <div className="flex flex-row gap-4">
         <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
           <img
-            src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png"
-            alt="WETH"
+            src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+            alt={pool.tokenY.symbol}
             className="rounded-full size-6"
           />
-          <p className="text-sm">2,414 USDC <span className="text-xs">per ETH</span></p>
+          <p className="text-sm">{computePrice(pool.reserveX, pool.reserveY, pool.parameters.weightX, pool.parameters.weightY).toLocaleString(undefined)} {pool.tokenY.symbol} <span className="text-xs">per {pool.tokenX.symbol}</span></p>
         </div>
         <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
           <img
-            src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
-            alt="WETH"
+            src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+            alt={pool.tokenX.symbol}
             className="rounded-full size-6"
           />
-          <p className="text-sm">0.00085 ETH <span className="text-xs">per USDC</span></p>
+          <p className="text-sm">{computePrice(pool.reserveY, pool.reserveX, pool.parameters.weightY, pool.parameters.weightX).toLocaleString(undefined, { maximumFractionDigits: 8 })} {pool.tokenX.symbol} <span className="text-xs">per {pool.tokenY.symbol}</span></p>
         </div>
       </div>
 
@@ -71,25 +106,33 @@ function Pool() {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col">
                 <p className="text-lg font-bold">My Position</p>
-                <p className="text-dagger3 text-xs">$7,043.41</p>
+                <p className="text-dagger3 text-xs">$0.0</p>
               </div>
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
-                  <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                  <p className="text-xs text-dagger3">WETH</p>
+                  <img
+                    src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+                    alt={pool.tokenX.symbol}
+                    className="rounded-full size-4"
+                  />
+                  <p className="text-xs text-dagger3">{pool.tokenX.symbol}</p>
                 </div>
-                <p className="font-bold">1.44 WETH <span className="text-xs font-normal text-dagger3">($3,535.24)</span></p>
+                <p className="font-bold">{userPosition ? userPosition.liquidity / pool.liquidity * pool.reserveX : '0.0'} {pool.tokenX.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
               </div>
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
-                  <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-4" />
-                  <p className="text-xs text-dagger3">USDC</p>
+                  <img
+                    src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+                    alt={pool.tokenY.symbol}
+                    className="rounded-full size-4"
+                  />
+                  <p className="text-xs text-dagger3">{pool.tokenY.symbol}</p>
                 </div>
-                <p className="font-bold">3,252.24 USDC <span className="text-xs font-normal text-dagger3">($3,535.64)</span></p>
+                <p className="font-bold">{userPosition ? (userPosition.liquidity / pool.liquidity * pool.reserveY).toLocaleString(undefined) : '0.0'} {pool.tokenY.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Total Liquidity</p>
-                <p className="font-bold">7,043.41</p>
+                <p className="font-bold">{userPosition ? userPosition.liquidity.toLocaleString(undefined) : '0.0'}</p>
               </div>
             </div>
           </div>
@@ -127,42 +170,24 @@ function Pool() {
                     <p className="text-lg font-bold">Add Liquidity</p>
                     <p className="text-dagger3 text-xs">Increase your position by adding liquidity into the pool.</p>
                   </div>
-                  <div className="grid grid-cols-2 border border-solid border-dagger2 p-3 rounded-xl gap-2">
-                    <input className="text-lg" placeholder="0.0" />
-                    <div className="flex flex-row gap-1 items-center justify-end">
-                      <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                      <p className="text-dagger4">WETH</p>
-                    </div>
-                    <p className="text-sm text-dagger3">$0.0</p>
-                    <button className="p-0 border-0 hover:opacity-100">
-                      <div className="flex flex-row gap-1 justify-end items-center">
-                        <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <path className="text-dagger3 hover:text-dagger4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 8H5m12 0c.6 0 1 .4 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1Z" />
-                        </svg>
-                        <p className="text-sm text-dagger3 hover:text-dagger4">
-                          1.525 WETH
-                        </p>
-                      </div>
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-2 border border-solid border-dagger2 p-3 rounded-xl gap-2">
-                    <input className="text-lg" placeholder="0.0" />
-                    <div className="flex flex-row gap-1 items-center justify-end">
-                      <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                      <p className="text-dagger4">WETH</p>
-                    </div>
-                    <p className="text-sm text-dagger3">$0.0</p>
-                    <button className="p-0 border-0 hover:opacity-100  hover:text-dagger4">
-                      <div className="flex flex-row gap-1 justify-end items-center">
-                        <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <path className="text-dagger3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 8H5m12 0c.6 0 1 .4 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1Z" />
-                        </svg>
-                        <p className="text-sm text-dagger3">
-                          3,525.52 USDC
-                        </p>
-                      </div>
-                    </button>
-                  </div>
+                  <TokenAmountInput
+                    tokenAddress={pool.tokenX.id}
+                    tokenSymbol={pool.tokenX.symbol}
+                    tokenBalance={0}
+                    tokenLogo={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo!}
+                    tokenPrice={0}
+                    amount=""
+                    setAmount={() => { }}
+                  />
+                  <TokenAmountInput
+                    tokenAddress={pool.tokenY.id}
+                    tokenSymbol={pool.tokenY.symbol}
+                    tokenBalance={0}
+                    tokenLogo={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo!}
+                    tokenPrice={0}
+                    amount=""
+                    setAmount={() => { }}
+                  />
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
@@ -220,29 +245,37 @@ function Pool() {
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">TVL</p>
-                <p className="font-bold">$353.24m</p>
+                <p className="font-bold">$0.0</p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Volume (24h)</p>
-                <p className="font-bold">$1.25m</p>
+                <p className="font-bold">$0.0</p>
               </div>
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
-                  <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                  <p className="text-xs text-dagger3">WETH</p>
+                  <img
+                    src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+                    alt={pool.tokenX.symbol}
+                    className="rounded-full size-4"
+                  />
+                  <p className="text-xs text-dagger3">{pool.tokenX.symbol}</p>
                 </div>
-                <p className="font-bold">1.44 WETH <span className="text-xs font-normal text-dagger3">($3,535.24)</span></p>
+                <p className="font-bold">{pool.reserveX.toLocaleString(undefined)} {pool.tokenX.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Fees (24h)</p>
-                <p className="font-bold">$3.75k</p>
+                <p className="font-bold">$0.0</p>
               </div>
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
-                  <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-4" />
-                  <p className="text-xs text-dagger3">USDC</p>
+                  <img
+                    src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+                    alt={pool.tokenY.symbol}
+                    className="rounded-full size-4"
+                  />
+                  <p className="text-xs text-dagger3">{pool.tokenY.symbol}</p>
                 </div>
-                <p className="font-bold">3,252.24 USDC <span className="text-xs font-normal text-dagger3">($3,535.64)</span></p>
+                <p className="font-bold">{pool.reserveY.toLocaleString(undefined)} {pool.tokenY.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
               </div>
             </div>
           </div>
@@ -255,27 +288,23 @@ function Pool() {
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Strategy</p>
-                <p className="font-bold">G3M</p>
+                <p className="font-bold">{pool.strategy.name}</p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Fee Rate</p>
-                <p className="font-bold">0.03%</p>
+                <p className="font-bold">{pool.parameters.swapFee}%</p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Controller</p>
-                <a href="#" className="flex flex-row gap-1 font-bold">0xbeef...cafe <LinkIcon /></a>
+                <a href="#" className="flex flex-row gap-1 font-bold">{shortAddress(pool.parameters.controller as `0x${string}`)} <LinkIcon /></a>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Weight X</p>
-                <p className="font-bold">50%</p>
+                <p className="font-bold">{pool.parameters.weightX}%</p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Weight Y</p>
-                <p className="font-bold">50%</p>
-              </div>
-              <div className="flex flex-col">
-                <p className="text-xs text-dagger3">Weight Update</p>
-                <p className="font-bold">On-going</p>
+                <p className="font-bold">{pool.parameters.weightX}%</p>
               </div>
             </div>
           </div>
@@ -284,7 +313,7 @@ function Pool() {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col">
                 <p className="text-lg font-bold">Strategy</p>
-                <p className="text-dagger3 text-xs">G3M</p>
+                <p className="text-dagger3 text-xs">{pool.strategy.name}</p>
               </div>
               <p className="text-sm text-dagger3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec dui eget urna aliquet aliquam.</p>
             </div>
@@ -293,6 +322,8 @@ function Pool() {
         </div>
 
       </div>
+
+      {/*
       <div className="my-8">
         <p className="text-lg font-bold mb-2">Recent Transactions</p>
         <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
@@ -302,14 +333,22 @@ function Pool() {
                 <th className="text-left">Action</th>
                 <th>
                   <div className="flex flex-row gap-1 items-center justify-end">
-                    <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                    <p className="text-xs text-dagger3">WETH</p>
+                    <img
+                      src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+                      alt={pool.tokenX.symbol}
+                      className="rounded-full size-4"
+                    />
+                    <p className="text-xs text-dagger3">{pool.tokenX.symbol}</p>
                   </div>
                 </th>
                 <th>
                   <div className="flex flex-row gap-1 items-center justify-end">
-                    <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-4" />
-                    <p className="text-xs text-dagger3">USDC</p>
+                    <img
+                      src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+                      alt={pool.tokenY.symbol}
+                      className="rounded-full size-4"
+                    />
+                    <p className="text-xs text-dagger3">{pool.tokenY.symbol}</p>
                   </div>
                 </th>
                 <th className="text-right">Value</th>
@@ -332,7 +371,9 @@ function Pool() {
           </table>
         </div>
       </div>
-    </div >
+
+              */}
+    </div>
   );
 }
 
