@@ -1,29 +1,9 @@
-const FakePool = () => (
-  <tr onClick={() => location.href = '/pool/0'}>
-    <td>
-      <div className="flex flex-row items-center gap-2">
-        <div className="flex flex-row items-center">
-          <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-8" style={{ zIndex: 1 }} />
-          <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-8" style={{ marginLeft: '-8px' }} />
-        </div>
-        <div className="flex flex-col font-bold">
-          WETH/USDC
-          <div className="flex flex-row gap-2">
-            <div className="bg-blue-600 px-2 rounded-full text-xs">0.03%</div>
-            <div className="bg-purple-600 px-2 rounded-full text-xs">G3M</div>
-          </div>
-        </div>
-      </div>
-    </td>
-    <td className="text-right">$53.39m</td>
-    <td className="text-right">$1.25m</td>
-    <td className="text-right">$4.22m</td>
-    <td className="text-right">$39.09m</td>
-    <td className="text-right">$3.75k</td>
-  </tr>
-);
+import { useIndexer } from "../../store/IndexerContext";
+import { tokens } from "../../data/tokens";
 
 function Home() {
+  const { pools } = useIndexer();
+
   return (
     <>
       <div className="w-full py-16">
@@ -61,12 +41,39 @@ function Home() {
               </tr>
             </thead>
             <tbody>
-              <FakePool />
-              <FakePool />
-              <FakePool />
-              <FakePool />
-              <FakePool />
-              <FakePool />
+              {pools.length > 0 && pools.map((pool) => (
+                <tr key={pool.id.toString()} onClick={() => location.href = `/pool/${pool.id.toString()}`}>
+                  <td>
+                    <div className="flex flex-row items-center gap-2">
+                      <div className="flex flex-row items-center">
+                        <img
+                          src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+                          alt={pool.tokenX.symbol}
+                          className="rounded-full size-8" style={{ zIndex: 1 }}
+                        />
+                        <img
+                          src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+                          alt={pool.tokenY.symbol}
+                          className="rounded-full size-8"
+                          style={{ marginLeft: '-8px' }}
+                        />
+                      </div>
+                      <div className="flex flex-col font-bold">
+                        {pool.tokenX.symbol}/{pool.tokenY.symbol}
+                        <div className="flex flex-row gap-2">
+                          <div className="bg-blue-600 px-2 rounded-full text-xs">0.005%</div>
+                          <div className="bg-purple-600 px-2 rounded-full text-xs">G3M</div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="text-right">$0.0</td>
+                  <td className="text-right">$0.0</td>
+                  <td className="text-right">$0.0</td>
+                  <td className="text-right">$0.0</td>
+                  <td className="text-right">$0.0</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
