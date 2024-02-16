@@ -1,18 +1,11 @@
 import { WriteContractReturnType, readContract, writeContract } from 'wagmi/actions';
 import { dfmmABI } from './abis/dfmm';
 import { config } from '../App';
-import { computeL } from './g3m';
-import { encodeAbiParameters } from 'viem';
+import { getInitialPoolData } from './g3m';
 
-export const DFMM = '0xc508CB5c417fAdF005b7d30063113B9883a3EB0B';
-export const G3M = '0x6001822cfAe06Eb92bf61A86491189cf30c34c4a';
-export const LogNormal = '0x3E45fC1bf8d81559A376c7b0Fa26E82D77800aeb';
-
-/*
-  DFMM: 0xc508CB5c417fAdF005b7d30063113B9883a3EB0B
-  G3M: 0x6001822cfAe06Eb92bf61A86491189cf30c34c4a
-  LogNormal: 0x3E45fC1bf8d81559A376c7b0Fa26E82D77800aeb
-*/
+export const DFMM = '0x5482ca07ac79d0Ca9F495e1c0Ea8A16780C64731';
+export const G3M = '0x67f6C0c97ac803A64B56bd7c9479a259aC959B4a';
+export const LogNormal = '0xA63e861915c4627e994031dc35E642FAfE018b33';
 
 export async function weth(): Promise<`0x${string}`> {
   try {
@@ -31,25 +24,14 @@ export async function init(
   strategy: `0x${string}`,
   tokenX: `0x${string}`,
   tokenY: `0x${string}`,
-  x: bigint,
-  y: bigint,
+  reserveX: bigint,
+  price: bigint,
   wX: bigint,
-  wY: bigint,
   feeRate: bigint,
   controller: `0x${string}`,
 ): Promise<WriteContractReturnType> {
-  const L = computeL(x, y, wX, wY);
-  const data = encodeAbiParameters([
-    { type: 'uint256' },
-    { type: 'uint256' },
-    { type: 'uint256' },
-    { type: 'uint256' },
-    { type: 'uint256' },
-    { type: 'uint256' },
-    { type: 'address' },
-  ], [
-    x, y, L, wX, wY, feeRate, controller,
-  ]);
+  const data = await getInitialPoolData(reserveX, price, wX, feeRate, controller);
+  console.log(data);
 
   try {
     return writeContract(config, {
