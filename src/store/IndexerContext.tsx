@@ -1,14 +1,16 @@
 import { createContext } from 'react';
 import { useReducer, useContext, useEffect } from 'react';
-import { getPools } from '../lib/indexer';
+import { getPools, getUserPositions } from '../lib/indexer';
+import { useAccount } from 'wagmi';
 
 type Action = {
-  type: 'SET_POOLS';
-  payload: Pool[];
+  type: 'SET_POOLS' | 'SET_USER_POSITIONS';
+  payload: Pool[] | Position[];
 }
 
 type IndexerContextState = {
   pools: Pool[];
+  userPositions: Position[];
   dispatch: (action: Action) => void;
 }
 
@@ -16,6 +18,7 @@ export const IndexerContext = createContext<IndexerContextState>({} as IndexerCo
 
 const initialIndexerState: IndexerContextState = {
   pools: [],
+  userPositions: [],
   dispatch: () => { },
 };
 
@@ -24,7 +27,12 @@ function indexerReducer(state: IndexerContextState, action: Action): IndexerCont
     case 'SET_POOLS':
       return {
         ...state,
-        pools: action.payload,
+        pools: action.payload as Pool[],
+      };
+    case 'SET_USER_POSITIONS':
+      return {
+        ...state,
+        userPositions: action.payload as Position[],
       };
     default:
       throw new Error('Invalid action');
@@ -36,17 +44,29 @@ type IndexerProviderProps = {
 }
 
 export function IndexerProvider(props: IndexerProviderProps) {
+  const { address } = useAccount();
+
   const [state, dispatch] = useReducer(indexerReducer, initialIndexerState);
 
   useEffect(() => {
     (async () => {
-      if (state.pools.length > 0) return;
       dispatch({
         type: 'SET_POOLS',
         payload: await getPools(),
       });
     })();
-  }, [state.pools]);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        dispatch({
+          type: 'SET_USER_POSITIONS',
+          payload: await getUserPositions(address),
+        });
+      }
+    })();
+  }, [address]);
 
   return (
     <IndexerContext.Provider value={{ ...state, dispatch }}>
