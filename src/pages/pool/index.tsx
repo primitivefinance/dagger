@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
@@ -7,6 +7,7 @@ import { tokens } from '../../data/tokens';
 import { shortAddress } from '../../utils/address';
 import { computePrice } from '../../lib/g3m';
 import TokenAmountInput from '../../components/TokenAmountInput';
+import { balanceOf } from '../../lib/erc20';
 
 const LinkIcon = () => (
   <svg className="w-3 h-3 self-center" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -18,8 +19,24 @@ function Pool() {
   const { pools } = useIndexer();
   const { id } = useParams();
   const { address } = useAccount();
+  const [balanceX, setBalanceX] = useState<number>(0);
+  const [balanceY, setBalanceY] = useState<number>(0);
+
+  const [amountX, setAmountX] = useState<string>('');
+  const [amountY, setAmountY] = useState<string>('');
 
   const pool = pools.find(pool => pool.id.toString() === id)!;
+
+  useEffect(() => {
+    async function fetchBalances() {
+      setBalanceX(await balanceOf(pool.tokenX.id, address!));
+      setBalanceY(await balanceOf(pool.tokenY.id, address!));
+    }
+
+    if (address && pool) {
+      fetchBalances();
+    }
+  }, [address, pool]);
 
   let userPosition;
 
@@ -36,6 +53,9 @@ function Pool() {
     return (<></>);
   }
 
+  const tokenXLogo = tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo;
+  const tokenYLogo = tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo;
+
   return (
     <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
 
@@ -43,13 +63,13 @@ function Pool() {
         <div className="flex flex-row items-center gap-2">
           <div className="flex flex-row items-center">
             <img
-              src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+              src={tokenXLogo}
               alt={pool.tokenX.symbol}
               className="rounded-full size-8"
               style={{ zIndex: 1 }}
             />
             <img
-              src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+              src={tokenYLogo}
               alt={pool.tokenY.symbol}
               className="rounded-full size-8"
               style={{ marginLeft: '-8px' }}
@@ -82,7 +102,7 @@ function Pool() {
       <div className="flex flex-row gap-4">
         <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
           <img
-            src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+            src={tokenYLogo}
             alt={pool.tokenY.symbol}
             className="rounded-full size-6"
           />
@@ -90,7 +110,7 @@ function Pool() {
         </div>
         <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
           <img
-            src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+            src={tokenXLogo}
             alt={pool.tokenX.symbol}
             className="rounded-full size-6"
           />
@@ -111,7 +131,7 @@ function Pool() {
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
                   <img
-                    src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+                    src={tokenXLogo}
                     alt={pool.tokenX.symbol}
                     className="rounded-full size-4"
                   />
@@ -122,7 +142,7 @@ function Pool() {
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
                   <img
-                    src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+                    src={tokenYLogo}
                     alt={pool.tokenY.symbol}
                     className="rounded-full size-4"
                   />
@@ -173,20 +193,20 @@ function Pool() {
                   <TokenAmountInput
                     tokenAddress={pool.tokenX.id}
                     tokenSymbol={pool.tokenX.symbol}
-                    tokenBalance={0}
-                    tokenLogo={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo!}
+                    tokenBalance={balanceX}
+                    tokenLogo={tokenXLogo!}
                     tokenPrice={0}
-                    amount=""
-                    setAmount={() => { }}
+                    amount={amountX}
+                    setAmount={setAmountX}
                   />
                   <TokenAmountInput
                     tokenAddress={pool.tokenY.id}
                     tokenSymbol={pool.tokenY.symbol}
-                    tokenBalance={0}
-                    tokenLogo={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo!}
+                    tokenBalance={balanceY}
+                    tokenLogo={tokenYLogo!}
                     tokenPrice={0}
-                    amount=""
-                    setAmount={() => { }}
+                    amount={amountY}
+                    setAmount={setAmountY}
                   />
                 </div>
               ) : (
@@ -218,13 +238,21 @@ function Pool() {
                   />
                   <div className="flex flex-row gap-1 items-center justify-end">
                     <p className="text-dagger3 text-xs">You'll receive at least</p>
-                    <p className="text-dagger4 text-sm">1.42</p>
-                    <img src="https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png" alt="WETH" className="rounded-full size-4" />
-                    <p className="text-dagger4 text-sm">WETH</p>
+                    <p className="text-dagger4 text-sm">{userPosition ? ((userPosition.liquidity / pool.liquidity * pool.reserveX) * range / 100).toLocaleString(undefined) : '0.0'}</p>
+                    <img
+                      src={tokenXLogo}
+                      alt={pool.tokenX.symbol}
+                      className="rounded-full size-4"
+                    />
+                    <p className="text-dagger4 text-sm">{pool.tokenX.symbol}</p>
                     <p className="text-dagger3 text-xs">and</p>
-                    <p className="text-dagger4 text-sm">2,415.24</p>
-                    <img src="https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="rounded-full size-4" />
-                    <p className="text-dagger4 text-sm">USDC<span className="text-dagger3">.</span></p>
+                    <p className="text-dagger4 text-sm">{userPosition ? ((userPosition.liquidity / pool.liquidity * pool.reserveY) * range / 100).toLocaleString(undefined) : '0.0'}</p>
+                    <img
+                      src={tokenYLogo}
+                      alt={pool.tokenY.symbol}
+                      className="rounded-full size-4"
+                    />
+                    <p className="text-dagger4 text-sm">{pool.tokenY.symbol}<span className="text-dagger3">.</span></p>
                   </div>
                 </div>
               )}
@@ -254,7 +282,7 @@ function Pool() {
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
                   <img
-                    src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+                    src={tokenXLogo}
                     alt={pool.tokenX.symbol}
                     className="rounded-full size-4"
                   />
@@ -269,7 +297,7 @@ function Pool() {
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
                   <img
-                    src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+                    src={tokenYLogo}
                     alt={pool.tokenY.symbol}
                     className="rounded-full size-4"
                   />
@@ -334,7 +362,7 @@ function Pool() {
                 <th>
                   <div className="flex flex-row gap-1 items-center justify-end">
                     <img
-                      src={tokens.find(token => token.address.toLowerCase() === pool.tokenX.id.toLowerCase())?.logo}
+                      src={tokenXLogo}
                       alt={pool.tokenX.symbol}
                       className="rounded-full size-4"
                     />
@@ -344,7 +372,7 @@ function Pool() {
                 <th>
                   <div className="flex flex-row gap-1 items-center justify-end">
                     <img
-                      src={tokens.find(token => token.address.toLowerCase() === pool.tokenY.id.toLowerCase())?.logo}
+                      src={tokenYLogo}
                       alt={pool.tokenY.symbol}
                       className="rounded-full size-4"
                     />
