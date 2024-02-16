@@ -188,7 +188,7 @@ function Pool() {
                 </button>
               </div>
               {isAddLiquidity ? (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-4">
                   <div className="flex flex-col">
                     <p className="text-lg font-bold">Add Liquidity</p>
                     <p className="text-dagger3 text-xs">Increase your position by adding liquidity into the pool.</p>
@@ -419,7 +419,6 @@ function Pool() {
           </table>
         </div>
       </div>
-
               */}
     </div>
   );
