@@ -1,4 +1,5 @@
 import { WriteContractReturnType, readContract, writeContract } from 'wagmi/actions';
+import { encodeAbiParameters } from 'viem';
 import { dfmmABI } from './abis/dfmm';
 import { config } from '../App';
 import { getInitialPoolData } from './g3m';
@@ -48,5 +49,43 @@ export async function init(
   } catch (e) {
     console.error(e);
     throw new Error('Cannot init pool');
+  }
+}
+
+export async function allocate(
+  poolId: bigint,
+  reserveX: bigint,
+  reserveY: bigint,
+  liquidity: bigint,
+): Promise<WriteContractReturnType> {
+  try {
+    return writeContract(config, {
+      abi: dfmmABI,
+      address: DFMM,
+      functionName: 'allocate',
+      args: [poolId, encodeAbiParameters([{ type: 'uint256', name: '' }, { type: 'uint256', name: '' }, { type: 'uint256', name: '' }], [reserveX, reserveY, liquidity])],
+    });
+  } catch (e) {
+    console.error(e);
+    throw new Error('Cannot allocate');
+  }
+}
+
+export async function deallocate(
+  poolId: bigint,
+  reserveX: bigint,
+  reserveY: bigint,
+  liquidity: bigint,
+): Promise<WriteContractReturnType> {
+  try {
+    return writeContract(config, {
+      abi: dfmmABI,
+      address: DFMM,
+      functionName: 'deallocate',
+      args: [poolId, encodeAbiParameters([{ type: 'uint256', name: '' }, { type: 'uint256', name: '' }, { type: 'uint256', name: '' }], [reserveX, reserveY, liquidity])],
+    });
+  } catch (e) {
+    console.error(e);
+    throw new Error('Cannot deallocate');
   }
 }
