@@ -1,3 +1,10 @@
+import { parseEther } from "viem";
+import { config } from "../App";
+import { readContract } from "wagmi/actions";
+import { g3mSolverAbi } from "./abis/g3mSolver";
+
+const G3MSolver = '0xbbaA2acB8F2f23ecfd8A3dF3b263Bb513F26a582';
+
 export function computePrice(reserveX: number, reserveY: number, weightX: number, weightY: number): number {
   return (reserveY / weightY) / (reserveX / weightX);
 }
@@ -8,7 +15,31 @@ export function computeAndFormatPrice(reserveX: number, reserveY: number, weight
 }
 
 export function computeL(x: bigint, y: bigint, wX: bigint, wY: bigint): bigint {
+  const a = x / parseEther('1') ** wX;
+  const b = y / parseEther('1') ** wY;
+  return a * b;
+}
+
+export function computeLNumber(x: number, y: number, wX: number, wY: number): number {
   const a = x ** wX;
   const b = y ** wY;
   return a * b;
+}
+
+export function getInitialPoolData(reserveX: bigint, S: bigint, wX: bigint, swapFee: bigint, controller: `0x${string}`): Promise<`0x${string}`> {
+  console.log(
+    reserveX, S, wX, parseEther('1') - wX, swapFee, controller
+  );
+
+  try {
+    return readContract(config, {
+      abi: g3mSolverAbi,
+      address: G3MSolver,
+      functionName: 'getInitialPoolData',
+      args: [reserveX, S, { wX, wY: parseEther('1') - wX, swapFee, controller }],
+    });
+  } catch (e) {
+    console.error(e);
+    throw new Error('Failed to fetch initial pool data');
+  }
 }
