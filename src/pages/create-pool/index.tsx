@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useConnect } from 'wagmi';
-import { isAddress } from 'viem';
+import { isAddress, parseEther, parseUnits } from 'viem';
 
-import { balanceOf } from '../../lib/erc20';
+import { balanceOf, allowance, approve } from '../../lib/erc20';
 import TokenAmountInput from '../../components/TokenAmountInput';
 import Card from '../../components/Card';
-import { computeAndFormatPrice } from '../../lib/g3m';
+import { computeAndFormatPrice, computePrice } from '../../lib/g3m';
 import TokenSelector from '../../components/TokenSelector';
-
+import { LogNormal, init, G3M, DFMM } from '../../lib/dfmm';
 import { tokens } from '../../data/tokens';
 
 function CreatePool() {
@@ -15,8 +15,8 @@ function CreatePool() {
   const { connectors, connect } = useConnect();
 
   const [strategy, setStrategy] = useState<'G3M' | 'LogNormal'>('G3M');
-  const [tokenX, setTokenX] = useState<`0x${string}`>(tokens[0].address);
-  const [tokenY, setTokenY] = useState<`0x${string}`>(tokens[1].address);
+  const [tokenX, setTokenX] = useState<`0x${string}`>(tokens[4].address);
+  const [tokenY, setTokenY] = useState<`0x${string}`>(tokens[3].address);
   const [weight, setWeight] = useState<number>(50);
   const [feeRate, setFeeRate] = useState<number>(0.3);
   const [controller, setController] = useState<string>('');
@@ -234,7 +234,30 @@ function CreatePool() {
           if (address === undefined) {
             connect({ connector: connectors[0] });
           } else {
-            // Create pool
+            const allowanceX = await allowance(tokenX, address, DFMM);
+
+            if (allowanceX === 0) {
+              await approve(tokenX, DFMM);
+            }
+
+            const allowanceY = await allowance(tokenY, address, DFMM);
+
+            if (allowanceY === 0) {
+              await approve(tokenY, DFMM);
+            }
+
+            const result = await init(
+              strategy === 'G3M' ? G3M : LogNormal,
+              tokenX,
+              tokenY,
+              parseUnits(reserveX, _tokenX.decimals),
+              parseEther(computePrice(parseFloat(reserveX), parseFloat(reserveY), weight / 100, (100 - weight) / 100).toString()),
+              parseEther((weight / 100).toString()),
+              parseEther((feeRate / 100).toString()),
+              controller as `0x${string}`,
+            );
+
+            console.log(result);
           }
         }}
       >
