@@ -1,6 +1,7 @@
-import { useIndexer } from "../../store/IndexerContext";
-import { usePrices } from "../../store/PricesContext";
-import { tokens } from "../../data/tokens";
+import { useIndexer } from "@/store/IndexerContext";
+import { usePrices } from "@/store/PricesContext";
+import { tokens } from "@/data/tokens";
+import { title, subtitle } from '@/data/copy/home'
 
 function Home() {
   const { pools } = useIndexer();
@@ -12,9 +13,9 @@ function Home() {
       <div className="w-full py-16">
         <div className="container mx-auto max-w-4xl">
           <div className="max-w-md gap-4 flex flex-col">
-            <h1>Manage your funds lorem strategies.</h1>
+            <h1>{title}</h1>
             <h3 className="leading-tight text-dagger3 font-normal">
-              Manage your funds onchain, stack too deep and you might get liquidated, stack too shallow and you might miss out on rewards.
+              {subtitle}              
             </h3>
           </div>
         </div>
