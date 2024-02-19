@@ -1,7 +1,9 @@
-const indexer:string = process.env.DFMM_INDEXER ? process.env.DFMM_INDEXER : 'http://localhost:42069'
+
+const indexer:string = import.meta.env.VITE_DFMM_INDEXER ? import.meta.env.VITE_DFMM_INDEXER : 'http://localhost:42069'
 
 export async function getPools(): Promise<Pool[]> {
   try {
+    console.log(indexer)
     const query = await fetch(indexer, {
       method: 'POST',
       headers: {
