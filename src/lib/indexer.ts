@@ -3,7 +3,6 @@ const indexer:string = import.meta.env.VITE_DFMM_INDEXER ? import.meta.env.VITE_
 
 export async function getPools(): Promise<Pool[]> {
   try {
-    console.log(indexer)
     const query = await fetch(indexer, {
       method: 'POST',
       headers: {
