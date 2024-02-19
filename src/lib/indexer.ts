@@ -8,6 +8,7 @@ export async function getPools(): Promise<Pool[]> {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'Access-Control-Allow-Origin': indexer,
       },
       body: JSON.stringify({
         query: `
@@ -77,6 +78,7 @@ export async function getUserPositions(account: `0x${string}`): Promise<Position
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'Access-Control-Allow-Origin': indexer,
       },
       body: JSON.stringify({
         query: `
