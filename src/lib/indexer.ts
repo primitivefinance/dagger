@@ -1,4 +1,4 @@
-const indexer:string = process.env.DFMM_INDEXER ? process.env.DFMM_INDEXER: 'http://localhost:42069'
+const indexer:string = process.env.DFMM_INDEXER ? process.env.DFMM_INDEXER : 'http://localhost:42069'
 
 export async function getPools(): Promise<Pool[]> {
   try {
