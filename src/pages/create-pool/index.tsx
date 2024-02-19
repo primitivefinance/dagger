@@ -9,10 +9,12 @@ import { computeAndFormatPrice, computePrice } from '../../lib/g3m';
 import TokenSelector from '../../components/TokenSelector';
 import { LogNormal, init, G3M, DFMM } from '../../lib/dfmm';
 import { tokens } from '../../data/tokens';
+import { usePrices } from '../../store/PricesContext';
 
 function CreatePool() {
   const { address } = useAccount();
   const { connectors, connect } = useConnect();
+  const { prices } = usePrices().state;
 
   const [strategy, setStrategy] = useState<'G3M' | 'LogNormal'>('G3M');
   const [tokenX, setTokenX] = useState<`0x${string}`>(tokens[4].address);
@@ -203,7 +205,7 @@ function CreatePool() {
             tokenBalance={tokenXBalance}
             amount={reserveX}
             setAmount={setReserveX}
-            tokenPrice={tokens.find((token) => token.address === tokenX)!.price!}
+            tokenPrice={prices[tokens.find((token) => token.address === tokenX)!.symbol]}
             tokenLogo={tokens.find((token) => token.address === tokenX)!.logo}
           />
 
@@ -213,7 +215,7 @@ function CreatePool() {
             tokenBalance={tokenYBalance}
             amount={reserveY}
             setAmount={setReserveY}
-            tokenPrice={tokens.find((token) => token.address === tokenY)!.price!}
+            tokenPrice={prices[tokens.find((token) => token.address === tokenX)!.symbol]}
             tokenLogo={tokens.find((token) => token.address === tokenY)!.logo}
           />
 

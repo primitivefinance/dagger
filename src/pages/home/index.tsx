@@ -1,8 +1,11 @@
 import { useIndexer } from "../../store/IndexerContext";
+import { usePrices } from "../../store/PricesContext";
 import { tokens } from "../../data/tokens";
 
 function Home() {
   const { pools } = useIndexer();
+  const { state } = usePrices();
+  const { prices } = state;
 
   return (
     <>
@@ -67,7 +70,7 @@ function Home() {
                       </div>
                     </div>
                   </td>
-                  <td className="text-right">$0.0</td>
+                  <td className="text-right">${(pool.reserveX * prices[pool.tokenX.symbol] + pool.reserveY * prices[pool.tokenY.symbol]).toLocaleString(undefined)}</td>
                   <td className="text-right">$0.0</td>
                   <td className="text-right">$0.0</td>
                   <td className="text-right">$0.0</td>

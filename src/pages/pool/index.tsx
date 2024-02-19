@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount, useConnect } from 'wagmi';
 
+import { usePrices } from '../../store/PricesContext';
 import { useIndexer } from '../../store/IndexerContext';
 import { tokens } from '../../data/tokens';
 import { shortAddress } from '../../utils/address';
@@ -22,6 +23,8 @@ function Pool() {
   const { id } = useParams();
   const { address } = useAccount();
   const { connectors, connect } = useConnect();
+  const { state } = usePrices();
+  const { prices } = state;
 
   const [balanceX, setBalanceX] = useState<number>(0);
   const [balanceY, setBalanceY] = useState<number>(0);
@@ -198,7 +201,7 @@ function Pool() {
                     tokenSymbol={pool.tokenX.symbol}
                     tokenBalance={balanceX}
                     tokenLogo={tokenXLogo!}
-                    tokenPrice={0}
+                    tokenPrice={prices[pool.tokenX.id]}
                     amount={amountX}
                     setAmount={setAmountX}
                   />
@@ -207,7 +210,7 @@ function Pool() {
                     tokenSymbol={pool.tokenY.symbol}
                     tokenBalance={balanceY}
                     tokenLogo={tokenYLogo!}
-                    tokenPrice={0}
+                    tokenPrice={prices[pool.tokenY.id]}
                     amount={amountY}
                     setAmount={setAmountY}
                   />
@@ -293,7 +296,7 @@ function Pool() {
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">TVL</p>
-                <p className="font-bold">$0.0</p>
+                <p className="font-bold">${(pool.reserveX * prices[pool.tokenX.symbol] + pool.reserveY * prices[pool.tokenY.symbol]).toLocaleString(undefined)}</p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Volume (24h)</p>
@@ -308,7 +311,7 @@ function Pool() {
                   />
                   <p className="text-xs text-dagger3">{pool.tokenX.symbol}</p>
                 </div>
-                <p className="font-bold">{pool.reserveX.toLocaleString(undefined)} {pool.tokenX.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
+                <p className="font-bold">{pool.reserveX.toLocaleString(undefined)} {pool.tokenX.symbol} <span className="text-xs font-normal text-dagger3">(${(prices[pool.tokenX.symbol] * pool.reserveX).toLocaleString(undefined)})</span></p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Fees (24h)</p>
@@ -323,7 +326,7 @@ function Pool() {
                   />
                   <p className="text-xs text-dagger3">{pool.tokenY.symbol}</p>
                 </div>
-                <p className="font-bold">{pool.reserveY.toLocaleString(undefined)} {pool.tokenY.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
+                <p className="font-bold">{pool.reserveY.toLocaleString(undefined)} {pool.tokenY.symbol} <span className="text-xs font-normal text-dagger3">(${(prices[pool.tokenY.symbol] * pool.reserveY).toLocaleString(undefined)})</span></p>
               </div>
             </div>
           </div>
