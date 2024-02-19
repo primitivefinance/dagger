@@ -6,6 +6,7 @@ import { injected, safe, walletConnect } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { IndexerProvider } from './store/IndexerContext';
+import { PricesProvider } from './store/PricesContext';
 
 import Header from './components/Header';
 import Home from './pages/home';
@@ -59,8 +60,10 @@ function App() {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <IndexerProvider>
-          <Header />
-          <RouterProvider router={router} />
+          <PricesProvider>
+            <Header />
+            <RouterProvider router={router} />
+          </PricesProvider>
         </IndexerProvider>
       </QueryClientProvider>
     </WagmiProvider>
