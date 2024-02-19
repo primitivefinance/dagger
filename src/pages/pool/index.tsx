@@ -132,7 +132,7 @@ function Pool() {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col">
                 <p className="text-lg font-bold">My Position</p>
-                <p className="text-dagger3 text-xs">$0.0</p>
+                <p className="text-dagger3 text-xs">${userPosition! ? userPosition.liquidity / pool.liquidity * pool.reserveX * prices[pool.tokenX.symbol] + userPosition.liquidity / pool.liquidity * pool.reserveY * prices[pool.tokenY.symbol] : '0.0'}</p>
               </div>
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
@@ -143,7 +143,7 @@ function Pool() {
                   />
                   <p className="text-xs text-dagger3">{pool.tokenX.symbol}</p>
                 </div>
-                <p className="font-bold">{userPosition! ? userPosition.liquidity / pool.liquidity * pool.reserveX : '0.0'} {pool.tokenX.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
+                <p className="font-bold">{userPosition! ? userPosition.liquidity / pool.liquidity * pool.reserveX : '0.0'} {pool.tokenX.symbol} <span className="text-xs font-normal text-dagger3">(${userPosition! ? userPosition!.liquidity / pool.liquidity * pool.reserveX * prices[pool.tokenX.symbol] : '0.0'})</span></p>
               </div>
               <div className="flex flex-col">
                 <div className="flex flex-row gap-1 items-center">
@@ -154,7 +154,7 @@ function Pool() {
                   />
                   <p className="text-xs text-dagger3">{pool.tokenY.symbol}</p>
                 </div>
-                <p className="font-bold">{userPosition! ? (userPosition.liquidity / pool.liquidity * pool.reserveY).toLocaleString(undefined) : '0.0'} {pool.tokenY.symbol} <span className="text-xs font-normal text-dagger3">($0.0)</span></p>
+                <p className="font-bold">{userPosition! ? (userPosition.liquidity / pool.liquidity * pool.reserveY).toLocaleString(undefined) : '0.0'} {pool.tokenY.symbol} <span className="text-xs font-normal text-dagger3">(${userPosition! ? userPosition!.liquidity / pool.liquidity * pool.reserveY * prices[pool.tokenY.symbol] : '0.0'})</span></p>
               </div>
               <div className="flex flex-col">
                 <p className="text-xs text-dagger3">Total Liquidity</p>
