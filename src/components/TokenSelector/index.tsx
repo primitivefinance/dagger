@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { tokens, tokens2 } from '../../data/tokens';
+import { tokens } from '../../data/tokens';
 
 type TokenSelectorProps = {
   tokenLogo: string;
@@ -62,7 +62,7 @@ function TokenSelector(props: TokenSelectorProps) {
               ))}
             </div>
             <div className="flex flex-col justify-center overflow-auto max-h-96" style={{ scrollbarWidth: 'none' }}>
-              {tokens2.filter((token) => token.name.includes(search) || token.symbol.includes(search)).map((token) => (
+              {tokens.filter((token) => token.name.includes(search) || token.symbol.includes(search)).map((token) => (
                 <div
                   key={token.address}
                   className="flex flew-row gap-3 items-center cursor-pointer border border-transparent hover:border-dagger2 hover:border border-solid p-2 rounded-xl"
