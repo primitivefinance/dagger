@@ -45,4 +45,7 @@ type Position = {
   liquidityWad: bigint;
   liquidity: number;
   accountId: `0x${string}`;
+  id: `0x${string}`;
+  poolId: bigint;
+  pool: Pool;
 }
