@@ -13,11 +13,11 @@ function Header() {
         <a href="/" className="text-sm text-dagger4 hover:no-underline">
           Pools
         </a>
-        <a href="/create-pool" className="text-sm text-dagger4 hover:no-underline">
-          Create
-        </a>
         <a href="/dashboard" className="text-sm text-dagger4 hover:no-underline">
           Dashboard
+        </a>
+        <a href="/create-pool" className="text-sm text-dagger4 hover:no-underline">
+          Create
         </a>
         <a href="/faucet" className="text-sm text-dagger4 hover:no-underline">
           Faucet
