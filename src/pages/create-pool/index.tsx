@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import { useAccount, useConnect } from 'wagmi';
 import { isAddress, parseEther, parseUnits } from 'viem';
 
-import { balanceOf, allowance, approve } from '../../lib/erc20';
-import TokenAmountInput from '../../components/TokenAmountInput';
-import Card from '../../components/Card';
-import { computeAndFormatPrice, computePrice } from '../../lib/g3m';
-import TokenSelector from '../../components/TokenSelector';
-import { LogNormal, init, G3M, DFMM } from '../../lib/dfmm';
-import { tokens } from '../../data/tokens';
-import { usePrices } from '../../store/PricesContext';
+import { balanceOf, allowance, approve } from '@/lib/erc20';
+import TokenAmountInput from '@/components/TokenAmountInput';
+import Card from '@/components/Card';
+import { computeAndFormatPrice, computePrice } from '@/lib/g3m';
+import TokenSelector from '@/components/TokenSelector';
+import { LogNormal, init, G3M, DFMM } from '@/lib/dfmm';
+import { tokens } from '@/data/tokens';
+import { title, subtitle, tags, strats, feeLevels, weights } from '@/data/copy/create-pool'
+import { usePrices } from '@/store/PricesContext';
 
 function CreatePool() {
   const { address } = useAccount();
@@ -52,17 +53,17 @@ function CreatePool() {
     <div className="py-16 container mx-auto max-w-4xl gap-14 flex flex-col">
 
       <div className="flex flex-col gap-2">
-        <h2 className="text-3xl">Create a new pool</h2>
+        <h2 className="text-3xl">{title}</h2>
         <h4 className="leading-tight text-dagger3 font-normal">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+          {subtitle}
         </h4>
       </div>
 
       <div className="grid grid-cols-[1fr_2fr] gap-x-14 gap-y-8">
 
         <div className="flex flex-col">
-          <p className="text-lg font-bold">Pair</p>
-          <p className="text-dagger3 text-xs">Select the tokens pair you want to provide liquidity with.</p>
+          <p className="text-lg font-bold">{tags[0].title}</p>
+          <p className="text-dagger3 text-xs">{tags[0].sub}</p>
         </div>
 
         <div className="flex flex-row gap-4 items-center">
@@ -79,94 +80,94 @@ function CreatePool() {
         </div>
 
         <div className="flex flex-col">
-          <p className="text-lg font-bold">Strategy</p>
-          <p className="text-dagger3 text-xs">Select the strategy you want to use with for this new pool.</p>
+          <p className="text-lg font-bold">{tags[1].title}</p>
+          <p className="text-dagger3 text-xs">{tags[1].sub}</p>
         </div>
 
         <div className="flex flex-row gap-4 items-center">
           <Card
             isSelected={strategy === 'G3M'}
             onClick={() => setStrategy('G3M')}
-            title="G3M"
-            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
+            title={strats[0].title}
+            description={strats[0].sub}
           />
           <Card
             isSelected={strategy === 'LogNormal'}
             onClick={() => setStrategy('LogNormal')}
-            title="LogNormal"
-            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
+            title={strats[1].title}
+            description={strats[1].sub}
           />
         </div>
 
         <div className="flex flex-col">
-          <p className="text-lg font-bold">Fee Rate</p>
-          <p className="text-dagger3 text-xs">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <p className="text-lg font-bold">{tags[2].title}</p>
+          <p className="text-dagger3 text-xs">{tags[2].sub}</p>
         </div>
 
         <div className="flex flex-row gap-4 items-center">
           <Card
             isSelected={feeRate === 0.01}
             onClick={() => setFeeRate(0.01)}
-            title="0.01%"
-            description="Best for very stable pairs."
+            title={feeLevels[0].title}
+            description={feeLevels[0].sub}
             smallTitle
           />
           <Card
             isSelected={feeRate === 0.05}
             onClick={() => setFeeRate(0.05)}
-            title="0.05%"
-            description="Best for stable pairs."
+            title={feeLevels[1].title}
+            description={feeLevels[1].sub}
             smallTitle
           />
           <Card
             isSelected={feeRate === 0.3}
             onClick={() => setFeeRate(0.3)}
-            title="0.30%"
-            description="Best for most pairs."
+            title={feeLevels[2].title}
+            description={feeLevels[2].sub}
             smallTitle
           />
           <Card
             isSelected={feeRate === 1}
             onClick={() => setFeeRate(1)}
-            title="1.00%"
-            description="Best for exotic pairs."
+            title={feeLevels[3].title}
+            description={feeLevels[3].sub}
             smallTitle
           />
         </div>
 
 
         <div className="flex flex-col">
-          <p className="text-lg font-bold">Weights</p>
-          <p className="text-dagger3 text-xs">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <p className="text-lg font-bold">{tags[3].title}</p>
+          <p className="text-dagger3 text-xs">{tags[3].sub}</p>
         </div>
 
         <div className="flex flex-row gap-4 items-center">
           <Card
             isSelected={weight === 20}
             onClick={() => setWeight(20)}
-            title="20/80%"
-            description="Best for very stable pairs."
+            title={weights[0].title}
+            description={weights[0].sub}
             smallTitle
           />
           <Card
             isSelected={weight === 30}
             onClick={() => setWeight(30)}
-            title="30/70%"
-            description="Best for stable pairs."
+            title={weights[1].title}
+            description={weights[1].sub}
             smallTitle
           />
           <Card
             isSelected={weight === 50}
             onClick={() => setWeight(50)}
-            title="50/50%"
-            description="Best for most pairs."
+            title={weights[2].title}
+            description={weights[2].sub}
             smallTitle
           />
         </div>
 
         <div className="flex flex-col">
-          <p className="text-lg font-bold">Controller</p>
-          <p className="text-dagger3 text-xs">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+          <p className="text-lg font-bold">{tags[4].title}</p>
+          <p className="text-dagger3 text-xs">{tags[4].title}</p>
         </div>
 
         <div className="flex flex-col">
@@ -193,8 +194,8 @@ function CreatePool() {
 
 
         <div className="flex flex-col">
-          <p className="text-lg font-bold">Liquidity</p>
-          <p className="text-dagger3 text-xs">Select the assets and the quantity of liquidity you want to provide in the pool.</p>
+          <p className="text-lg font-bold">{tags[5].title}</p>
+          <p className="text-dagger3 text-xs">{tags[5].sub}</p>
         </div>
 
         <div className="flex flex-col gap-4 items-start">
