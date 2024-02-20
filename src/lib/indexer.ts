@@ -1,5 +1,5 @@
 
-const indexer:string = import.meta.env.VITE_DFMM_INDEXER ? import.meta.env.VITE_DFMM_INDEXER : 'http://localhost:42069'
+const indexer: string = import.meta.env.VITE_DFMM_INDEXER ? import.meta.env.VITE_DFMM_INDEXER : 'http://localhost:42069'
 
 export async function getPools(): Promise<Pool[]> {
   try {
@@ -83,11 +83,42 @@ export async function getUserPositions(account: `0x${string}`): Promise<Position
       body: JSON.stringify({
         query: `
         query MyQuery {
-          positions(limit: 10, where: {accountId: "${account}"}) {
+          positions(where: {accountId: "${account}"}) {
             items {
               liquidity
               liquidityWad
+              id
               poolId
+              pool {
+                liquidity
+                liquidityWad
+                name
+                id
+                lpToken
+                reserveX
+                reserveXWad
+                reserveY
+                reserveYWad
+                strategyId
+                strategy {
+                  name
+                }
+                parameters {
+                  swapFee
+                }
+                tokenX {
+                  decimals
+                  id
+                  name
+                  symbol
+                }
+                tokenY {
+                  decimals
+                  id
+                  name
+                  symbol
+                }
+              }
             }
           }
         }
