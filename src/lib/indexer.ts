@@ -1,10 +1,14 @@
+
+const indexer:string = import.meta.env.VITE_DFMM_INDEXER ? import.meta.env.VITE_DFMM_INDEXER : 'http://localhost:42069'
+
 export async function getPools(): Promise<Pool[]> {
   try {
-    const query = await fetch('http://localhost:42069', {
+    const query = await fetch(indexer, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'Access-Control-Allow-Origin': indexer,
       },
       body: JSON.stringify({
         query: `
@@ -69,11 +73,12 @@ export async function getPools(): Promise<Pool[]> {
 
 export async function getUserPositions(account: `0x${string}`): Promise<Position[]> {
   try {
-    const query = await fetch('http://localhost:42069', {
+    const query = await fetch(indexer, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'Access-Control-Allow-Origin': indexer,
       },
       body: JSON.stringify({
         query: `
