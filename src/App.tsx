@@ -13,6 +13,7 @@ import Home from './pages/home';
 import CreatePool from './pages/create-pool';
 import Pool from './pages/pool';
 import Faucet from './pages/faucet';
+import Dashboard from './pages/dashboard';
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0';
 
@@ -42,7 +43,11 @@ const router = createBrowserRouter([
   {
     path: '/faucet',
     element: <Faucet />,
-  }
+  },
+  {
+    path: '/dashboard',
+    element: <Dashboard />,
+  },
 ]);
 
 const queryClient = new QueryClient();
