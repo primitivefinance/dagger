@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useState } from 'react';
 import { useReducer, useContext, useEffect } from 'react';
 
 import { tokens } from '../data/tokens';
@@ -30,11 +30,11 @@ const initialIndexerState: PricesContextState = {
 export const PricesContext = createContext<{
   state: PricesContextState,
   dispatch: React.Dispatch<Action>,
-  setPrice: (id: string) => void,
+  checkPrices: () => void,
 }>({
   dispatch: () => null,
   state: initialIndexerState,
-  setPrice: () => null,
+  checkPrices: () => null,
 });
 
 function pricesReducer(state: PricesContextState, action: Action): PricesContextState {
@@ -54,8 +54,10 @@ type PricesProviderProps = {
 
 export function PricesProvider(props: PricesProviderProps) {
   const [state, dispatch] = useReducer(pricesReducer, initialIndexerState);
+  const [check, setCheck] = useState(true)
 
-  const setPrice = (id: string) => {
+  const checkPrices = () => {
+    setCheck(check!)
   }
 
   useEffect(() => {
@@ -71,16 +73,16 @@ export function PricesProvider(props: PricesProviderProps) {
       }
     }
 
-    // fetchPrices();
+    fetchPrices();
 
     for (let i = 0; i < Object.keys(prices).length; i++) {
       const symbol = Object.keys(prices)[i];
       dispatch({ type: 'SET_PRICE', id: symbol, price: prices[symbol] });
     }
-  }, []);
+  }, [check]); // runs useEffect every time this checkPrices() causes a state change
 
   return (
-    <PricesContext.Provider value={{ state, dispatch, setPrice }}>
+    <PricesContext.Provider value={{ state, dispatch, checkPrices }}>
       {props.children}
     </PricesContext.Provider>
   );

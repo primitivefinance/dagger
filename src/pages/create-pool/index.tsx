@@ -16,6 +16,7 @@ function CreatePool() {
   const { address } = useAccount();
   const { connectors, connect } = useConnect();
   const { prices } = usePrices().state;
+  const { checkPrices } = usePrices()
 
   const [strategy, setStrategy] = useState<'G3M' | 'LogNormal'>('G3M');
   const [tokenX, setTokenX] = useState<`0x${string}`>(tokens[4].address);
@@ -33,6 +34,7 @@ function CreatePool() {
       if (address) {
         const balance = await balanceOf(tokenX, address);
         setTokenXBalance(balance);
+        checkPrices() // add whenever we NEED to check prices
       }
     })();
   }, [address, tokenX]);
