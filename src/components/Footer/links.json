@@ -1,0 +1,21 @@
+{
+  "links": [
+    {
+      "title": "Github",
+      "url": "https://github.com/primitivefinance"
+    },
+    {
+      "title": "Twitter",
+      "url": "https://twitter.com/primitivefi"
+    },
+    {
+      "title": "Press",
+      "url": "https://primitive.xyz/press"
+    },
+    {
+      "title": "Docs",
+      "url": "https://primitive.xyz/docs",
+      "aria_label": "docs"
+    }
+  ]
+}
