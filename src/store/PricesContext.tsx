@@ -30,7 +30,7 @@ const initialIndexerState: PricesContextState = {
 export const PricesContext = createContext<{
   state: PricesContextState,
   dispatch: React.Dispatch<Action>,
-  checkPrices: () => void,
+  checkPrices: (assetTicker:string) => void,
 }>({
   dispatch: () => null,
   state: initialIndexerState,
@@ -54,21 +54,21 @@ type PricesProviderProps = {
 
 export function PricesProvider(props: PricesProviderProps) {
   const [state, dispatch] = useReducer(pricesReducer, initialIndexerState);
-  const [check, setCheck] = useState(true)
+  const [check, setCheck] = useState('')
 
-  const checkPrices = () => {
-    setCheck(check!)
+  const checkPrices = (assetTicker:string) => {
+    setCheck(assetTicker)
   }
 
   useEffect(() => {
     async function fetchPrices() {
       for (let i = 0; i < tokens.length; i++) {
-        const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${tokens[i].symbol}`);
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${check}`);
         const data = await res.json();
 
         if (data && data.pairs && data.pairs.length > 0) {
           const average = data.pairs.reduce((acc: any, pair: any) => acc + parseFloat(pair.priceUsd), 0) / data.pairs.length;
-          dispatch({ type: 'SET_PRICE', id: tokens[i].symbol, price: average });
+          dispatch({ type: 'SET_PRICE', id: check, price: average });
         }
       }
     }

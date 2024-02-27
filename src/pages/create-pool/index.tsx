@@ -34,7 +34,7 @@ function CreatePool() {
       if (address) {
         const balance = await balanceOf(tokenX, address);
         setTokenXBalance(balance);
-        checkPrices() // add whenever we NEED to check prices
+        checkPrices(_tokenX.symbol) // add whenever we NEED to check prices
       }
     })();
   }, [address, tokenX]);
@@ -44,6 +44,7 @@ function CreatePool() {
       if (address) {
         const balance = await balanceOf(tokenY, address);
         setTokenYBalance(balance);
+        checkPrices(_tokenY.symbol)
       }
     })();
   }, [address, tokenY]);
