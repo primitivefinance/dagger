@@ -15,8 +15,13 @@ An online non-custodial asset management platform built on top of DFMM.
 
 The goal of Dagger is to provide a simple and secure web application to use DFMM strategies.
 
-## Installation
+## Dependancies
+- [Bun](https://bun.sh/)
+- [dfmm-indexer](https://github.com/primitivefinance/dfmm-indexer)
+    - Local deployment at `http://localhost:42069`
+    - Optionally, define a hosted endpoint in `.env` variable `VITE_DFMM_INDEXER` 
 
+## Installation
 1. Clone this repository.
 2. Use [Bun](https://bun.sh/) to install the dependencies with `bun install`.
 3. Run `bun run dev` to launch run the app locally.
