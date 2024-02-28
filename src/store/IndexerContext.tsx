@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { useReducer, useContext, useEffect } from 'react';
+import { useReducer, useContext, useEffect, useState } from 'react';
 import { getPools, getUserPositions } from '../lib/indexer';
 import { useAccount } from 'wagmi';
 
@@ -12,6 +12,7 @@ type IndexerContextState = {
   pools: Pool[];
   userPositions: Position[];
   dispatch: (action: Action) => void;
+  updateIndexer: () => void;
 }
 
 export const IndexerContext = createContext<IndexerContextState>({} as IndexerContextState);
@@ -20,6 +21,7 @@ const initialIndexerState: IndexerContextState = {
   pools: [],
   userPositions: [],
   dispatch: () => { },
+  updateIndexer: () => null,
 };
 
 function indexerReducer(state: IndexerContextState, action: Action): IndexerContextState {
@@ -48,6 +50,12 @@ export function IndexerProvider(props: IndexerProviderProps) {
 
   const [state, dispatch] = useReducer(indexerReducer, initialIndexerState);
 
+  const [update, setUpdate] = useState(false)
+
+  const updateIndexer = () => {
+    setUpdate(!update)
+  }
+
   useEffect(() => {
     (async () => {
       dispatch({
@@ -55,7 +63,7 @@ export function IndexerProvider(props: IndexerProviderProps) {
         payload: await getPools(),
       });
     })();
-  }, []);
+  }, [update]);
 
   useEffect(() => {
     (async () => {
@@ -66,10 +74,10 @@ export function IndexerProvider(props: IndexerProviderProps) {
         });
       }
     })();
-  }, [address]);
+  }, [address, update]);
 
   return (
-    <IndexerContext.Provider value={{ ...state, dispatch }}>
+    <IndexerContext.Provider value={{ ...state, dispatch, updateIndexer }}>
       {props.children}
     </IndexerContext.Provider>
   );
