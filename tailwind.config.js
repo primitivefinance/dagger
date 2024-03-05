@@ -54,8 +54,8 @@ export default {
       variant4: {
         'brand': '#d7ff37', // '#2c5ee8',
         'dagger0': '#000000',
-        'dagger1': '#111111cc',
-        'dagger2': '#ffffff1a',
+        'dagger1': '#0c0c0c',
+        'dagger2': '#2c2c2c',
         'dagger3': '#999999',
         'dagger4': '#ffffff',
       },

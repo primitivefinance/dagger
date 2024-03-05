@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { http, createConfig, WagmiProvider } from 'wagmi';
 import { optimismSepolia } from 'wagmi/chains';
-import { injected, safe, walletConnect } from 'wagmi/connectors';
+import { injected, walletConnect } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { IndexerProvider } from './store/IndexerContext';
@@ -21,6 +21,7 @@ export const config = createConfig({
   chains: [optimismSepolia],
   connectors: [
     injected(),
+    walletConnect({ projectId }),
   ],
   transports: {
     [optimismSepolia.id]: http(),
