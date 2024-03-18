@@ -1,7 +1,7 @@
 import { WriteContractReturnType, readContract, writeContract } from 'wagmi/actions';
 import { encodeAbiParameters } from 'viem';
 import { dfmmABI } from './abis/dfmm';
-import { config } from '../App';
+import { config } from '@/utils/wagmi';
 import { getInitialPoolData } from './g3m';
 
 export const DFMM = '0x1FEbA1856976c9bBfaEA9A731fF5F4Dc2B49ae9d';

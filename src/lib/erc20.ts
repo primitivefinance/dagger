@@ -1,6 +1,6 @@
 import { multicall, readContract, writeContract } from 'wagmi/actions';
 import { erc20Abi, formatUnits, maxUint256, parseUnits } from 'viem';
-import { config } from '../App';
+import { config } from '@/utils/wagmi';
 import { mockERC20Abi } from './abis/mockERC20';
 
 export async function balanceOf(token: `0x${string}`, account: `0x${string}`): Promise<number> {
