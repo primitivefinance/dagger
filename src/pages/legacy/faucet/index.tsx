@@ -1,7 +1,7 @@
 import { useAccount } from 'wagmi';
 
-import { tokens } from '../../data/tokens';
-import { mint } from '../../lib/erc20';
+import { tokens } from '../../../data/tokens';
+import { mint } from '../../../lib/erc20';
 
 function Faucet() {
   const { address } = useAccount();

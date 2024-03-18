@@ -1,12 +1,21 @@
-import { useIndexer } from "@/store/IndexerContext";
-import { usePrices } from "@/store/PricesContext";
-import { tokens } from "@/data/tokens";
-import { title, subtitle } from '@/data/copy/home'
+'use client'
 
-function Home() {
-  const { pools } = useIndexer();
+import { useIndexer } from "@/store/IndexerContext"
+import { usePrices } from "@/store/PricesContext"
+import { tokens } from "@/data/tokens"
+import { title, subtitle } from '@/data/copy/home'
+import { useEffect } from "react"
+
+export default function Home() {
+  const { pools, updateIndexer } = useIndexer();
   const { state } = usePrices();
   const { prices } = state;
+  console.log(pools)
+  useEffect(() => {
+    updateIndexer
+  },[updateIndexer])
+
+  if (!pools || !prices) return null
 
   return (
     <>
@@ -71,7 +80,9 @@ function Home() {
                       </div>
                     </div>
                   </td>
-                  <td className="text-right">${(pool.reserveX * prices[pool.tokenX.symbol] + pool.reserveY * prices[pool.tokenY.symbol]).toLocaleString(undefined)}</td>
+                  <td className="text-right">//**
+                  (pool.reserveX * prices[pool.tokenX.symbol] + pool.reserveY * prices[pool.tokenY.symbol]).toLocaleString(undefined)
+                   */ $0.0</td>
                   <td className="text-right">$0.0</td>
                   <td className="text-right">$0.0</td>
                   <td className="text-right">$0.0</td>
@@ -85,5 +96,3 @@ function Home() {
     </>
   );
 }
-
-export default Home;

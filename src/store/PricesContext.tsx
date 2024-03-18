@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useState } from 'react';
 import { useReducer, useContext, useEffect } from 'react';
 
 import { tokens } from '../data/tokens';
@@ -30,11 +30,11 @@ const initialIndexerState: PricesContextState = {
 export const PricesContext = createContext<{
   state: PricesContextState,
   dispatch: React.Dispatch<Action>,
-  setPrice: (id: string) => void,
+  checkPrices: (assetTicker:string) => void,
 }>({
   dispatch: () => null,
   state: initialIndexerState,
-  setPrice: () => null,
+  checkPrices: () => null,
 });
 
 function pricesReducer(state: PricesContextState, action: Action): PricesContextState {
@@ -54,33 +54,35 @@ type PricesProviderProps = {
 
 export function PricesProvider(props: PricesProviderProps) {
   const [state, dispatch] = useReducer(pricesReducer, initialIndexerState);
+  const [check, setCheck] = useState('')
 
-  const setPrice = (id: string) => {
+  const checkPrices = (assetTicker:string) => {
+    setCheck(assetTicker)
   }
 
   useEffect(() => {
     async function fetchPrices() {
       for (let i = 0; i < tokens.length; i++) {
-        const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${tokens[i].symbol}`);
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${check}`);
         const data = await res.json();
 
         if (data && data.pairs && data.pairs.length > 0) {
           const average = data.pairs.reduce((acc: any, pair: any) => acc + parseFloat(pair.priceUsd), 0) / data.pairs.length;
-          dispatch({ type: 'SET_PRICE', id: tokens[i].symbol, price: average });
+          dispatch({ type: 'SET_PRICE', id: check, price: average });
         }
       }
     }
 
-    // fetchPrices();
+    fetchPrices();
 
     for (let i = 0; i < Object.keys(prices).length; i++) {
       const symbol = Object.keys(prices)[i];
       dispatch({ type: 'SET_PRICE', id: symbol, price: prices[symbol] });
     }
-  }, []);
+  }, [check]); // runs useEffect every time this checkPrices() causes a state change
 
   return (
-    <PricesContext.Provider value={{ state, dispatch, setPrice }}>
+    <PricesContext.Provider value={{ state, dispatch, checkPrices }}>
       {props.children}
     </PricesContext.Provider>
   );

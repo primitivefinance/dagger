@@ -19,7 +19,7 @@ The goal of Dagger is to provide a simple and secure web application to use DFMM
 - [Bun](https://bun.sh/)
 - [dfmm-indexer](https://github.com/primitivefinance/dfmm-indexer)
     - Local deployment at `http://localhost:42069`
-    - Optionally, define a hosted endpoint in `.env` variable `VITE_DFMM_INDEXER` 
+    - Optionally, define a hosted endpoint in `.env` variable `NEXT_PUBLIC_DFMM_INDEXER` 
 
 ## Installation
 1. Clone this repository.
