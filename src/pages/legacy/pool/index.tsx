@@ -268,11 +268,11 @@ function Pool() {
                     connect({ connector: connectors[0] });
                   } else {
                     if (isAddLiquidity) {
-                      const data = await allocateGivenX(pool.id, parseEther(amountX));
+                      const data: bigint[] = await allocateGivenX(pool.id, parseEther(amountX))
                       await allocate(pool.id, data[0], data[1], data[2]);
                     } else {
                       const x = userPosition.liquidity / pool.liquidity * pool.reserveX;
-                      const data = await deallocateGivenX(pool.id, parseEther((x * range / 100).toString()));
+                      const data: bigint[] = await deallocateGivenX(pool.id, parseEther((x * range / 100).toString()));
                       await deallocate(pool.id, data[0], data[1], data[2]);
                     }
                   }

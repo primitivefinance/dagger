@@ -1,10 +1,11 @@
 'use client'
 
 import { title, subtitle } from '@/data/copy/home'
+import Layout from './layout'
 
 export default function Home() {
   return (
-    <>
+    <Layout>
       <div className="w-full py-16">
         <div className="container mx-auto max-w-4xl">
           <div className="max-w-md gap-4 flex flex-col">
@@ -15,6 +16,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </>
+    </Layout>
   );
 }

@@ -1,9 +1,4 @@
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Dagger',
-  description: 'Ethereum Portfolio Management'
-}
+import { Providers } from '@/pages/providers'
 
 export default function RootLayout({
   children,
@@ -17,7 +12,9 @@ export default function RootLayout({
         <title>Dagger</title>
       </head>
       <body>
-        <div id="root">{children}</div>
+        <div id="root">
+          <Providers>{children}</Providers>
+        </div>
         <script type="module" src="/src/main.tsx"></script>
       </body>
     </html>

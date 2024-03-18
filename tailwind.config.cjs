@@ -1,10 +1,9 @@
-const { createThemes } = require('tw-colors');
+import { createThemes } from 'tw-colors'
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx}',
-    "./src/components**/*.{js,ts,jsx,tsx}",
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -17,6 +16,7 @@ export default {
       },
     },
   },
+  mode: 'jit', // needed for custom themes
   plugins: [
     createThemes({
       variant1: {

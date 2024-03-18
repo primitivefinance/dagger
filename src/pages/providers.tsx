@@ -14,16 +14,16 @@ import { config } from '@/utils/wagmi'
 
 export function Providers(props: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient())
-
+  console.log('provider mounted')
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-      <IndexerProvider>
-        <PricesProvider>
-          <Header />
-        {props.children}
-        </PricesProvider>
-      </IndexerProvider>
+        <IndexerProvider>
+          <PricesProvider>
+            <Header />
+            {props.children}
+          </PricesProvider>
+        </IndexerProvider>
       </QueryClientProvider>
     </WagmiProvider>
   )
