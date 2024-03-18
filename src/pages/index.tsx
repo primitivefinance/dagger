@@ -9,13 +9,13 @@ import { useEffect } from "react"
 export default function Home() {
   const { pools, updateIndexer } = useIndexer();
   const { state } = usePrices();
-  const { prices } = state;
-  console.log(pools)
+  const { prices } = state
+  
   useEffect(() => {
     updateIndexer
   },[updateIndexer])
 
-  if (!pools || !prices) return null
+  if (!pools) return null
 
   return (
     <>
