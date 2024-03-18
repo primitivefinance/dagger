@@ -39,16 +39,7 @@ const Footer = () => {
               </small>
             </div>
             <p className="text-gray-400 disclaimer justify-between text-left">
-              Disclaimer: This website is for informational purposes only. The
-              information contained herein is not intended to be and should not
-              be construed as legal, tax, investment, financial, or other
-              advice. The information contained herein is not intended to be and
-              should not be construed as an offer to provide investment advisory
-              or other services by Primitive. The information contained herein
-              is not intended to be and should not be construed as investment
-              research. The information contained herein is not intended to be
-              and should not be construed as a recommendation by Primitive to
-              engage in any specific investment strategy.
+              Disclaimer: Lorem Ipsum
             </p>
           </div>
         </div>
