@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { tokens } from '../../data/tokens';
+import { tokens } from '@/data/tokens';
 
 type TokenSelectorProps = {
   tokenLogo: string;

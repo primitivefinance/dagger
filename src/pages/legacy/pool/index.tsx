@@ -2,15 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount, useConnect } from 'wagmi';
 
-import { usePrices } from '../../../store/PricesContext';
-import { useIndexer } from '../../../store/IndexerContext';
-import { tokens } from '../../../data/tokens';
-import { shortAddress } from '../../../utils/address';
-import { computePrice, allocateGivenX, deallocateGivenX } from '../../../lib/g3m';
-import TokenAmountInput from '../../../components/TokenAmountInput';
-import { balanceOf } from '../../../lib/erc20';
+import { usePrices } from '@/store/PricesContext';
+import { useIndexer } from '@/store/IndexerContext';
+import { tokens } from '@/data/tokens';
+import { shortAddress } from '@/utils/address';
+import { computePrice, allocateGivenX, deallocateGivenX } from '@/lib/g3m';
+import TokenAmountInput from '@/components/TokenAmountInput';
+import { balanceOf } from '@/lib/erc20';
 import { parseEther } from 'viem';
-import { allocate, deallocate } from '../../../lib/dfmm';
+import { allocate, deallocate } from '@/lib/dfmm';
 
 const LinkIcon = () => (
   <svg className="w-3 h-3 self-center" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

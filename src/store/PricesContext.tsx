@@ -1,7 +1,7 @@
 import { createContext, useState } from 'react';
 import { useReducer, useContext, useEffect } from 'react';
 
-import { tokens } from '../data/tokens';
+import { tokens } from '@/data/tokens';
 
 const prices: { [key: string]: number } = {
   'WETH': 3000,
