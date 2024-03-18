@@ -39,10 +39,11 @@ export const PricesContext = createContext<{
 
 function pricesReducer(state: PricesContextState, action: Action): PricesContextState {
   switch (action.type) {
-    case 'SET_PRICE':
+    case 'SET_PRICE': {
       const newPrices = { ...state };
       newPrices.prices[action.id] = action.price;
       return { ...newPrices };
+    }
     default:
       throw new Error('Invalid action');
   }
@@ -67,7 +68,7 @@ export function PricesProvider(props: PricesProviderProps) {
         const data = await res.json();
 
         if (data && data.pairs && data.pairs.length > 0) {
-          const average = data.pairs.reduce((acc: any, pair: any) => acc + parseFloat(pair.priceUsd), 0) / data.pairs.length;
+          const average = data.pairs.reduce((acc: number, pair) => acc + parseFloat(pair.priceUsd), 0) / data.pairs.length;
           dispatch({ type: 'SET_PRICE', id: check, price: average });
         }
       }

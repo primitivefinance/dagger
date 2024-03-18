@@ -80,9 +80,9 @@ export default function Home() {
                       </div>
                     </div>
                   </td>
-                  <td className="text-right">//**
-                  (pool.reserveX * prices[pool.tokenX.symbol] + pool.reserveY * prices[pool.tokenY.symbol]).toLocaleString(undefined)
-                   */ $0.0</td>
+                  <td className="text-right">
+                  ${(pool.reserveX * prices[pool.tokenX.symbol] + pool.reserveY * prices[pool.tokenY.symbol]).toLocaleString(undefined)}
+                   </td>
                   <td className="text-right">$0.0</td>
                   <td className="text-right">$0.0</td>
                   <td className="text-right">$0.0</td>

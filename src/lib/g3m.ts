@@ -1,5 +1,5 @@
 import { ReadContractReturnType, parseEther } from "viem";
-import { config } from "../App";
+import { config } from "@/utils/wagmi";
 import { readContract } from "wagmi/actions";
 import { g3mSolverAbi } from "./abis/g3mSolver";
 
@@ -44,7 +44,7 @@ export function getInitialPoolData(reserveX: bigint, S: bigint, wX: bigint, swap
   }
 }
 
-export async function allocateGivenX(poolId: bigint, x: bigint): Promise<any> {
+export async function allocateGivenX(poolId: bigint, x: bigint): Promise<ReadContractReturnType> {
   try {
     return readContract(config, {
       abi: g3mSolverAbi,
@@ -58,7 +58,7 @@ export async function allocateGivenX(poolId: bigint, x: bigint): Promise<any> {
   }
 }
 
-export async function deallocateGivenX(poolId: bigint, x: bigint): Promise<any> {
+export async function deallocateGivenX(poolId: bigint, x: bigint): Promise<ReadContractReturnType> {
   try {
     return readContract(config, {
       abi: g3mSolverAbi,
