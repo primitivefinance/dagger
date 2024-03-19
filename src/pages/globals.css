@@ -6,6 +6,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   -font-smoothing: antialiased;
+  background-color: #2c2c2c; /*need to add theme variable here*/ 
 }
 
 @layer base {
