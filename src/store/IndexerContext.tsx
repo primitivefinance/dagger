@@ -57,20 +57,25 @@ export function IndexerProvider(props: IndexerProviderProps) {
   }
 
   useEffect(() => {
-    (async () => {
+    (async() => {
+      const pools = await getPools() as unknown as Pool[]
+      if (!pools) return
       dispatch({
         type: 'SET_POOLS',
-        payload: await getPools(),
-      });
-    })();
+        payload: pools
+      })
+    })
+    console.log(state.pools)
   }, [update]);
 
   useEffect(() => {
     (async () => {
       if (address) {
+        const pools = await getUserPositions(address) as unknown as Pool[]
+        if (!pools) return
         dispatch({
           type: 'SET_USER_POSITIONS',
-          payload: await getUserPositions(address),
+          payload: pools,
         });
       }
     })();
