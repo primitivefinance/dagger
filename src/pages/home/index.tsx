@@ -1,7 +1,8 @@
 import { useIndexer } from "@/store/IndexerContext";
 import { usePrices } from "@/store/PricesContext";
 import { tokens } from "@/data/tokens";
-import { title, subtitle } from '@/data/copy/home'
+import { title, subtitle } from '@/data/copy/home';
+import { Link } from 'react-router-dom';
 
 function Home() {
   const { pools } = useIndexer();
@@ -23,14 +24,14 @@ function Home() {
       <div className="container mx-auto max-w-4xl gap-2 flex flex-col">
         <div className="flex flex-row items-center w-full justify-between">
           <h3>All pools ({pools.length})</h3>
-          <button className="p-2" onClick={() => location.href = '/create-pool'}>
+          <Link className="p-2" to='/create-pool'>
             <div className="flex flex-row items-center gap-1">
               <svg className="w-4 h-3 text-dagger4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 12h14m-7 7V5" />
               </svg>
               Create pool
             </div>
-          </button>
+          </Link>
         </div>
         <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
           <table>
