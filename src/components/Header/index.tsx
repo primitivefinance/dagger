@@ -1,25 +1,37 @@
 import WalletConnector from '../WalletConnector';
+import { Link, Outlet } from "react-router-dom";
 
 function Header() {
   return (
+    <>
     <nav className="flex flex-row items-center justify-between py-2 px-5">
-      <div className="flex-grow w-full flex-row flex gap-8 items-center">
-        <a href="/" className="hover:no-underline">
-          🗡️
-        </a>
-        <a href="/" className="text-sm text-dagger4 hover:no-underline">
-          Pools
-        </a>
-        <a href="/dashboard" className="text-sm text-dagger4 hover:no-underline">
-          Dashboard
-        </a>
-        <a href="/create-pool" className="text-sm text-dagger4 hover:no-underline">
-          Create
-        </a>
-        <a href="/faucet" className="text-sm text-dagger4 hover:no-underline">
-          Faucet
-        </a>
-      </div>
+      <ul className="flex-grow w-full flex-row flex gap-8 items-center">
+        <li>
+          <Link to="/" className="hover:no-underline">
+            🗡️
+          </Link>
+        </li>
+        <li>
+          <Link to="/" className="text-sm text-dagger4 hover:no-underline">
+            Pools
+          </Link>
+        </li>
+        <li>
+          <Link to="/dashboard" className="text-sm text-dagger4 hover:no-underline">
+            Dashboard
+          </Link>
+        </li>
+        <li>
+          <Link to="create-pool" className="text-sm text-dagger4 hover:no-underline">
+            Create
+          </Link>
+        </li>
+        <li>
+          <Link to="/faucet" className="text-sm text-dagger4 hover:no-underline">
+            Faucet
+          </Link>
+        </li>
+      </ul>
       <div className="flex-grow w-full flex-row-reverse flex gap-4 items-center">
         <WalletConnector />
         <button>
@@ -30,6 +42,8 @@ function Header() {
         </button>
       </div>
     </nav>
+      <Outlet />
+    </>
   );
 }
 

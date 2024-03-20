@@ -32,23 +32,29 @@ export const config = createConfig({
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/create-pool',
-    element: <CreatePool />,
-  },
-  {
-    path: '/pool/:id',
-    element: <Pool />,
-  },
-  {
-    path: '/faucet',
-    element: <Faucet />,
-  },
-  {
-    path: '/dashboard',
-    element: <Dashboard />,
+    element: <Header />,
+    children: [
+      {
+        path: '/',
+        element: <Home />
+      },
+      {
+        path: '/create-pool',
+        element: <CreatePool />,
+      },
+      {
+        path: '/pool/:id',
+        element: <Pool />,
+      },
+      {
+        path: '/faucet',
+        element: <Faucet />,
+      },
+      {
+        path: '/dashboard',
+        element: <Dashboard />,
+      },
+    ],
   },
 ]);
 
@@ -68,7 +74,6 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <IndexerProvider>
           <PricesProvider>
-            <Header />
             <RouterProvider router={router} />
             <Footer />
           </PricesProvider>
