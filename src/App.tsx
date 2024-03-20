@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IndexerProvider } from './store/IndexerContext';
 import { PricesProvider } from './store/PricesContext';
 
-import Header from './components/Header';
+import Root from './components/Root';
 import Home from './pages/home';
 import CreatePool from './pages/create-pool';
 import Pool from './pages/pool';
@@ -32,7 +32,7 @@ export const config = createConfig({
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Header />,
+    element: <Root />,
     children: [
       {
         path: '/',
@@ -75,7 +75,6 @@ function App() {
         <IndexerProvider>
           <PricesProvider>
             <RouterProvider router={router} />
-            <Footer />
           </PricesProvider>
         </IndexerProvider>
       </QueryClientProvider>
