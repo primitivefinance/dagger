@@ -1,4 +1,4 @@
-import { ReadContractReturnType, parseEther } from "viem";
+import { parseEther } from "viem";
 import { config } from "../App";
 import { readContract } from "wagmi/actions";
 import { g3mSolverAbi } from "./abis/g3mSolver";
