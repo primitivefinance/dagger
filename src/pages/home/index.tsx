@@ -5,6 +5,7 @@ import { title, subtitle } from '@/data/copy/home';
 import { Link } from 'react-router-dom';
 import { Table, TableRow, TableHeader, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@radix-ui/react-separator";
 
 function Home() {
   const { pools } = useIndexer();
@@ -13,7 +14,7 @@ function Home() {
 
   return (
     <>
-      <div className="w-full pt-16 pb-8">
+      <div className="w-full pt-16 pb-6">
         <div className="container mx-auto max-w-4xl">
           <div className="gap-2 flex flex-col">
             <h1 className= "font-bold scroll-m-20 text-3xl">{title}</h1>
@@ -21,6 +22,7 @@ function Home() {
               {subtitle}              
             </h3>
           </div>
+          <Separator className="my-4" />
         </div>
       </div>
       <div className="container mx-auto max-w-4xl gap-2 flex flex-col">
