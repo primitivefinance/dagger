@@ -2,10 +2,11 @@ import WalletConnector from '../WalletConnector';
 import { Link, Outlet } from "react-router-dom";
 import Links from './links.json'
 import { Button } from '../ui/button';
+import { GeistSans } from 'geist/font/sans'
 
 function Root() {
   return (
-    <div className="flex flex-col h-screen justify-between">
+    <div className={`flex flex-col h-screen justify-between font-primary`}>
       <header className="flex flex-row items-center justify-between py-2 px-5">
           <ul className="flex-grow w-full flex-row flex gap-4 items-center">
             <li>

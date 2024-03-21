@@ -1,6 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "Regular";
+  src: local("Geist-Regular"), url('./assets/fonts/Geist-Regular.otf'), format("opentype");
+}
+
+@font-face {
+  font-family: "SemiBold";
+  src: local("Geist-SemiBold"), url('./assets/fonts/Geist-SemiBold.otf'), format("opentype");
+}
+
+@font-face {
+  font-family: "Bold";
+  src: local("Geist-Bold"), url('./assets/fonts/Geist-Bold.otf'), format("opentype");
+}
  
 @layer base {
   :root {
