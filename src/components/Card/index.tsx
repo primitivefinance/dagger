@@ -1,4 +1,4 @@
-type CardProps = {
+type PoolConfigCardProps = {
   onClick?: () => void;
   title: string;
   description: string;
@@ -7,7 +7,7 @@ type CardProps = {
   smallTitle?: boolean;
 };
 
-function Card(props: CardProps) {
+function PoolConfigCard(props: PoolConfigCardProps) {
   return (
     <div
       className={`flex flex-col gap-1 p-3 rounded-lg border border-solid cursor-pointer hover:opacity-50 bg-dagger1 ${props.isSelected ? 'border-brand' : 'border-dagger2'}`}
@@ -28,4 +28,4 @@ function Card(props: CardProps) {
   );
 }
 
-export default Card;
+export default PoolConfigCard;

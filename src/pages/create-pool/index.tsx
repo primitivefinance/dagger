@@ -4,13 +4,14 @@ import { isAddress, parseEther, parseUnits } from 'viem';
 
 import { balanceOf, allowance, approve } from '@/lib/erc20';
 import TokenAmountInput from '@/components/TokenAmountInput';
-import Card from '@/components/Card';
+import PoolConfigCard from '@/components/Card';
 import { computeAndFormatPrice, computePrice } from '@/lib/g3m';
 import TokenSelector from '@/components/TokenSelector';
 import { LogNormal, init, G3M, DFMM } from '@/lib/dfmm';
 import { tokens } from '@/data/tokens';
 import { title, subtitle, tags, strats, feeLevels, weights } from '@/data/copy/create-pool'
 import { usePrices } from '@/store/PricesContext';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 function CreatePool() {
   const { address } = useAccount();
@@ -56,18 +57,18 @@ function CreatePool() {
     <div className="py-16 container mx-auto max-w-4xl gap-14 flex flex-col">
 
       <div className="flex flex-col gap-2">
-        <h2 className="text-3xl">{title}</h2>
-        <h4 className="leading-tight text-dagger3 font-normal">
+        <h2 className="text-3xl font-semibold">{title}</h2>
+        <h4 className="leading-tight text-xl">
           {subtitle}
         </h4>
       </div>
-
       <div className="grid grid-cols-[1fr_2fr] gap-x-14 gap-y-8">
-
-        <div className="flex flex-col">
-          <p className="text-lg font-bold">{tags[0].title}</p>
-          <p className="text-dagger3 text-xs">{tags[0].sub}</p>
-        </div>
+        <Card>
+          <CardHeader>
+          <CardTitle>{tags[0].title}</CardTitle>
+          <CardDescription>{tags[0].sub}</CardDescription>
+          </CardHeader>
+        </Card>
 
         <div className="flex flex-row gap-4 items-center">
           <TokenSelector
@@ -82,19 +83,21 @@ function CreatePool() {
           />
         </div>
 
-        <div className="flex flex-col">
-          <p className="text-lg font-bold">{tags[1].title}</p>
-          <p className="text-dagger3 text-xs">{tags[1].sub}</p>
-        </div>
+        <Card>
+          <CardHeader>
+          <CardTitle>{tags[1].title}</CardTitle>
+          <CardDescription>{tags[1].sub}</CardDescription>
+          </CardHeader>
+        </Card>
 
         <div className="flex flex-row gap-4 items-center">
-          <Card
+          <PoolConfigCard
             isSelected={strategy === 'G3M'}
             onClick={() => setStrategy('G3M')}
             title={strats[0].title}
             description={strats[0].sub}
           />
-          <Card
+          <PoolConfigCard
             isSelected={strategy === 'LogNormal'}
             onClick={() => setStrategy('LogNormal')}
             title={strats[1].title}
@@ -102,34 +105,36 @@ function CreatePool() {
           />
         </div>
 
-        <div className="flex flex-col">
-          <p className="text-lg font-bold">{tags[2].title}</p>
-          <p className="text-dagger3 text-xs">{tags[2].sub}</p>
-        </div>
+        <Card>
+          <CardHeader>
+          <CardTitle>{tags[2].title}</CardTitle>
+          <CardDescription>{tags[2].sub}</CardDescription>
+          </CardHeader>
+        </Card>
 
         <div className="flex flex-row gap-4 items-center">
-          <Card
+          <PoolConfigCard
             isSelected={feeRate === 0.01}
             onClick={() => setFeeRate(0.01)}
             title={feeLevels[0].title}
             description={feeLevels[0].sub}
             smallTitle
           />
-          <Card
+          <PoolConfigCard
             isSelected={feeRate === 0.05}
             onClick={() => setFeeRate(0.05)}
             title={feeLevels[1].title}
             description={feeLevels[1].sub}
             smallTitle
           />
-          <Card
+          <PoolConfigCard
             isSelected={feeRate === 0.3}
             onClick={() => setFeeRate(0.3)}
             title={feeLevels[2].title}
             description={feeLevels[2].sub}
             smallTitle
           />
-          <Card
+          <PoolConfigCard
             isSelected={feeRate === 1}
             onClick={() => setFeeRate(1)}
             title={feeLevels[3].title}
@@ -139,27 +144,30 @@ function CreatePool() {
         </div>
 
 
-        <div className="flex flex-col">
-          <p className="text-lg font-bold">{tags[3].title}</p>
-          <p className="text-dagger3 text-xs">{tags[3].sub}</p>
-        </div>
+        <Card>
+          <CardHeader>
+          <CardTitle>{tags[3].title}</CardTitle>
+          <CardDescription>{tags[3].sub}</CardDescription>
+          </CardHeader>
+        </Card>
+
 
         <div className="flex flex-row gap-4 items-center">
-          <Card
+          <PoolConfigCard
             isSelected={weight === 20}
             onClick={() => setWeight(20)}
             title={weights[0].title}
             description={weights[0].sub}
             smallTitle
           />
-          <Card
+          <PoolConfigCard
             isSelected={weight === 30}
             onClick={() => setWeight(30)}
             title={weights[1].title}
             description={weights[1].sub}
             smallTitle
           />
-          <Card
+          <PoolConfigCard
             isSelected={weight === 50}
             onClick={() => setWeight(50)}
             title={weights[2].title}
@@ -168,10 +176,13 @@ function CreatePool() {
           />
         </div>
 
-        <div className="flex flex-col">
-          <p className="text-lg font-bold">{tags[4].title}</p>
-          <p className="text-dagger3 text-xs">{tags[4].title}</p>
-        </div>
+        <Card>
+          <CardHeader>
+          <CardTitle>{tags[4].title}</CardTitle>
+          <CardDescription>{tags[4].sub}</CardDescription>
+          </CardHeader>
+        </Card>
+
 
         <div className="flex flex-col">
           <div className="flex flex-row justify-between items-center bg-dagger1 border border-solid border-dagger2 text-sm p-3 w-full rounded-xl">
@@ -196,10 +207,13 @@ function CreatePool() {
         </div>
 
 
-        <div className="flex flex-col">
-          <p className="text-lg font-bold">{tags[5].title}</p>
-          <p className="text-dagger3 text-xs">{tags[5].sub}</p>
-        </div>
+        <Card>
+          <CardHeader>
+          <CardTitle>{tags[5].title}</CardTitle>
+          <CardDescription>{tags[5].sub}</CardDescription>
+          </CardHeader>
+        </Card>
+
 
         <div className="flex flex-col gap-4 items-start">
 
