@@ -30,6 +30,8 @@ function CreatePool() {
   const [tokenXBalance, setTokenXBalance] = useState<number>(0);
   const [tokenYBalance, setTokenYBalance] = useState<number>(0);
 
+  const [tokenAOpen, setTokenAOpen] = useState<boolean>(false);
+
   useEffect(() => {
     (async () => {
       if (address) {

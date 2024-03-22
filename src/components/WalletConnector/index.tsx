@@ -11,14 +11,14 @@ function getButtonState(
 ) {
   if (isConnecting) {
     return (
-      <button>
+      <Button disabled>
         <div className="flex flex-row gap-1 items-center">
           <svg className="w-4 h-4 text-dagger4 animate-spin" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 12a9 9 0 1 1-6.219-8.56" />
           </svg>
           <span className="text-sm">Connecting</span>
         </div>
-      </button>
+      </Button>
     );
   } else if (address === undefined) {
     return (
