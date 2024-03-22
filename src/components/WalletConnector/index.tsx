@@ -43,16 +43,16 @@ function getButtonState(
 function WalletSelection() {
   const { connectors, connect } = useConnect();
   const { address } = useAccount();
-  const [isModalOpen, toggleModal] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const [isConnecting, toggleConnecting] = useState(false);
 
   return (
-    <Dialog open={(!isConnecting || !address) && isModalOpen}>
+    <Dialog open={(!isConnecting || !address) && open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {getButtonState(address, isConnecting, toggleModal)}
+        {getButtonState(address, isConnecting, setOpen)}
       </DialogTrigger>
-      <Modal isOpen={isModalOpen} toggle={toggleModal} title="Select a wallet">
+      <Modal isOpen={open} toggle={setOpen} title="Select a wallet">
         <div className="flex flex-col gap-4">
           {connectors.map((connector) => (
             <Button
@@ -65,7 +65,7 @@ function WalletSelection() {
                     connector,
                   },
                   {
-                    onSuccess: () => toggleModal(false),
+                    onSuccess: () => setOpen(false),
                     onSettled: () => toggleConnecting(false),
                   }
                 );
