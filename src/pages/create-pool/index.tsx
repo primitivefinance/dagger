@@ -5,7 +5,6 @@ import CardToggleGroup from "@/components/CardRadioGroup";
 
 import { balanceOf, allowance, approve } from "@/lib/erc20";
 import TokenAmountInput from "@/components/TokenAmountInput";
-import PoolConfigCard from "@/components/Card";
 import { computeAndFormatPrice, computePrice } from "@/lib/g3m";
 import TokenSelector from "@/components/TokenSelector";
 import { LogNormal, init, G3M, DFMM } from "@/lib/dfmm";
@@ -215,8 +214,8 @@ function CreatePool() {
               {computeAndFormatPrice(
                 parseFloat(reserveX),
                 parseFloat(reserveY),
-                weight / 100,
-                (100 - weight) / 100
+                Number(weight) / 100,
+                (100 - Number(weight)) / 100
               )}{" "}
               {_tokenY.symbol}{" "}
               <span className="text-xs font-normal">
@@ -225,8 +224,8 @@ function CreatePool() {
               {computeAndFormatPrice(
                 parseFloat(reserveY),
                 parseFloat(reserveX),
-                (100 - weight) / 100,
-                weight / 100
+                (100 - Number(weight)) / 100,
+                Number(weight) / 100
               )}{" "}
               {_tokenX.symbol}{" "}
               <span className="text-xs font-normal">per {_tokenY.symbol}.</span>
@@ -262,12 +261,12 @@ function CreatePool() {
                 computePrice(
                   parseFloat(reserveX),
                   parseFloat(reserveY),
-                  weight / 100,
-                  (100 - weight) / 100
+                  Number(weight) / 100,
+                  (100 - Number(weight)) / 100
                 ).toString()
               ),
-              parseEther((weight / 100).toString()),
-              parseEther((feeRate / 100).toString()),
+              parseEther((Number(weight) / 100).toString()),
+              parseEther((Number(feeRate) / 100).toString()),
               controller as `0x${string}`
             );
 

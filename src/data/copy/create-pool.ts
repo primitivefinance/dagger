@@ -6,7 +6,6 @@ export const subtitle: string =
   "Determine parameters, define a DFMM strategy contract, and deposit assets.";
 
 type Tag = { title: string; sub: string };
-type ToggleItem = { value: string; title: string; description: string };
 
 export const tags: Tag[] = [
   { title: "Pair", sub: "Select the tokens to include in the pool." },
