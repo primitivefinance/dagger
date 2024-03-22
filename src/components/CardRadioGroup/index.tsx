@@ -20,7 +20,9 @@ function CardToggleGroup({ options, value, setValue }: CardToggleGroupProps) {
     <ToggleGroup
       type="single"
       value={value}
-      onValueChange={(v) => setValue(v)}
+      onValueChange={(v) => {
+        if (v) setValue(v);
+      }}
       className="w-full grid grid-cols-3 gap-4"
     >
       {options.map((opt) => (
