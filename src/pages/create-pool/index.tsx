@@ -12,6 +12,7 @@ import { tokens } from '@/data/tokens';
 import { title, subtitle, tags, strats, feeLevels, weights } from '@/data/copy/create-pool'
 import { usePrices } from '@/store/PricesContext';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 function CreatePool() {
   const { address } = useAccount();
@@ -250,8 +251,8 @@ function CreatePool() {
 
       </div>
 
-      <button
-        className="w-full text-base bg-brand border-0 p-4 font-bold text-dagger0"
+      <Button
+        variant="default"
         onClick={async () => {
           if (address === undefined) {
             connect({ connector: connectors[0] });
@@ -284,7 +285,7 @@ function CreatePool() {
         }}
       >
         {address === undefined ? 'Connect Wallet' : 'Create Pool'}
-      </button>
+      </Button>
     </div>
   );
 }

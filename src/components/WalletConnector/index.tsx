@@ -1,5 +1,11 @@
+<<<<<<< Updated upstream
 import { useState } from "react";
 import { useAccount, useConnect } from "wagmi";
+=======
+import { useState } from 'react';
+import { useAccount, useConnect } from 'wagmi';
+import { ReloadIcon } from "@radix-ui/react-icons";
+>>>>>>> Stashed changes
 
 import Modal from "../Modal";
 import { Button } from "../ui/button";
@@ -12,6 +18,7 @@ function getButtonState(
 ) {
   if (isConnecting) {
     return (
+<<<<<<< Updated upstream
       <Button disabled>
         <div className="flex flex-row gap-1 items-center">
           <svg
@@ -30,13 +37,23 @@ function getButtonState(
             />
           </svg>
           <span className="text-sm">Connecting</span>
+=======
+      <Button variant="secondary" disabled>
+        <div className="flex flex-row items-center text-sm">
+          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+          Connecting
+>>>>>>> Stashed changes
         </div>
       </Button>
     );
   } else if (address === undefined) {
     return (
       <Button variant="secondary" onClick={() => toggleModal(true)}>
+<<<<<<< Updated upstream
         Connect Wallet
+=======
+          <span className="text-sm">Connect</span>
+>>>>>>> Stashed changes
       </Button>
     );
   } else {
