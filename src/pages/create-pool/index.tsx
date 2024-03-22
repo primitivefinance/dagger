@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAccount, useConnect } from "wagmi";
-import { isAddress, parseEther, parseUnits } from "viem";
+import { parseEther, parseUnits } from "viem";
+import CardToggleGroup from "@/components/CardRadioGroup";
 
 import { balanceOf, allowance, approve } from "@/lib/erc20";
 import TokenAmountInput from "@/components/TokenAmountInput";
@@ -34,11 +35,12 @@ function CreatePool() {
   const { prices } = usePrices().state;
   const { checkPrices } = usePrices();
 
-  const [strategy, setStrategy] = useState<"G3M" | "LogNormal">("G3M");
+  const [strategy, setStrategy] = useState(strats[0].value);
+  const [feeRate, setFeeRate] = useState(feeLevels[0].value);
+  const [weight, setWeight] = useState(weights[0].value);
+
   const [tokenX, setTokenX] = useState<`0x${string}`>(tokens[4].address);
   const [tokenY, setTokenY] = useState<`0x${string}`>(tokens[3].address);
-  const [weight, setWeight] = useState<number>(50);
-  const [feeRate, setFeeRate] = useState<number>(0.3);
   const [controller, setController] = useState<string>("");
   const [reserveX, setReserveX] = useState<string>("");
   const [reserveY, setReserveY] = useState<string>("");
@@ -109,21 +111,11 @@ function CreatePool() {
             <CardDescription>{tags[1].sub}</CardDescription>
           </CardHeader>
         </Card>
-
-        <div className="flex flex-row gap-4 items-center">
-          <PoolConfigCard
-            isSelected={strategy === "G3M"}
-            onClick={() => setStrategy("G3M")}
-            title={strats[0].title}
-            description={strats[0].sub}
-          />
-          <PoolConfigCard
-            isSelected={strategy === "LogNormal"}
-            onClick={() => setStrategy("LogNormal")}
-            title={strats[1].title}
-            description={strats[1].sub}
-          />
-        </div>
+        <CardToggleGroup
+          options={strats}
+          value={strategy}
+          setValue={setStrategy}
+        />
 
         <Card>
           <CardHeader>
@@ -131,37 +123,11 @@ function CreatePool() {
             <CardDescription>{tags[2].sub}</CardDescription>
           </CardHeader>
         </Card>
-
-        <div className="flex flex-row gap-4 items-center">
-          <PoolConfigCard
-            isSelected={feeRate === 0.01}
-            onClick={() => setFeeRate(0.01)}
-            title={feeLevels[0].title}
-            description={feeLevels[0].sub}
-            smallTitle
-          />
-          <PoolConfigCard
-            isSelected={feeRate === 0.05}
-            onClick={() => setFeeRate(0.05)}
-            title={feeLevels[1].title}
-            description={feeLevels[1].sub}
-            smallTitle
-          />
-          <PoolConfigCard
-            isSelected={feeRate === 0.3}
-            onClick={() => setFeeRate(0.3)}
-            title={feeLevels[2].title}
-            description={feeLevels[2].sub}
-            smallTitle
-          />
-          <PoolConfigCard
-            isSelected={feeRate === 1}
-            onClick={() => setFeeRate(1)}
-            title={feeLevels[3].title}
-            description={feeLevels[3].sub}
-            smallTitle
-          />
-        </div>
+        <CardToggleGroup
+          options={feeLevels}
+          value={feeRate}
+          setValue={setFeeRate}
+        />
 
         <Card>
           <CardHeader>
@@ -169,30 +135,11 @@ function CreatePool() {
             <CardDescription>{tags[3].sub}</CardDescription>
           </CardHeader>
         </Card>
-
-        <div className="flex flex-row gap-4 items-center">
-          <PoolConfigCard
-            isSelected={weight === 20}
-            onClick={() => setWeight(20)}
-            title={weights[0].title}
-            description={weights[0].sub}
-            smallTitle
-          />
-          <PoolConfigCard
-            isSelected={weight === 30}
-            onClick={() => setWeight(30)}
-            title={weights[1].title}
-            description={weights[1].sub}
-            smallTitle
-          />
-          <PoolConfigCard
-            isSelected={weight === 50}
-            onClick={() => setWeight(50)}
-            title={weights[2].title}
-            description={weights[2].sub}
-            smallTitle
-          />
-        </div>
+        <CardToggleGroup
+          options={weights}
+          value={weight}
+          setValue={setWeight}
+        />
 
         <Card>
           <CardHeader>
