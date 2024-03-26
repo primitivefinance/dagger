@@ -1,15 +1,18 @@
-
-import type { CodegenConfig } from '@graphql-codegen/cli';
+import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "https://dfmm-indexer-production.up.railway.app/graphql",
+  schema: "https://dfmm-indexer-production-9708.up.railway.app/",
+  documents: ["src/queries/*.ts", "src/queries/*.tsx"],
   generates: {
     "src/gql/": {
       preset: "client",
-      plugins: []
-    }
-  }
+      config: {
+        documentMode: "string",
+      },
+      plugins: [],
+    },
+  },
 };
 
 export default config;
