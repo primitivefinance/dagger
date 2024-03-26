@@ -2,106 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  -font-smoothing: antialiased;
+@font-face {
+  font-family: "Regular";
+  src: local("Geist-Regular"), url('./assets/fonts/Geist-Regular.otf'), format("opentype");
 }
 
+@font-face {
+  font-family: "SemiBold";
+  src: local("Geist-SemiBold"), url('./assets/fonts/Geist-SemiBold.otf'), format("opentype");
+}
+
+@font-face {
+  font-family: "Bold";
+  src: local("Geist-Bold"), url('./assets/fonts/Geist-Bold.otf'), format("opentype");
+}
+ 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+ 
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+ 
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+ 
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+ 
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+ 
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+ 
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+ 
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+ 
 @layer base {
   * {
-    @apply text-dagger4;
+    @apply border-border;
   }
-
-  h1 {
-    @apply text-5xl;
-    @apply font-bold;
+  body {
+    @apply bg-background text-foreground;
   }
-
-  h2 {
-    @apply text-xl;
-    @apply font-bold;
-  }
-
-  h3 {
-    @apply text-lg;
-    @apply font-bold;
-  }
-
-  h4 {}
-
-  h5 {}
-
-  p {
-    @apply text-base;
-  }
-
-  button {
-    @apply text-dagger4;
-    @apply bg-dagger1;
-    @apply border;
-    @apply border-solid;
-    @apply border-dagger2;
-    @apply rounded-xl;
-    @apply text-xs;
-    @apply px-4;
-    @apply py-2;
-  }
-
-  button:hover {
-    @apply opacity-50;
-  }
-
-  input {
-    @apply bg-transparent;
-    @apply text-dagger4;
-    @apply outline-none;
-  }
-
-  input::placeholder {
-    @apply text-dagger3;
-  }
-
-  a {
-    @apply text-blue-600;
-  }
-
-  a:hover {
-    @apply underline;
-    @apply opacity-50;
-  }
-
-  table {
-    @apply w-full;
-  }
-
-  th {
-    @apply p-4;
-    @apply text-dagger3;
-    @apply text-xs;
-    @apply font-bold;
-  }
-
-  tbody tr {
-    @apply border-t;
-    @apply border-dagger2;
-    @apply border-solid;
-    @apply cursor-pointer;
-  }
-
-  tbody tr:hover {
-    @apply bg-dagger2;
-  }
-
-  td {
-    @apply p-4;
-  }
-
-  tbody {}
-
-  @screen md {}
-
-  @screen lg {}
-
-  @screen xl {}
 }
