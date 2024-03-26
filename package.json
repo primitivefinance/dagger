@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",
@@ -18,11 +19,13 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toggle": "^1.0.3",
     "@radix-ui/react-toggle-group": "^1.0.4",
-    "@tanstack/react-query": "^5.20.5",
+    "@tanstack/react-query": "^5.28.8",
     "autoprefixer": "^10.4.17",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "geist": "^1.2.2",
+    "graphql": "^16.8.1",
+    "graphql-request": "^6.1.0",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.3",
     "postcss": "^8.4.33",
@@ -38,6 +41,7 @@
     "wagmi": "^2.5.7"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.2",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
@@ -46,7 +50,9 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "typescript": "^5.4.3",
+    "vite": "^5.0.8",
+    "@graphql-codegen/introspection": "4.0.3",
+    "@graphql-codegen/client-preset": "4.2.4"
   }
 }
