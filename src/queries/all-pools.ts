@@ -26,7 +26,7 @@ export const PoolFragment = graphql(
   `
 );
 
-export const allPoolsDocument = graphql(
+export const allPoolsQueryDocument = graphql(
   `
     query allPools($limit: Int!) {
       pools(limit: $limit) {

@@ -13,28 +13,17 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-separator";
-import { useQuery } from "@tanstack/react-query";
 import { allPoolsDocument } from "../../queries/all-pools";
-import { request } from "graphql-request";
+import { useGraphQL } from "../../useGraphQL";
 
 function Home() {
   const { pools } = useIndexer();
   const { state } = usePrices();
   const { prices } = state;
 
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["pools"],
-    queryFn: async () =>
-      request(
-        "https://dfmm-indexer-production-9708.up.railway.app/",
-        allPoolsDocument,
-        { limit: 10 }
-      ),
-  });
+  const { data } = useGraphQL(allPoolsDocument, { limit: 10 });
 
   console.log(data);
-  console.log(error);
-  console.log(isLoading);
 
   return (
     <>
