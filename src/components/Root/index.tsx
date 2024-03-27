@@ -15,6 +15,13 @@ function Root() {
           </li>
           <li>
             <Button variant="link" asChild>
+              <Link to="/bridge" className="text-sm text-dagger4">
+                Bridge
+              </Link>
+            </Button>
+          </li>
+          <li>
+            <Button variant="link" asChild>
               <Link to="/" className="text-sm text-dagger4">
                 Pools
               </Link>

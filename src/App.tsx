@@ -10,6 +10,7 @@ import { PricesProvider } from './store/PricesContext';
 
 import Root from './components/Root';
 import Home from './pages/home';
+import Bridge from './pages/bridge';
 import CreatePool from './pages/create-pool';
 import Pool from './pages/pool';
 import Faucet from './pages/faucet';
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />
+      },
+      {
+        path: '/bridge',
+        element: <Bridge />,
       },
       {
         path: '/create-pool',
