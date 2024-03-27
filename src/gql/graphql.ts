@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1172,73 +1172,8 @@ export type AllPoolsQueryVariables = Exact<{
 }>;
 
 
-export type AllPoolsQuery = { __typename?: 'Query', pools: { __typename?: 'PoolPage', items: Array<(
-      { __typename?: 'Pool' }
-      & { ' $fragmentRefs'?: { 'PoolItemFragment': PoolItemFragment } }
-    )> } };
+export type AllPoolsQuery = { __typename?: 'Query', pools: { __typename?: 'PoolPage', items: Array<{ __typename?: 'Pool', id: any, poolTokens?: { __typename?: 'PoolTokenPage', items: Array<{ __typename?: 'PoolToken', token: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number } }> } | null }> } };
 
-export class TypedDocumentString<TResult, TVariables>
-  extends String
-  implements DocumentTypeDecoration<TResult, TVariables>
-{
-  __apiType?: DocumentTypeDecoration<TResult, TVariables>['__apiType'];
-
-  constructor(private value: string, public __meta__?: Record<string, any>) {
-    super(value);
-  }
-
-  toString(): string & DocumentTypeDecoration<TResult, TVariables> {
-    return this.value;
-  }
-}
-export const PoolTokenItemFragmentDoc = new TypedDocumentString(`
-    fragment PoolTokenItem on PoolToken {
-  token {
-    id
-    name
-    symbol
-    decimals
-  }
-}
-    `, {"fragmentName":"PoolTokenItem"}) as unknown as TypedDocumentString<PoolTokenItemFragment, unknown>;
-export const PoolItemFragmentDoc = new TypedDocumentString(`
-    fragment PoolItem on Pool {
-  id
-  poolTokens {
-    items {
-      ...PoolTokenItem
-    }
-  }
-}
-    fragment PoolTokenItem on PoolToken {
-  token {
-    id
-    name
-    symbol
-    decimals
-  }
-}`, {"fragmentName":"PoolItem"}) as unknown as TypedDocumentString<PoolItemFragment, unknown>;
-export const AllPoolsDocument = new TypedDocumentString(`
-    query allPools($limit: Int!) {
-  pools(limit: $limit) {
-    items {
-      ...PoolItem
-    }
-  }
-}
-    fragment PoolTokenItem on PoolToken {
-  token {
-    id
-    name
-    symbol
-    decimals
-  }
-}
-fragment PoolItem on Pool {
-  id
-  poolTokens {
-    items {
-      ...PoolTokenItem
-    }
-  }
-}`) as unknown as TypedDocumentString<AllPoolsQuery, AllPoolsQueryVariables>;
+export const PoolTokenItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PoolTokenItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PoolToken"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}}]}}]} as unknown as DocumentNode<PoolTokenItemFragment, unknown>;
+export const PoolItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PoolItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Pool"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PoolTokenItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PoolTokenItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PoolToken"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}}]}}]} as unknown as DocumentNode<PoolItemFragment, unknown>;
+export const AllPoolsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allPools"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pools"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<AllPoolsQuery, AllPoolsQueryVariables>;

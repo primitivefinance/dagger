@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-separator";
-import { allPoolsDocument } from "../../queries/all-pools";
+import { allPoolsQueryDocument } from "../../queries/all-pools";
 import { useGraphQL } from "../../useGraphQL";
 
 function Home() {
@@ -21,7 +21,7 @@ function Home() {
   const { state } = usePrices();
   const { prices } = state;
 
-  const { data } = useGraphQL(allPoolsDocument, { limit: 10 });
+  const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 });
 
   console.log(data);
 

@@ -8,9 +8,6 @@ const config: CodegenConfig = {
   generates: {
     "src/gql/": {
       preset: "client",
-      config: {
-        documentMode: "string",
-      },
       plugins: [],
     },
   },

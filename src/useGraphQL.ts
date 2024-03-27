@@ -6,13 +6,13 @@ export function useGraphQL<TResult, TVariables>(
   document: TypedDocumentNode<TResult, TVariables>,
   ...[variables]: TVariables extends Record<string, never> ? [] : [TVariables]
 ): UseQueryResult<TResult> {
-  return useQuery(
-    [(document.definitions[0] as any).name.value, variables],
-    async ({ queryKey }) =>
+  return useQuery({
+    queryKey: [(document.definitions[0] as any).name.value, variables],
+    queryFn: async ({ queryKey }) =>
       request(
         "https://dfmm-indexer-production-9708.up.railway.app/",
         document,
         queryKey[1] ? queryKey[1] : undefined
       )
-  );
+      });
 }
