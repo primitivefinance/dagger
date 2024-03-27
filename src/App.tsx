@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { http, createConfig, WagmiProvider } from 'wagmi';
-import { optimismSepolia } from 'wagmi/chains';
+import { sepolia, optimismSepolia } from 'wagmi/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -20,12 +20,13 @@ import { ThemeProvider } from './components/theme-provider';
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0';
 
 export const config = createConfig({
-  chains: [optimismSepolia],
+  chains: [sepolia, optimismSepolia],
   connectors: [
     injected(),
     walletConnect({ projectId }),
   ],
   transports: {
+    [sepolia.id]: http(),
     [optimismSepolia.id]: http(),
   },
 });

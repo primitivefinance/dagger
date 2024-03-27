@@ -49,3 +49,88 @@ export const tokens: Token[] = [
     faucet: 5,
   },
 ];
+
+
+export const l1_test_tokens: Token[] = [
+  {
+    address: '0x9e16Ace538956f6654E20EEB2DB6972Fe6884F71',
+    symbol: 'WETH',
+    name: 'Wrapped Ether',
+    decimals: 18,
+    logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+  },
+  {
+    address: '0xFAA53A584B893359D5c15C6a97edF982B0D142dF',
+    symbol: 'mETH',
+    name: 'Mantle Staked ETH',
+    decimals: 18,
+    logo: 'https://assets.coingecko.com/coins/images/33345/standard/symbol_transparent_bg.png?1701697066',
+    faucet: 1000
+  },
+  {
+    address: '0xbCEc7763Cb0683dE98095bfA6A8C14a49675E655',
+    symbol: 'cbETH',
+    name: 'Coinbase Staked ETH',
+    decimals: 18,
+    logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/21535.png',
+    faucet: 1000
+  },
+  {
+    address: '0x97Fd5e441902bE62A78f6d4110B1E094e7A70a56',
+    symbol: 'rETH',
+    name: 'Rocketpool Staked ETH',
+    decimals: 18,
+    logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/15060.png',
+    faucet: 1000
+  },
+  {
+    address: '0x797CD94ba30A85c95Db09C832B0197C3832156E5',
+    symbol: 'wstETH',
+    name: 'Wrapped stETH',
+    decimals: 18,
+    logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/12409.png',
+    faucet: 1000
+  }
+]
+
+export const l2_test_tokens: Token[] = [
+  {
+    address: '0x6AA84FBbc17c87bC29B7A8D457c09360858Ce8f1',
+    symbol: 'WETH',
+    name: 'Wrapped Ether',
+    decimals: 18,
+    logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+  },
+  {
+    address: '0x5E4b52E6a1922af9f4eF981ffFd3D1Cc0a574004',
+    symbol: 'mETH',
+    name: 'Mantle Staked ETH',
+    decimals: 18,
+    logo: 'https://assets.coingecko.com/coins/images/33345/standard/symbol_transparent_bg.png?1701697066',
+    faucet: 1000
+  },
+  {
+    address: '0x24240Be4f445763F7684F48Deb74B3B05a025b00',
+    symbol: 'cbETH',
+    name: 'Coinbase Staked ETH',
+    decimals: 18,
+    logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/21535.png',
+    faucet: 1000
+  },
+  {
+    address: '0x8240A8D6Ea6bC5D431DF9bD96c3ef09b2a7E0E28',
+    symbol: 'rETH',
+    name: 'Rocketpool Staked ETH',
+    decimals: 18,
+    logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/15060.png',
+    faucet: 1000
+  },
+  {
+    address: '0xeaF28e4A2E9F11ABaBF6c3B01305A7d656974ce9',
+    symbol: 'wstETH',
+    name: 'Wrapped stETH',
+    decimals: 18,
+    logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/12409.png',
+    faucet: 1000
+  }
+]
