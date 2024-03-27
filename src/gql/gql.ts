@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n    fragment PoolTokenItem on PoolToken {\n      token {\n        id\n        name\n        symbol\n        decimals\n      }\n    }\n  ": types.PoolTokenItemFragmentDoc,
     "\n    fragment PoolItem on Pool {\n      id\n      poolTokens {\n        items {\n          ...PoolTokenItem\n        }\n      }\n    }\n  ": types.PoolItemFragmentDoc,
-    "\n    query allPools($limit: Int!) {\n      pools(limit: $limit) {\n        items {\n          id\n          poolTokens {\n            items {\n              token {\n                id\n                name\n                symbol\n                decimals\n              }\n            }\n          }\n        }\n      }\n    }\n  ": types.AllPoolsDocument,
+    "\n    query allPools($limit: Int!) {\n      pools(limit: $limit) {\n        items {\n          ...PoolItem\n        }\n      }\n    }\n  ": types.AllPoolsDocument,
 };
 
 /**
@@ -43,7 +43,7 @@ export function graphql(source: "\n    fragment PoolItem on Pool {\n      id\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query allPools($limit: Int!) {\n      pools(limit: $limit) {\n        items {\n          id\n          poolTokens {\n            items {\n              token {\n                id\n                name\n                symbol\n                decimals\n              }\n            }\n          }\n        }\n      }\n    }\n  "): (typeof documents)["\n    query allPools($limit: Int!) {\n      pools(limit: $limit) {\n        items {\n          id\n          poolTokens {\n            items {\n              token {\n                id\n                name\n                symbol\n                decimals\n              }\n            }\n          }\n        }\n      }\n    }\n  "];
+export function graphql(source: "\n    query allPools($limit: Int!) {\n      pools(limit: $limit) {\n        items {\n          ...PoolItem\n        }\n      }\n    }\n  "): (typeof documents)["\n    query allPools($limit: Int!) {\n      pools(limit: $limit) {\n        items {\n          ...PoolItem\n        }\n      }\n    }\n  "];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

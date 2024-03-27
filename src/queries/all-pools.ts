@@ -28,17 +28,7 @@ export const allPoolsQueryDocument = graphql(/* GraphQL */ `
     query allPools($limit: Int!) {
       pools(limit: $limit) {
         items {
-          id
-          poolTokens {
-            items {
-              token {
-                id
-                name
-                symbol
-                decimals
-              }
-            }
-          }
+          ...PoolItem
         }
       }
     }
