@@ -58,6 +58,7 @@ export const l1_test_tokens: Token[] = [
     name: 'Wrapped Ether',
     decimals: 18,
     logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+    faucet: 10
   },
   {
     address: '0xFAA53A584B893359D5c15C6a97edF982B0D142dF',
@@ -100,6 +101,7 @@ export const l2_test_tokens: Token[] = [
     name: 'Wrapped Ether',
     decimals: 18,
     logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+    faucet: 10
   },
   {
     address: '0x5E4b52E6a1922af9f4eF981ffFd3D1Cc0a574004',
