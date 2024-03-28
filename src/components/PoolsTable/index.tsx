@@ -19,7 +19,7 @@ import { FC } from "react";
 import { useGraphQL } from "../../useGraphQL";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
-import { Link1Icon, Link2Icon } from "@radix-ui/react-icons";
+import { Link2Icon } from "@radix-ui/react-icons";
 
 const PoolsTable: FC = () => {
   const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 });
