@@ -17,11 +17,14 @@ import { tokens } from "@/data/tokens";
 
 import { FC } from "react";
 import { useGraphQL } from "../../useGraphQL";
+import { Link } from "react-router-dom";
+import { Button } from "../ui/button";
+import { Link1Icon, Link2Icon } from "@radix-ui/react-icons";
 
 const PoolsTable: FC = () => {
   const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 });
-
   const pools = data?.pools?.items;
+
   return (
     <Table>
       <TableHeader>
@@ -66,7 +69,17 @@ const PoolCell: FC<PoolCellProps> = (props: {
           ))}
         </div>
       </TableCell>
-      <TableCell className="text-right">{poolData.name}</TableCell>
+      <TableCell className="flex justify-end">
+        <Button variant="link" className="p-0">
+          <Link
+            to={`/pool/${poolData.id}`}
+            className="flex justify-between items-center"
+          >
+            {poolData.name}
+            <Link2Icon className="h-4 w-4 ml-1" />
+          </Link>
+        </Button>
+      </TableCell>
       <TableCell className="text-right">$0.0</TableCell>
       <TableCell className="text-right">$0.0</TableCell>
       <TableCell className="text-right">$0.0</TableCell>
