@@ -39,43 +39,43 @@ const LinkIcon = () => (
 
 function Pool() {
   // const { pools } = useIndexer();
-  const { id } = useParams();
-  const { address } = useAccount();
-  const { connectors, connect } = useConnect();
-  const { state } = usePrices();
-  const { prices } = state;
+  // const { id } = useParams();
+  // const { address } = useAccount();
+  // const { connectors, connect } = useConnect();
+  // const { state } = usePrices();
+  // const { prices } = state;
 
-  const [balanceX, setBalanceX] = useState<number>(0);
-  const [balanceY, setBalanceY] = useState<number>(0);
+  // const [balanceX, setBalanceX] = useState<number>(0);
+  // const [balanceY, setBalanceY] = useState<number>(0);
 
-  const [balances, setBalances] = useState<{ [key: string]: number }>({});
+  // const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
-  const [amountX, setAmountX] = useState<string>("");
-  const [amountY, setAmountY] = useState<string>("");
+  // const [amountX, setAmountX] = useState<string>("");
+  // const [amountY, setAmountY] = useState<string>("");
 
-  const { data } = useGraphQL(poolInfoQueryDocument, { id });
-  const pool = useFragment(PoolWithTokensFragment, data?.pool);
+  // const { data } = useGraphQL(poolInfoQueryDocument, { id });
+  // const pool = useFragment(PoolWithTokensFragment, data?.pool);
 
-  useEffect(() => {
-    async function fetchBalances() {
-      if (!pool?.poolTokens?.items) return;
+  // useEffect(() => {
+  //   async function fetchBalances() {
+  //     if (!pool?.poolTokens?.items) return;
 
-      const newBalances: { [key: string]: number } = {};
+  //     const newBalances: { [key: string]: number } = {};
 
-      for (const poolToken of pool.poolTokens.items) {
-        const balance = await balanceOf(poolToken.token.id, address!);
-        newBalances[poolToken.token.symbol] = balance;
-      }
+  //     for (const poolToken of pool.poolTokens.items) {
+  //       const balance = await balanceOf(poolToken.token.id, address!);
+  //       newBalances[poolToken.token.symbol] = balance;
+  //     }
 
-      setBalances(newBalances);
-      console.log("balances", newBalances);
-    }
+  //     setBalances(newBalances);
+  //     console.log("balances", newBalances);
+  //   }
 
-    if (address && pool?.poolTokens?.items) {
-      console.log("fetching balances");
-      fetchBalances();
-    }
-  }, [address, pool?.poolTokens?.items]);
+  //   if (address && pool?.poolTokens?.items) {
+  //     console.log("fetching balances");
+  //     fetchBalances();
+  //   }
+  // }, [address, pool?.poolTokens?.items]);
 
   // let userPosition: Position;
 
