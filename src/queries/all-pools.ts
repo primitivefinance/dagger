@@ -38,31 +38,32 @@ export const allPoolsQueryDocument = graphql(/* GraphQL */ `
   }
 `);
 
-// export const PoolWithTokensFragment = graphql(/* GraphQL */ `
-//     fragment PoolWithTokens on Pool {
-//         id
-//         poolTokens {
-//         items {
-//             token {
-//             id
-//             name
-//             symbol
-//             decimals
-//             }
-//         }
-//         tokens
-//         reserves
-//         liquidity
-//         lpToken
-//         name
-//         initTimestamp
-//     }
-//     `);
+export const PoolWithTokensFragment = graphql(/* GraphQL */ `
+  fragment PoolWithTokens on Pool {
+    id
+    poolTokens {
+      items {
+        token {
+          id
+          name
+          symbol
+          decimals
+        }
+      }
+    }
+    tokens
+    reserves
+    liquidity
+    lpToken
+    name
+    initTimestamp
+  }
+`);
 
-// export const poolInfoQueryDocument = graphql(/* GraphQL */ `
-//   query poolInfo($id: BigInt!) {
-//     pool(id: $id) {
-//       ...PoolWithTokens
-//     }
-//   }
-// `);
+export const poolInfoQueryDocument = graphql(/* GraphQL */ `
+  query poolInfo($id: BigInt!) {
+    pool(id: $id) {
+      ...PoolWithTokens
+    }
+  }
+`);

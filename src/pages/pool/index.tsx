@@ -39,7 +39,7 @@ const LinkIcon = () => (
 
 function Pool() {
   // const { pools } = useIndexer();
-  // const { id } = useParams();
+  const { id } = useParams();
   // const { address } = useAccount();
   // const { connectors, connect } = useConnect();
   // const { state } = usePrices();
@@ -53,8 +53,9 @@ function Pool() {
   // const [amountX, setAmountX] = useState<string>("");
   // const [amountY, setAmountY] = useState<string>("");
 
-  // const { data } = useGraphQL(poolInfoQueryDocument, { id });
-  // const pool = useFragment(PoolWithTokensFragment, data?.pool);
+  const { data } = useGraphQL(poolInfoQueryDocument, { id });
+  const pool = useFragment(PoolWithTokensFragment, data?.pool);
+  console.log(pool);
 
   // useEffect(() => {
   //   async function fetchBalances() {
