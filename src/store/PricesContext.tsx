@@ -54,7 +54,7 @@ type PricesProviderProps = {
 
 export function PricesProvider(props: PricesProviderProps) {
   const [state, dispatch] = useReducer(pricesReducer, initialIndexerState);
-  const [check, setCheck] = useState('')
+  const [check, setCheck] = useState('ETH')
 
   const checkPrices = (assetTicker:string) => {
     setCheck(assetTicker)
