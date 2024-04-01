@@ -5,7 +5,6 @@ import { optimismSepolia } from 'wagmi/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { IndexerProvider } from './store/IndexerContext';
 import { PricesProvider } from './store/PricesContext';
 
 import Root from './components/Root';
@@ -14,7 +13,10 @@ import CreatePool from './pages/create-pool';
 import Pool from './pages/pool';
 import Faucet from './pages/faucet';
 import Dashboard from './pages/dashboard';
+import Swap from './pages/swap'
 import { ThemeProvider } from './components/theme-provider';
+import { createPublicClient } from 'viem';
+import { walletActionsL2 } from 'viem/op-stack'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0';
 
@@ -29,6 +31,12 @@ export const config = createConfig({
   },
 });
 
+export const testnetClient = createPublicClient({
+  chain: optimismSepolia,
+  transport: http()
+}).extend(walletActionsL2())
+
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -37,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />
+      },
+      {
+        path: '/swap',
+        element: <Swap />
       },
       {
         path: '/create-pool',
@@ -49,10 +61,6 @@ const router = createBrowserRouter([
       {
         path: '/faucet',
         element: <Faucet />,
-      },
-      {
-        path: '/dashboard',
-        element: <Dashboard />,
       },
     ],
   },
@@ -72,13 +80,11 @@ function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <IndexerProvider>
           <PricesProvider>
             <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
               <RouterProvider router={router} />
             </ThemeProvider>
           </PricesProvider>
-        </IndexerProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

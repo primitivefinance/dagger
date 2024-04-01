@@ -97,7 +97,6 @@ type TokenCellProps = {
 
 const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
   const tokenData = useFragment(TokenFragment, token);
-  console.log(tokenData.token.id);
   return (
     <img
       key={tokenData.token.id}

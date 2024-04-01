@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { useAccount, useConnect } from "wagmi";
 
 import { usePrices } from "../../store/PricesContext";
-import { useIndexer } from "../../store/IndexerContext";
 import { tokens } from "../../data/tokens";
 import { shortAddress } from "../../utils/address";
 import { computePrice, allocateGivenX, deallocateGivenX } from "../../lib/g3m";
@@ -38,75 +37,70 @@ const LinkIcon = () => (
 );
 
 function Pool() {
-  // const { pools } = useIndexer();
   const { id } = useParams();
-  // const { address } = useAccount();
-  // const { connectors, connect } = useConnect();
-  // const { state } = usePrices();
-  // const { prices } = state;
+  const { address } = useAccount();
+  const { connectors, connect } = useConnect();
+  const { state } = usePrices();
+  const { prices } = state;
 
-  // const [balanceX, setBalanceX] = useState<number>(0);
-  // const [balanceY, setBalanceY] = useState<number>(0);
+  const [balanceX, setBalanceX] = useState<number>(0);
+  const [balanceY, setBalanceY] = useState<number>(0);
 
-  // const [balances, setBalances] = useState<{ [key: string]: number }>({});
+  const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
-  // const [amountX, setAmountX] = useState<string>("");
-  // const [amountY, setAmountY] = useState<string>("");
+  const [amountX, setAmountX] = useState<string>("");
+  const [amountY, setAmountY] = useState<string>("");
 
-  const { data } = useGraphQL(poolInfoQueryDocument, { id });
-  const pool = useFragment(PoolWithTokensFragment, data?.pool);
-  console.log(pool);
+  const { data } = useGraphQL(poolInfoQueryDocument, { id }) as any;
+  console.log(id)
+  const pool = useFragment(PoolWithTokensFragment, data?.pool) as any;
 
-  // useEffect(() => {
-  //   async function fetchBalances() {
-  //     if (!pool?.poolTokens?.items) return;
+  useEffect(() => {
+     async function fetchBalances() {
+       if (!pool?.poolTokens?.items) return;
+       const newBalances: { [key: string]: number } = {};
+       for (const poolToken of pool.poolTokens.items) {
+       const balance = await balanceOf(poolToken.token.id, address!);
+       newBalances[poolToken.token.symbol] = balance;
+     }
+     setBalances(newBalances);
+     console.log("balances", newBalances);
+   }
+   if (address && pool?.poolTokens?.items) {
+     console.log("fetching balances");
+     fetchBalances();
+   }
+  }, [address, pool?.poolTokens?.items]);
 
-  //     const newBalances: { [key: string]: number } = {};
+   let userPosition: Position;
 
-  //     for (const poolToken of pool.poolTokens.items) {
-  //       const balance = await balanceOf(poolToken.token.id, address!);
-  //       newBalances[poolToken.token.symbol] = balance;
-  //     }
+  if (pool?.position?.items && address) {
+     userPosition = pool.positions.items.find(
+       (position) =>
+         position.accountId.toLowerCase() === address?.toLocaleLowerCase()
+     )!;
+     console.log(userPosition)
+   }
 
-  //     setBalances(newBalances);
-  //     console.log("balances", newBalances);
-  //   }
+  const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true);
+  const ref = useRef(null);
+  const [range, setRange] = useState<number>(0);
 
-  //   if (address && pool?.poolTokens?.items) {
-  //     console.log("fetching balances");
-  //     fetchBalances();
-  //   }
-  // }, [address, pool?.poolTokens?.items]);
+  if (pool.items === undefined) {
+     return <>Loading</>;
+   }
 
-  // let userPosition: Position;
-
-  // if (pool && address) {
-  //   userPosition = pool.positions.items.find(
-  //     (position) =>
-  //       position.accountId.toLowerCase() === address?.toLocaleLowerCase()
-  //   )!;
-  // }
-
-  // const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true);
-  // const ref = useRef(null);
-  // const [range, setRange] = useState<number>(0);
-
-  // if (pool === undefined) {
-  //   return <></>;
-  // }
-
-  // const tokenXLogo = tokens.find(
-  //   (token) =>
-  //     token.address.toLowerCase() === pool?.poolTokens[0].id.toLowerCase()
-  // )?.logo;
-  // const tokenYLogo = tokens.find(
-  //   (token) =>
-  //     token.address.toLowerCase() === pool?.poolTokens[0].id.toLowerCase()
-  // )?.logo;
+  const tokenXLogo = tokens.find(
+    (token) =>
+      token.address.toLowerCase() === pool?.poolTokens[0].id.toLowerCase()
+    )?.logo;
+  const tokenYLogo = tokens.find(
+    (token) =>
+      token.address.toLowerCase() === pool?.poolTokens[0].id.toLowerCase()
+    )?.logo;
 
   return (
     <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
-      {/*
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
           <div className="flex flex-row items-center">
@@ -179,7 +173,7 @@ function Pool() {
               pool.reserveY,
               pool.parameters.weightX,
               pool.parameters.weightY
-            ).toLocaleString(undefined)}{" "}
+              ).toLocaleString(undefined)}{" "}
             {pool.tokenY.symbol}{" "}
             <span className="text-xs">per {pool.tokenX.symbol}</span>
           </p>
@@ -586,7 +580,6 @@ function Pool() {
         </div>
       </div>
 
-      {/*
       <div className="my-8">
         <p className="text-lg font-bold mb-2">Recent Transactions</p>
         <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
@@ -634,7 +627,6 @@ function Pool() {
           </table>
         </div>
       </div>
-              */}
     </div>
   );
 }

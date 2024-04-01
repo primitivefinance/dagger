@@ -7,6 +7,14 @@ type Token = {
   faucet?: number;
 };
 
+export const eth: Token = {
+  address: '0x0',
+  name: 'Ether',
+  symbol: 'ETH',
+  decimals: 18,
+  logo: 'https://assets.coingecko.com/coins/images/279/standard/ethereum.png?1696501628',
+}
+
 export const tokens: Token[] = [
   {
     address: "0xCB79ea015aCF9dc52843F47460c1ebab8eF0C613",

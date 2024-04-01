@@ -1,17 +1,16 @@
 import { tokens } from "@/data/tokens";
-import { useIndexer } from "@/store/IndexerContext";
 import { usePrices } from "@/store/PricesContext";
 import { Link } from 'react-router-dom';
 import { Table, TableRow, TableHeader, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
 function Dashboard() {
-  const { userPositions } = useIndexer();
   const { prices } = usePrices().state;
 
   return (
     <div className="container mx-auto max-w-4xl gap-2 flex flex-col my-12">
-      <div className="flex flex-row items-center w-full justify-between">
+      {/**
+       <div className="flex flex-row items-center w-full justify-between">
         <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">My Positions ({userPositions.length})</h3>
         <Button variant="secondary" asChild>
           <Link to="/">
@@ -65,6 +64,8 @@ function Dashboard() {
           </TableBody>
         </Table>
       </div>
+       */}
+     
     </div>
   );
 }

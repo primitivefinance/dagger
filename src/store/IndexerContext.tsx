@@ -1,7 +1,10 @@
 import { createContext } from 'react';
 import { useReducer, useContext, useEffect, useState } from 'react';
-import { getPools, getUserPositions } from '../lib/indexer';
+// import { getPools, getUserPositions } from '../lib/indexer';
 import { useAccount } from 'wagmi';
+import { allPoolsQueryDocument } from "../queries/all-pools";
+import { useGraphQL } from "../useGraphQL";
+import { allPositionsQueryDocument } from 'queries/positions';
 
 type Action = {
   type: 'SET_POOLS' | 'SET_USER_POSITIONS';
@@ -45,7 +48,7 @@ type IndexerProviderProps = {
   children: React.ReactNode;
 }
 
-export function IndexerProvider(props: IndexerProviderProps) {
+export async function IndexerProvider(props: IndexerProviderProps) {
   const { address } = useAccount();
 
   const [state, dispatch] = useReducer(indexerReducer, initialIndexerState);
@@ -55,12 +58,15 @@ export function IndexerProvider(props: IndexerProviderProps) {
   const updateIndexer = () => {
     setUpdate(!update)
   }
+  const { positions } = await useGraphQL(allPositionsQueryDocument, { account: address }) as unknown as any
+  const { pools } = await useGraphQL(allPoolsQueryDocument, { limit: 10 }) as unknown as any
 
   useEffect(() => {
     (async () => {
       dispatch({
         type: 'SET_POOLS',
-        payload: await getPools(),
+        payload: pools
+        (),
       });
     })();
   }, [update]);
@@ -70,7 +76,7 @@ export function IndexerProvider(props: IndexerProviderProps) {
       if (address) {
         dispatch({
           type: 'SET_USER_POSITIONS',
-          payload: await getUserPositions(address),
+          payload: positions
         });
       }
     })();
