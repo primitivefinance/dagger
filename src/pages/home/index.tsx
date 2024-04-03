@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@radix-ui/react-separator'
 import { useGraphQL } from '../../useGraphQL'
 import PoolsTable from '@/components/PoolsTable'
-import { allPoolsQueryDocument } from '../../queries/all-pools'
+import { allPoolsQueryDocument } from '../../queries/pools'
 
 function Home() {
     //const { pools } = useIndexer();

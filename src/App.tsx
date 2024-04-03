@@ -71,16 +71,9 @@ function App() {
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
-                <IndexerProvider>
-                    <PricesProvider>
-                        <ThemeProvider
-                            defaultTheme="dark"
-                            storageKey="vite-ui-theme"
-                        >
-                            <RouterProvider router={router} />
-                        </ThemeProvider>
-                    </PricesProvider>
-                </IndexerProvider>
+                <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                    <RouterProvider router={router} />
+                </ThemeProvider>
             </QueryClientProvider>
         </WagmiProvider>
     )

@@ -12,7 +12,7 @@ import {
     PoolFragment,
     TokenFragment,
     allPoolsQueryDocument,
-} from '../../queries/all-pools'
+} from '../../queries/pools'
 import { tokens } from '@/data/tokens'
 
 import { FC } from 'react'
