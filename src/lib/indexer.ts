@@ -1,17 +1,18 @@
-
-const indexer: string = import.meta.env.VITE_DFMM_INDEXER ? import.meta.env.VITE_DFMM_INDEXER : 'http://localhost:42069'
+const indexer: string = import.meta.env.VITE_DFMM_INDEXER
+    ? import.meta.env.VITE_DFMM_INDEXER
+    : 'http://localhost:42069'
 
 export async function getPools(): Promise<Pool[]> {
-  try {
-    const query = await fetch(indexer, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Access-Control-Allow-Origin': indexer,
-      },
-      body: JSON.stringify({
-        query: `
+    try {
+        const query = await fetch(indexer, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Access-Control-Allow-Origin': indexer,
+            },
+            body: JSON.stringify({
+                query: `
         query MyQuery {
           pools(limit: 10) {
             items {
@@ -59,29 +60,31 @@ export async function getPools(): Promise<Pool[]> {
             }
           }
         }
-        `
-      }),
-    });
+        `,
+            }),
+        })
 
-    const json = await query.json();
-    return json.data.pools.items;
-  } catch (e) {
-    console.error(e);
-    throw new Error('Failed to fetch pools');
-  }
+        const json = await query.json()
+        return json.data.pools.items
+    } catch (e) {
+        console.error(e)
+        throw new Error('Failed to fetch pools')
+    }
 }
 
-export async function getUserPositions(account: `0x${string}`): Promise<Position[]> {
-  try {
-    const query = await fetch(indexer, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Access-Control-Allow-Origin': indexer,
-      },
-      body: JSON.stringify({
-        query: `
+export async function getUserPositions(
+    account: `0x${string}`
+): Promise<Position[]> {
+    try {
+        const query = await fetch(indexer, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Access-Control-Allow-Origin': indexer,
+            },
+            body: JSON.stringify({
+                query: `
         query MyQuery {
           positions(where: {accountId: "${account}"}) {
             items {
@@ -122,14 +125,14 @@ export async function getUserPositions(account: `0x${string}`): Promise<Position
             }
           }
         }
-        `
-      }),
-    });
+        `,
+            }),
+        })
 
-    const json = await query.json();
-    return json.data.positions.items;
-  } catch (e) {
-    console.error(e);
-    throw new Error('Failed to fetch positions');
-  }
+        const json = await query.json()
+        return json.data.positions.items
+    } catch (e) {
+        console.error(e)
+        throw new Error('Failed to fetch positions')
+    }
 }

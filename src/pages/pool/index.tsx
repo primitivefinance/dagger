@@ -1,112 +1,112 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import { useAccount, useConnect } from "wagmi";
+import { useState, useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom'
+import { useAccount, useConnect } from 'wagmi'
 
-import { usePrices } from "../../store/PricesContext";
-import { useIndexer } from "../../store/IndexerContext";
-import { tokens } from "../../data/tokens";
-import { shortAddress } from "../../utils/address";
-import { computePrice, allocateGivenX, deallocateGivenX } from "../../lib/g3m";
-import TokenAmountInput from "../../components/TokenAmountInput";
-import { balanceOf } from "../../lib/erc20";
-import { parseEther } from "viem";
-import { allocate, deallocate } from "../../lib/dfmm";
-import { useGraphQL } from "../../useGraphQL";
+import { usePrices } from '../../store/PricesContext'
+import { useIndexer } from '../../store/IndexerContext'
+import { tokens } from '../../data/tokens'
+import { shortAddress } from '../../utils/address'
+import { computePrice, allocateGivenX, deallocateGivenX } from '../../lib/g3m'
+import TokenAmountInput from '../../components/TokenAmountInput'
+import { balanceOf } from '../../lib/erc20'
+import { parseEther } from 'viem'
+import { allocate, deallocate } from '../../lib/dfmm'
+import { useGraphQL } from '../../useGraphQL'
 import {
-  PoolWithTokensFragment,
-  poolInfoQueryDocument,
-} from "../../queries/all-pools";
-import { useFragment } from "../../gql";
+    PoolWithTokensFragment,
+    poolInfoQueryDocument,
+} from '../../queries/all-pools'
+import { useFragment } from '../../gql'
 
 const LinkIcon = () => (
-  <svg
-    className="w-3 h-3 self-center"
-    aria-hidden="true"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-  >
-    <path
-      className="text-blue-600"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-      d="M18 14v4.8a1.2 1.2 0 0 1-1.2 1.2H5.2A1.2 1.2 0 0 1 4 18.8V7.2A1.2 1.2 0 0 1 5.2 6h4.6m4.4-2H20v5.8m-7.9 2L20 4.2"
-    />
-  </svg>
-);
+    <svg
+        className="w-3 h-3 self-center"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            className="text-blue-600"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.5"
+            d="M18 14v4.8a1.2 1.2 0 0 1-1.2 1.2H5.2A1.2 1.2 0 0 1 4 18.8V7.2A1.2 1.2 0 0 1 5.2 6h4.6m4.4-2H20v5.8m-7.9 2L20 4.2"
+        />
+    </svg>
+)
 
 function Pool() {
-  // const { pools } = useIndexer();
-  const { id } = useParams();
-  // const { address } = useAccount();
-  // const { connectors, connect } = useConnect();
-  // const { state } = usePrices();
-  // const { prices } = state;
+    // const { pools } = useIndexer();
+    const { id } = useParams()
+    // const { address } = useAccount();
+    // const { connectors, connect } = useConnect();
+    // const { state } = usePrices();
+    // const { prices } = state;
 
-  // const [balanceX, setBalanceX] = useState<number>(0);
-  // const [balanceY, setBalanceY] = useState<number>(0);
+    // const [balanceX, setBalanceX] = useState<number>(0);
+    // const [balanceY, setBalanceY] = useState<number>(0);
 
-  // const [balances, setBalances] = useState<{ [key: string]: number }>({});
+    // const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
-  // const [amountX, setAmountX] = useState<string>("");
-  // const [amountY, setAmountY] = useState<string>("");
+    // const [amountX, setAmountX] = useState<string>("");
+    // const [amountY, setAmountY] = useState<string>("");
 
-  const { data } = useGraphQL(poolInfoQueryDocument, { id });
-  const pool = useFragment(PoolWithTokensFragment, data?.pool);
-  console.log(pool);
+    const { data } = useGraphQL(poolInfoQueryDocument, { id })
+    const pool = useFragment(PoolWithTokensFragment, data?.pool)
+    console.log(pool)
 
-  // useEffect(() => {
-  //   async function fetchBalances() {
-  //     if (!pool?.poolTokens?.items) return;
+    // useEffect(() => {
+    //   async function fetchBalances() {
+    //     if (!pool?.poolTokens?.items) return;
 
-  //     const newBalances: { [key: string]: number } = {};
+    //     const newBalances: { [key: string]: number } = {};
 
-  //     for (const poolToken of pool.poolTokens.items) {
-  //       const balance = await balanceOf(poolToken.token.id, address!);
-  //       newBalances[poolToken.token.symbol] = balance;
-  //     }
+    //     for (const poolToken of pool.poolTokens.items) {
+    //       const balance = await balanceOf(poolToken.token.id, address!);
+    //       newBalances[poolToken.token.symbol] = balance;
+    //     }
 
-  //     setBalances(newBalances);
-  //     console.log("balances", newBalances);
-  //   }
+    //     setBalances(newBalances);
+    //     console.log("balances", newBalances);
+    //   }
 
-  //   if (address && pool?.poolTokens?.items) {
-  //     console.log("fetching balances");
-  //     fetchBalances();
-  //   }
-  // }, [address, pool?.poolTokens?.items]);
+    //   if (address && pool?.poolTokens?.items) {
+    //     console.log("fetching balances");
+    //     fetchBalances();
+    //   }
+    // }, [address, pool?.poolTokens?.items]);
 
-  // let userPosition: Position;
+    // let userPosition: Position;
 
-  // if (pool && address) {
-  //   userPosition = pool.positions.items.find(
-  //     (position) =>
-  //       position.accountId.toLowerCase() === address?.toLocaleLowerCase()
-  //   )!;
-  // }
+    // if (pool && address) {
+    //   userPosition = pool.positions.items.find(
+    //     (position) =>
+    //       position.accountId.toLowerCase() === address?.toLocaleLowerCase()
+    //   )!;
+    // }
 
-  // const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true);
-  // const ref = useRef(null);
-  // const [range, setRange] = useState<number>(0);
+    // const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true);
+    // const ref = useRef(null);
+    // const [range, setRange] = useState<number>(0);
 
-  // if (pool === undefined) {
-  //   return <></>;
-  // }
+    // if (pool === undefined) {
+    //   return <></>;
+    // }
 
-  // const tokenXLogo = tokens.find(
-  //   (token) =>
-  //     token.address.toLowerCase() === pool?.poolTokens[0].id.toLowerCase()
-  // )?.logo;
-  // const tokenYLogo = tokens.find(
-  //   (token) =>
-  //     token.address.toLowerCase() === pool?.poolTokens[0].id.toLowerCase()
-  // )?.logo;
+    // const tokenXLogo = tokens.find(
+    //   (token) =>
+    //     token.address.toLowerCase() === pool?.poolTokens[0].id.toLowerCase()
+    // )?.logo;
+    // const tokenYLogo = tokens.find(
+    //   (token) =>
+    //     token.address.toLowerCase() === pool?.poolTokens[0].id.toLowerCase()
+    // )?.logo;
 
-  return (
-    <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
-      {/*
+    return (
+        <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
+            {/*
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
           <div className="flex flex-row items-center">
@@ -635,8 +635,8 @@ function Pool() {
         </div>
       </div>
               */}
-    </div>
-  );
+        </div>
+    )
 }
 
-export default Pool;
+export default Pool
