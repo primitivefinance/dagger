@@ -7,7 +7,7 @@ export const PositionFragment = graphql(/* GraphQL */ `
         accountId
         poolId
         pool {
-            id
+            ...PoolItem
         }
     }
 `)
