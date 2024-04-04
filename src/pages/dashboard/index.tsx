@@ -16,7 +16,9 @@ import { useAccount } from 'wagmi'
 import { useState } from 'react'
 
 function Dashboard() {
-    const { status, data } = useGraphQL(allPositionsQueryDocument, { limit: 20})
+    const { status, data } = useGraphQL(allPositionsQueryDocument, {
+        limit: 20,
+    })
     const { prices } = usePrices().state
 
     const { address } = useAccount()
@@ -56,7 +58,9 @@ function Dashboard() {
                             <TableHead className="text-left">Pool</TableHead>
                             <TableHead className="text-right">Owner</TableHead>
                             <TableHead className="text-right">Value</TableHead>
-                            <TableHead className="text-right">Pool TVL</TableHead>
+                            <TableHead className="text-right">
+                                Pool TVL
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody className="cursor-pointer">
@@ -87,10 +91,16 @@ function Dashboard() {
                                             </div>
                                             <div className="flex flex-col font-bold">
                                                 <div className="flex flex-row gap-2">
-                                                    {position.pool.poolTokens.items.map((poolToken) => 
-                                                        <div className="bg-gray-600 px-2 rounded-full text-xs">
-                                                            {poolToken.token.symbol}
-                                                        </div> 
+                                                    {position.pool.poolTokens.items.map(
+                                                        (poolToken) => (
+                                                            <div className="bg-gray-600 px-2 rounded-full text-xs">
+                                                                {
+                                                                    poolToken
+                                                                        .token
+                                                                        .symbol
+                                                                }
+                                                            </div>
+                                                        )
                                                     )}
                                                     <div className="bg-blue-600 px-2 rounded-full text-xs">
                                                         0%
@@ -106,10 +116,16 @@ function Dashboard() {
                                         {position.accountId.substring(0, 10)}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {(position.liquidity).toLocaleString(undefined)} LP
+                                        {position.liquidity.toLocaleString(
+                                            undefined
+                                        )}{' '}
+                                        LP
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {(position.pool.liquidity).toLocaleString(undefined)} LP
+                                        {position.pool.liquidity.toLocaleString(
+                                            undefined
+                                        )}{' '}
+                                        LP
                                     </TableCell>
                                 </TableRow>
                             ))}
