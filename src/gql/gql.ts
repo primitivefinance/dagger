@@ -13,6 +13,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n    fragment NGParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n": types.NgParamsItemFragmentDoc,
+    "\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NGParamsItem\n        }\n    }\n": types.NGParamsDocument,
     "\n    fragment PoolTokenItem on PoolToken {\n        token {\n            id\n            name\n            symbol\n            decimals\n        }\n    }\n": types.PoolTokenItemFragmentDoc,
     "\n    fragment PoolItem on Pool {\n        id\n        poolTokens {\n            items {\n                ...PoolTokenItem\n            }\n        }\n        tokens\n        reserves\n        liquidity\n        lpToken\n        name\n        initTimestamp\n    }\n": types.PoolItemFragmentDoc,
     "\n    query allPools($limit: Int!) {\n        pools(limit: $limit) {\n            items {\n                ...PoolItem\n            }\n        }\n    }\n": types.AllPoolsDocument,
@@ -36,6 +38,14 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    fragment NGParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n"): (typeof documents)["\n    fragment NGParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NGParamsItem\n        }\n    }\n"): (typeof documents)["\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NGParamsItem\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

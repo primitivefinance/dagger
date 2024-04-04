@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { useGraphQL } from '../../useGraphQL'
+import { shortAddress } from '../../utils/address'
 import { allPositionsQueryDocument } from '../../queries/positions'
 import { useChainId } from 'wagmi'
 
@@ -130,7 +131,7 @@ function Dashboard() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {position.accountId.substring(0, 10)}
+                                        {shortAddress(position.accountId)}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         {position.liquidity.toLocaleString(

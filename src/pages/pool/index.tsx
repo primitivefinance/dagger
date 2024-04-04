@@ -16,6 +16,7 @@ import {
     poolInfoQueryDocument,
 } from '../../queries/pools'
 import { useFragment } from '../../gql'
+import { NGParamsFragment } from 'queries/parameters'
 
 const LinkIcon = () => (
     <svg
@@ -51,6 +52,8 @@ function Pool() {
     const [amountY, setAmountY] = useState<string>('')
     const { data } = useGraphQL(poolInfoQueryDocument, { id })
     const pool = useFragment(PoolWithTokensFragment, data?.pool)
+    const params = useGraphQL(NGParamsFragment, BigInt(pool?.id.toString()))
+    const parameters = params?.data
 
     useEffect(() => {
         async function fetchBalances() {
@@ -74,7 +77,7 @@ function Pool() {
 
     let userPosition: Position
 
-    if (pool && address) {
+    if (pool?.positions?.items && address) {
         userPosition = pool.positions.items.find(
             (position) =>
                 position.accountId.toLowerCase() ===
@@ -86,14 +89,15 @@ function Pool() {
     const ref = useRef(null)
     const [range, setRange] = useState<number>(0)
 
-    if (pool?.poolTokens === undefined) return <></>
+    console.log(pool.poolTokens.items)
 
+    if (!pool?.poolTokens?.items) return <></>
     return (
         <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
             <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center gap-2">
                     <div className="flex flex-row items-center">
-                        {pool.poolTokens.items.map((poolToken) => {
+                        {pool?.poolTokens?.items?.map((poolToken) => {
                             return (
                                 <>
                                     <img
@@ -104,7 +108,7 @@ function Pool() {
                                                     poolToken.token.symbol.toLowerCase()
                                             )?.logo
                                         }
-                                        alt={poolToken.token.symbol}
+                                        alt={poolToken?.token?.symbol}
                                         className="rounded-full size-8"
                                         style={{
                                             zIndex: 1,
@@ -119,21 +123,18 @@ function Pool() {
                                             marginTop: '1rem',
                                         }}
                                     >
-                                        {poolToken.token.symbol}
+                                        {poolToken?.token.symbol}
                                     </div>
                                 </>
                             )
                         })}
                     </div>
-                    <h1>
-                        {pool?.tokenX.symbol}/{pool?.tokenY.symbol}
-                    </h1>
                     <div className="flex flex-initial flex-row gap-2">
                         <div className="self-center bg-blue-600 px-2 rounded-full text-[14px]">
                             {pool?.parameters.swapFee}%
                         </div>
                         <div className="self-center bg-purple-600 px-2 rounded-full text-[14px]">
-                            {pool?.strategy.name}
+                            {pool?.name}
                         </div>
                     </div>
                 </div>

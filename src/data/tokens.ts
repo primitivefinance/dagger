@@ -1,5 +1,5 @@
 type Token = {
-    address: `0x${string}`
+    address: `0x${string}` | string
     logo: string
     decimals: number
     symbol: string
