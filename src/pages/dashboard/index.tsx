@@ -59,7 +59,7 @@ function Dashboard() {
                             <TableHead className="text-right">Pool TVL</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className="cursor-pointer">
                         {data.positions.items.length > 0 &&
                             data.positions.items.map((position) => (
                                 <TableRow

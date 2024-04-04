@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { http, createConfig, WagmiProvider } from 'wagmi'
 import { optimismSepolia } from 'wagmi/chains'
 import { injected, walletConnect } from 'wagmi/connectors'
@@ -36,10 +36,6 @@ const router = createBrowserRouter([
             {
                 path: '/create-pool',
                 element: <CreatePool />,
-            },
-            {
-                path: '/pool',
-                element: <Navigate to="/" replace />,
             },
             {
                 path: '/pool/:id',
