@@ -1,12 +1,10 @@
 import { useEffect } from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { http, createConfig, WagmiProvider } from 'wagmi'
 import { optimismSepolia } from 'wagmi/chains'
 import { injected, walletConnect } from 'wagmi/connectors'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { IndexerProvider } from './store/IndexerContext'
-import { PricesProvider } from './store/PricesContext'
 
 import Root from './components/Root'
 import Home from './pages/home'
@@ -38,6 +36,10 @@ const router = createBrowserRouter([
             {
                 path: '/create-pool',
                 element: <CreatePool />,
+            },
+            {
+                path: '/pool',
+                element: <Navigate to="/" replace />,
             },
             {
                 path: '/pool/:id',
