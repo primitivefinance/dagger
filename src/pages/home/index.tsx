@@ -7,8 +7,6 @@ import PoolsTable from '@/components/PoolsTable'
 import { allPoolsQueryDocument } from '../../queries/pools'
 
 function Home() {
-    //const { pools } = useIndexer();
-
     const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 })
 
     return (
