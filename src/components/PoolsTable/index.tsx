@@ -20,6 +20,7 @@ import { useGraphQL } from '../../useGraphQL'
 import { Link } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { Link2Icon } from '@radix-ui/react-icons'
+import { useChainId } from 'wagmi'
 
 const PoolsTable: FC = () => {
     const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 })
@@ -98,15 +99,15 @@ type TokenCellProps = {
 
 const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
     const tokenData = useFragment(TokenFragment, token)
-    console.log(tokenData.token.id)
+    const chainId = useChainId()
     return (
         <img
             key={tokenData.token.id}
             src={
-                tokens.find(
-                    (token) =>
-                        token.address.toLowerCase() ===
-                        tokenData.token.id.toLowerCase()
+                tokens[chainId].find(
+                    (tkn) =>
+                        tkn.symbol.toLowerCase() ===
+                        tokenData.token.symbol.toLowerCase()
                 )?.logo
             }
             alt={tokenData.token.symbol}
