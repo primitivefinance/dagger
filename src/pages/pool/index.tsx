@@ -137,15 +137,16 @@ function Pool() {
                     </div>
                 </div>
                 <div className="flex flex-row items-center gap-5">
-                    {pool.poolTokens.items.map((poolToken) => {
+                    {pool.poolTokens.items.map((poolToken, i) => {
                         return (
-                            <div className="flex gap-1 items-center">
+                            <div key={i} className="flex gap-1 items-center">
                                 <p className="font-bold">{poolToken.token.symbol}</p>
                                 <a
                                     href={`https://sepolia-optimistic.etherscan.io/address/${poolToken.token.id}`}
                                     className="flex flex-row gap-1 text-sm"
                                 >
-                                    {shortAddress(poolToken.token.id)} <LinkIcon />
+                                    {shortAddress(poolToken.token.id)}
+                                    <LinkIcon />
                                 </a>
                             </div>
                         )
@@ -154,46 +155,37 @@ function Pool() {
             </div>
 
             <div className="flex flex-row gap-4">
-                <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
-                    <img
-                        src={tokenYLogo}
-                        alt={pool?.poolTokens[1].symbol}
-                        className="rounded-full size-6"
-                    />
-                    <p className="text-sm">
-                        {computePrice(
-                            pool.reserveX,
-                            pool.reserveY,
-                            pool.parameters.weightX,
-                            pool.parameters.weightY
-                        ).toLocaleString(undefined)}{' '}
-                        {pool.tokenY.symbol}{' '}
-                        <span className="text-xs">
-                            per {pool.tokenX.symbol}
-                        </span>
-                    </p>
-                </div>
-                <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
-                    <img
-                        src={tokenXLogo}
-                        alt={pool.tokenX.symbol}
-                        className="rounded-full size-6"
-                    />
-                    <p className="text-sm">
-                        {computePrice(
-                            pool.reserveY,
-                            pool.reserveX,
-                            pool.parameters.weightY,
-                            pool.parameters.weightX
-                        ).toLocaleString(undefined, {
-                            maximumFractionDigits: 8,
-                        })}{' '}
-                        {pool.tokenX.symbol}{' '}
-                        <span className="text-xs">
-                            per {pool.tokenY.symbol}
-                        </span>
-                    </p>
-                </div>
+                {pool.poolTokens.items.map((poolToken, i) => {
+                    return (
+                        <div key={i} className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center">
+                            <img
+                                src={
+                                    tokens[chainId].find(
+                                        (tkn) =>
+                                            tkn.symbol.toLowerCase() ===
+                                            poolToken.token.symbol.toLowerCase()
+                                    )?.logo
+                                }
+                                alt={poolToken.token.symbol}
+                                className="rounded-full size-6"
+                            />
+                            <p className="text-sm">
+                                {/**
+                                 * {computePrice(
+                                    pool.reserveX,
+                                    pool.reserveY,
+                                    pool.parameters.weightX,
+                                    pool.parameters.weightY
+                                ).toLocaleString(undefined)}
+                                 */}{' '}
+                                {poolToken.token.symbol}{' '}
+                                <span className="text-xs">
+                                    per {pool.poolTokens.items[0].token.symbol}
+                                </span>
+                            </p>
+                        </div>
+                    )
+                })}
             </div>
 
             <div className="grid grid-cols-2 gap-8">
@@ -541,7 +533,8 @@ function Pool() {
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-xs text-dagger3">TVL</p>
-                                <p className="font-bold">
+                                {/**
+                                 * <p className="font-bold">
                                     $
                                     {(
                                         pool.reserveX *
@@ -550,6 +543,7 @@ function Pool() {
                                             prices[pool.tokenY.symbol]
                                     ).toLocaleString(undefined)}
                                 </p>
+                                */}
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-xs text-dagger3">
@@ -558,7 +552,8 @@ function Pool() {
                                 <p className="font-bold">$0.0</p>
                             </div>
                             <div className="flex flex-col">
-                                <div className="flex flex-row gap-1 items-center">
+                                {/**
+                                 * <div className="flex flex-row gap-1 items-center">
                                     <img
                                         src={tokenXLogo}
                                         alt={pool.tokenX.symbol}
@@ -580,6 +575,7 @@ function Pool() {
                                         )
                                     </span>
                                 </p>
+                                */}
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-xs text-dagger3">
@@ -588,7 +584,8 @@ function Pool() {
                                 <p className="font-bold">$0.0</p>
                             </div>
                             <div className="flex flex-col">
-                                <div className="flex flex-row gap-1 items-center">
+                                {/**
+                                 *   <div className="flex flex-row gap-1 items-center">
                                     <img
                                         src={tokenYLogo}
                                         alt={pool.tokenY.symbol}
@@ -610,6 +607,8 @@ function Pool() {
                                         )
                                     </span>
                                 </p>
+                                 * 
+                                 */}
                             </div>
                         </div>
                     </div>
@@ -644,21 +643,20 @@ function Pool() {
                                     className="flex flex-row gap-1 font-bold"
                                 >
                                     {shortAddress(
-                                        parameters
-                                            .controller as `0x${string}`
+                                        parameters.controller as `0x${string}`
                                     )}{' '}
                                     <LinkIcon />
                                 </a>
                             </div>
                             <div className="flex flex-col">
                                 {parameters.lastComputedWeights.map((weight, i) => {
-                                    return (
-                                        <div className="flex flex-col">
-                                            <p className="text-xs text-dagger3">Weight #{i}</p>
-                                            <p className="font-bold">
+                                        return (
+                                            <div key={i} className="flex flex-col">
+                                                <p className="text-xs text-dagger3">Weight #{i}</p>
+                                                <p className="font-bold">
                                                 {weight}%
-                                            </p>
-                                        </div>
+                                                </p>
+                                            </div>
                                     )
                                 })}
                             </div>
@@ -689,30 +687,28 @@ function Pool() {
                         <thead>
                             <tr>
                                 <th className="text-left">Action</th>
-                                <th>
-                                    <div className="flex flex-row gap-1 items-center justify-end">
-                                        <img
-                                            src={tokenXLogo}
-                                            alt={pool.tokenX.symbol}
-                                            className="rounded-full size-4"
-                                        />
-                                        <p className="text-xs text-dagger3">
-                                            {pool.tokenX.symbol}
-                                        </p>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="flex flex-row gap-1 items-center justify-end">
-                                        <img
-                                            src={tokenYLogo}
-                                            alt={pool.tokenY.symbol}
-                                            className="rounded-full size-4"
-                                        />
-                                        <p className="text-xs text-dagger3">
-                                            {pool.tokenY.symbol}
-                                        </p>
-                                    </div>
-                                </th>
+                                {pool.poolTokens.items.map((poolToken, i) => {
+                                    return (
+                                        <th key={i}>
+                                            <div className="flex flex-row gap-1 items-center justify-end">
+                                                <img
+                                                    src={
+                                                        tokens[chainId].find(
+                                                            (tkn) =>
+                                                                tkn.symbol.toLowerCase() ===
+                                                                poolToken.token.symbol.toLowerCase()
+                                                        )?.logo
+                                                    }
+                                                    alt={poolToken.token.symbol}
+                                                    className="rounded-full size-4"
+                                                />
+                                                <p className="text-xs text-dagger3">
+                                                    {poolToken.token.symbol}
+                                                </p>
+                                            </div>
+                                        </th>
+                                    )
+                                })}
                                 <th className="text-right">Value</th>
                                 <th className="text-right">Account</th>
                                 <th className="text-right">Time</th>
