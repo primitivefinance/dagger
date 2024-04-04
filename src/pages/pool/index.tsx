@@ -16,7 +16,7 @@ import {
     poolInfoQueryDocument,
 } from '../../queries/pools'
 import { useFragment } from '../../gql'
-import { NGParamsFragment } from 'queries/parameters'
+import { NGParamsFragment } from '../../queries/parameters'
 
 const LinkIcon = () => (
     <svg
@@ -52,8 +52,8 @@ function Pool() {
     const [amountY, setAmountY] = useState<string>('')
     const { data } = useGraphQL(poolInfoQueryDocument, { id })
     const pool = useFragment(PoolWithTokensFragment, data?.pool)
-    const params = useGraphQL(NGParamsFragment, BigInt(pool?.id.toString()))
-    const parameters = params?.data
+    const params = useGraphQL(NGParamsFragment, { id })
+    const parameters = useFragment(NGParamsFragment, params.data)
 
     useEffect(() => {
         async function fetchBalances() {
@@ -88,8 +88,6 @@ function Pool() {
     const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true)
     const ref = useRef(null)
     const [range, setRange] = useState<number>(0)
-
-    console.log(pool.poolTokens.items)
 
     if (!pool?.poolTokens?.items) return <></>
     return (
@@ -131,7 +129,7 @@ function Pool() {
                     </div>
                     <div className="flex flex-initial flex-row gap-2">
                         <div className="self-center bg-blue-600 px-2 rounded-full text-[14px]">
-                            {pool?.parameters.swapFee}%
+                            {parameters.swapFee}%
                         </div>
                         <div className="self-center bg-purple-600 px-2 rounded-full text-[14px]">
                             {pool?.name}
@@ -139,35 +137,19 @@ function Pool() {
                     </div>
                 </div>
                 <div className="flex flex-row items-center gap-5">
-                    <div className="flex gap-1 items-center">
-                        <p className="font-bold">{pool?.tokenX.symbol}</p>
-                        <a
-                            href={`https://sepolia-optimistic.etherscan.io/address/${pool?.poolTokens[0].id}`}
-                            className="flex flex-row gap-1 text-sm"
-                        >
-                            {shortAddress(pool?.poolTokens[0].id)} <LinkIcon />
-                        </a>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                        <p className="font-bold">
-                            {pool?.poolTokens[1].symbol}
-                        </p>
-                        <a
-                            href={`https://sepolia-optimistic.etherscan.io/address/${pool?.poolTokens[1].id}`}
-                            className="flex flex-row gap-1 text-sm"
-                        >
-                            {shortAddress(pool?.poolTokens[1].id)} <LinkIcon />
-                        </a>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                        <p className="font-bold">{pool?.name}</p>
-                        <a
-                            href={`https://sepolia-optimistic.etherscan.io/address/${pool.lpToken}`}
-                            className="flex flex-row gap-1 text-sm"
-                        >
-                            {shortAddress(pool?.lpToken)} <LinkIcon />
-                        </a>
-                    </div>
+                    {pool.poolTokens.items.map((poolToken) => {
+                        return (
+                            <div className="flex gap-1 items-center">
+                                <p className="font-bold">{poolToken.token.symbol}</p>
+                                <a
+                                    href={`https://sepolia-optimistic.etherscan.io/address/${poolToken.token.id}`}
+                                    className="flex flex-row gap-1 text-sm"
+                                >
+                                    {shortAddress(poolToken.token.id)} <LinkIcon />
+                                </a>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
 
@@ -631,7 +613,6 @@ function Pool() {
                             </div>
                         </div>
                     </div>
-
                     <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
                         <div className="grid gap-4 grid-cols-2">
                             <div className="flex flex-col col-span-2">
@@ -645,13 +626,13 @@ function Pool() {
                             <div className="flex flex-col">
                                 <p className="text-xs text-dagger3">Strategy</p>
                                 <p className="font-bold">
-                                    {pool.strategy.name}
+                                    {pool.name}
                                 </p>
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-xs text-dagger3">Fee Rate</p>
                                 <p className="font-bold">
-                                    {pool.parameters.swapFee}%
+                                    {parameters.swapFee}%
                                 </p>
                             </div>
                             <div className="flex flex-col">
@@ -663,23 +644,23 @@ function Pool() {
                                     className="flex flex-row gap-1 font-bold"
                                 >
                                     {shortAddress(
-                                        pool.parameters
+                                        parameters
                                             .controller as `0x${string}`
                                     )}{' '}
                                     <LinkIcon />
                                 </a>
                             </div>
                             <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">Weight X</p>
-                                <p className="font-bold">
-                                    {pool.parameters.weightX}%
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">Weight Y</p>
-                                <p className="font-bold">
-                                    {pool.parameters.weightX}%
-                                </p>
+                                {parameters.lastComputedWeights.map((weight, i) => {
+                                    return (
+                                        <div className="flex flex-col">
+                                            <p className="text-xs text-dagger3">Weight #{i}</p>
+                                            <p className="font-bold">
+                                                {weight}%
+                                            </p>
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
                     </div>
@@ -689,7 +670,7 @@ function Pool() {
                             <div className="flex flex-col">
                                 <p className="text-lg font-bold">Strategy</p>
                                 <p className="text-dagger3 text-xs">
-                                    {pool.strategy.name}
+                                    {pool.name}
                                 </p>
                             </div>
                             <p className="text-sm text-dagger3">
