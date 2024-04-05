@@ -74,7 +74,7 @@ const PoolCell: FC<PoolCellProps> = (props: {
             <TableCell className="flex justify-end">
                 <Button variant="link" className="p-0">
                     <Link
-                        to={`/pool/${poolData.name}`}
+                        to={`/pool/${poolData.id}`}
                         className="flex justify-between items-center"
                     >
                         {poolData.name}
