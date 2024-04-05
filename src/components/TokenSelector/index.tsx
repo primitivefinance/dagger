@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useChainId } from 'wagmi'
 import { tokens } from '../../data/tokens'
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog'
 import { Button } from '../ui/button'
@@ -15,7 +16,7 @@ type TokenSelectorProps = {
 function TokenSelector(props: TokenSelectorProps) {
     const [open, setOpen] = useState<boolean>(false)
     const [search, setSearch] = useState<string>('')
-
+    const chainId = useChainId()
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -45,12 +46,12 @@ function TokenSelector(props: TokenSelectorProps) {
                     />
                 </div>
                 <div className="flex flex-row gap-4 items-center flex-wrap">
-                    {tokens.map((token) => (
+                    {tokens[chainId].map((token) => (
                         <div
                             key={token.address}
                             className="cursor-pointer flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3 hover:opacity-50"
                             onClick={() => {
-                                props.setToken(token.address)
+                                props.setToken(token.address as `0x${string}`)
                                 setOpen(false)
                             }}
                         >
@@ -67,7 +68,7 @@ function TokenSelector(props: TokenSelectorProps) {
                     className="flex flex-col justify-center overflow-auto max-h-96"
                     style={{ scrollbarWidth: 'none' }}
                 >
-                    {tokens
+                    {tokens[chainId]
                         .filter(
                             (token) =>
                                 token.name.includes(search) ||
@@ -78,7 +79,7 @@ function TokenSelector(props: TokenSelectorProps) {
                                 key={token.address}
                                 className="flex flew-row gap-3 items-center cursor-pointer border border-transparent hover:border-dagger2 hover:border border-solid p-2 rounded-xl"
                                 onClick={() => {
-                                    props.setToken(token.address)
+                                    props.setToken(token.address as `0x${string}`)
                                     close()
                                 }}
                             >
