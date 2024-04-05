@@ -13,8 +13,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n    fragment NGParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n": types.NgParamsItemFragmentDoc,
-    "\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NGParamsItem\n        }\n    }\n": types.NGParamsDocument,
+    "\n    fragment NgParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n": types.NgParamsItemFragmentDoc,
+    "\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NgParamsItem\n        }\n    }\n": types.NGParamsDocument,
     "\n    fragment CSParamsItem on ConstantSumParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedPrice\n        priceUpdatePerSecond\n        priceUpdateEnd\n        lastPriceUpdate\n    }\n": types.CsParamsItemFragmentDoc,
     "\n    query csParams($id: BigInt!) {\n        constantSumParams(id: $id) {\n            ...CSParamsItem\n        }\n    }\n": types.CsParamsDocument,
     "\n    fragment PoolTokenItem on PoolToken {\n        token {\n            id\n            name\n            symbol\n            decimals\n        }\n    }\n": types.PoolTokenItemFragmentDoc,
@@ -45,11 +45,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    fragment NGParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n"): (typeof documents)["\n    fragment NGParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n"];
+export function graphql(source: "\n    fragment NgParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n"): (typeof documents)["\n    fragment NgParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NGParamsItem\n        }\n    }\n"): (typeof documents)["\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NGParamsItem\n        }\n    }\n"];
+export function graphql(source: "\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NgParamsItem\n        }\n    }\n"): (typeof documents)["\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NgParamsItem\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -1,7 +1,7 @@
 import { graphql } from '../gql'
 
 export const NGParamsFragment = graphql(`
-    fragment NGParamsItem on NTokenGeometricMeanParams {
+    fragment NgParamsItem on NTokenGeometricMeanParams {
         id
         poolId
         swapFee
@@ -16,7 +16,7 @@ export const NGParamsFragment = graphql(`
 export const nGParamsQueryDocument = graphql(/* GraphQL */ `
     query nGParams($id: BigInt!) {
         nTokenGeometricMeanParams(id: $id) {
-            ...NGParamsItem
+            ...NgParamsItem
         }
     }
 `)

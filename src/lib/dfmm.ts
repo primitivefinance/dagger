@@ -18,7 +18,7 @@ export async function weth(): Promise<`0x${string}`> {
             abi: dfmmABI,
             address: DFMM,
             functionName: 'weth',
-        })
+        }) as Promise<`0x${string}`>
     } catch (e) {
         console.error(e)
         throw new Error('Failed to fetch WETH')
@@ -37,8 +37,8 @@ export async function init(
 ): Promise<WriteContractReturnType> {
     const data = await getInitialPoolData(
         reserveX,
-        price,
-        wX,
+        [price],
+        [wX],
         feeRate,
         controller
     )

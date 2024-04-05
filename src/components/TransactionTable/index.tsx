@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+{/*import { FC, useEffect } from 'react'
 import { useChainId } from 'wagmi'
 
 import { tokens } from '../../data/tokens'
@@ -40,3 +40,4 @@ const TransactionTable: FC<TransactionTableProps> = ({ poolId }) => {
 }
 
 export default TransactionTable
+*/}
