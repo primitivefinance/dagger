@@ -3,11 +3,11 @@ import { graphql } from '../gql'
 export const PositionFragment = graphql(/* GraphQL */ `
     fragment PositionItem on Position {
         id
-        liquidity
         accountId
+        liquidity
         poolId
         pool {
-            ...PoolItem
+            ...PoolWithTokens
         }
     }
 `)

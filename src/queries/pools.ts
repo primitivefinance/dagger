@@ -57,6 +57,11 @@ export const PoolWithTokensFragment = graphql(/* GraphQL */ `
         strategy {
             name
         }
+        positions {
+            items {
+                accountId
+            }
+        }
         tokens
         reserves
         liquidity
