@@ -22,6 +22,8 @@ const documents = {
     "\n    query poolInfo($id: BigInt!) {\n        pool(id: $id) {\n            ...PoolWithTokens\n        }\n    }\n": types.PoolInfoDocument,
     "\n    fragment PositionItem on Position {\n        id\n        liquidity\n        accountId\n        poolId\n        pool {\n            ...PoolItem\n        }\n    }\n": types.PositionItemFragmentDoc,
     "\n    query allPositions($limit: Int!) {\n        positions(limit: $limit) {\n            items {\n                ...PositionItem\n            }\n        }\n    }\n": types.AllPositionsDocument,
+    "\n    fragment SwapItem on Swap {\n        id\n        poolId\n        pool {\n            ...PoolItem\n        }\n        sender\n        amountIn\n        amountOut\n        tokenIn\n        tokenOut\n        timestamp\n        block\n    }\n": types.SwapItemFragmentDoc,
+    "\n    query allSwaps($poolId: BigInt!) {\n        swaps(where: { poolId: $poolId }) {\n            items {\n                ...SwapItem\n            }\n        }\n    }\n": types.AllSwapsDocument,
 };
 
 /**
@@ -74,6 +76,14 @@ export function graphql(source: "\n    fragment PositionItem on Position {\n    
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query allPositions($limit: Int!) {\n        positions(limit: $limit) {\n            items {\n                ...PositionItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query allPositions($limit: Int!) {\n        positions(limit: $limit) {\n            items {\n                ...PositionItem\n            }\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    fragment SwapItem on Swap {\n        id\n        poolId\n        pool {\n            ...PoolItem\n        }\n        sender\n        amountIn\n        amountOut\n        tokenIn\n        tokenOut\n        timestamp\n        block\n    }\n"): (typeof documents)["\n    fragment SwapItem on Swap {\n        id\n        poolId\n        pool {\n            ...PoolItem\n        }\n        sender\n        amountIn\n        amountOut\n        tokenIn\n        tokenOut\n        timestamp\n        block\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query allSwaps($poolId: BigInt!) {\n        swaps(where: { poolId: $poolId }) {\n            items {\n                ...SwapItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query allSwaps($poolId: BigInt!) {\n        swaps(where: { poolId: $poolId }) {\n            items {\n                ...SwapItem\n            }\n        }\n    }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
