@@ -1,9 +1,8 @@
 import { parseEther } from 'viem'
 import { config } from '../App'
 import { readContract } from 'wagmi/actions'
-import { g3mSolverAbi } from './abis/g3mSolver'
-
-const G3MSolver = '0x05792cA1459699A3DA6e6E7Af295E3C792D5e038'
+import { nG3mSolverAbi } from './abis/nG3mSolver'
+import { nG3mSolver } from '@/data/contracts'
 
 export function computePrice(
     reserveX: number,
@@ -46,26 +45,46 @@ export function computeLNumber(
     return a * b
 }
 
-export function getInitialPoolData(
-    reserveX: bigint,
+export function computeReservesFromNumeraire(
+    amountNumeraire: bigint,
     S: bigint,
-    wX: bigint,
+    wT: bigint,
+    wNumeraire: bigint
+): bigint {
+    return wt
+}
+
+export function getInitialPoolData(
+    numeraireAmount: bigint,
+    prices: bigint[],
+    weights: bigint[],
     swapFee: bigint,
     controller: `0x${string}`
 ): Promise<`0x${string}`> {
-    console.log(reserveX, S, wX, parseEther('1') - wX, swapFee, controller)
+    const reserves: bigint[] = []
+    const numerairePrice = prices[prices.length - 1]
+    const numeraireWeight = weights[weights.length - 1]
 
+    for (let i = 0; i < prices.length - 1; i++) {
+        const amountT = computeReservesFromNumeraire(
+            numeraireAmount,
+            numerairePrice,
+            weights[i],
+            numeraireWeight
+        )
+        reserves[i] = amountT
+    }
     try {
         return readContract(config, {
-            abi: g3mSolverAbi,
-            address: G3MSolver,
+            abi: nG3mSolverAbi,
+            address: nG3mSolver,
             functionName: 'getInitialPoolData',
             args: [
                 reserveX,
                 S,
                 { wX, wY: parseEther('1') - wX, swapFee, controller },
             ],
-        })
+        }) as Promise<`0x${string}`>
     } catch (e) {
         console.error(e)
         throw new Error('Failed to fetch initial pool data')
@@ -75,8 +94,8 @@ export function getInitialPoolData(
 export async function allocateGivenX(poolId: bigint, x: bigint): Promise<any> {
     try {
         return readContract(config, {
-            abi: g3mSolverAbi,
-            address: G3MSolver,
+            abi: nG3mSolverAbi,
+            address: nG3mSolver,
             functionName: 'allocateGivenX',
             args: [poolId, x],
         })
@@ -92,8 +111,8 @@ export async function deallocateGivenX(
 ): Promise<any> {
     try {
         return readContract(config, {
-            abi: g3mSolverAbi,
-            address: G3MSolver,
+            abi: nG3mSolverAbi,
+            address: nG3mSolver,
             functionName: 'deallocateGivenX',
             args: [poolId, x],
         })

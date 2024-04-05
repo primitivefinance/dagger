@@ -6,6 +6,7 @@ import {
     useEffect,
 } from 'react'
 
+import { useChainId } from 'wagmi'
 import { tokens } from '../data/tokens'
 
 const prices: { [key: string]: number } = {
@@ -63,14 +64,14 @@ type PricesProviderProps = {
 export function PricesProvider(props: PricesProviderProps) {
     const [state, dispatch] = useReducer(pricesReducer, initialIndexerState)
     const [check, setCheck] = useState('ETH')
-
+    const chainId = useChainId()
     const checkPrices = (assetTicker: string) => {
         setCheck(assetTicker)
     }
 
     useEffect(() => {
         async function fetchPrices() {
-            for (let i = 0; i < tokens.length; i++) {
+            for (let i = 0; i < tokens[chainId].length; i++) {
                 const res = await fetch(
                     `https://api.dexscreener.com/latest/dex/search?q=${check}`
                 )

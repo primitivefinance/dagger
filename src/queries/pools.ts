@@ -19,6 +19,9 @@ export const PoolFragment = graphql(/* GraphQL */ `
                 ...PoolTokenItem
             }
         }
+        strategy {
+            name
+        }
         tokens
         reserves
         liquidity
@@ -50,6 +53,9 @@ export const PoolWithTokensFragment = graphql(/* GraphQL */ `
                     decimals
                 }
             }
+        }
+        strategy {
+            name
         }
         tokens
         reserves

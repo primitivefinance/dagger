@@ -1,15 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAccount, useChainId, useConnect } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 
-import { usePrices } from '../../store/PricesContext'
 import { tokens } from '../../data/tokens'
 import { shortAddress } from '../../utils/address'
-import { computePrice, allocateGivenX, deallocateGivenX } from '../../lib/g3m'
-import TokenAmountInput from '../../components/TokenAmountInput'
 import { balanceOf } from '../../lib/erc20'
-import { parseEther } from 'viem'
-import { allocate, deallocate } from '../../lib/dfmm'
 import { useGraphQL } from '../../useGraphQL'
 import {
     PoolWithTokensFragment,
@@ -17,10 +12,9 @@ import {
 } from '../../queries/pools'
 import { useFragment } from '../../gql'
 import {
-    NGParamsFragment,
+    csParamsQueryDocument,
     nGParamsQueryDocument,
 } from '../../queries/parameters'
-import { NTokenGeometricMeanParams } from '../../gql/graphql'
 
 const LinkIcon = () => (
     <svg
@@ -45,18 +39,22 @@ function Pool() {
     const { id } = useParams()
     const { address } = useAccount()
     const chainId = useChainId()
-    const { connectors, connect } = useConnect()
+    // const { connectors, connect } = useConnect()
     // const { state } = usePrices();
     // const { prices } = state;
     const poolId = id ? id : '0' // return to pool #0 if null
 
     const [balances, setBalances] = useState<{ [key: string]: string }>({})
-    const [amounts, setAmounts] = useState<{ [key: string]: string }>({})
+    // const [amounts, setAmounts] = useState<{ [key: string]: string }>({})
 
     const { data } = useGraphQL(poolInfoQueryDocument, { id: poolId })
     const pool = useFragment(PoolWithTokensFragment, data?.pool)
-    const params = useGraphQL(nGParamsQueryDocument, { id: poolId })
-    const parameters = params?.data?.nTokenGeometricMeanParams
+    const ng3mParams = useGraphQL(nGParamsQueryDocument, { id: poolId })
+    const csParams = useGraphQL(csParamsQueryDocument, { id: poolId })
+    const parameters =
+        pool?.strategy?.name === 'ConstantSum'
+            ? csParams.data?.constantSumParams
+            : ng3mParams?.data?.nTokenGeometricMeanParams
 
     useEffect(() => {
         async function fetchBalances() {
@@ -65,7 +63,10 @@ function Pool() {
             const newBalances: { [key: string]: string } = {}
 
             for (const poolToken of pool.poolTokens.items) {
-                const balance = await balanceOf(poolToken.token.id, address!)
+                const balance = await balanceOf(
+                    poolToken.token.id as `0x${string}`,
+                    address!
+                )
                 newBalances[poolToken.token.symbol] = balance.toString()
             }
             setBalances(newBalances)
@@ -77,11 +78,12 @@ function Pool() {
             fetchBalances()
         }
     }, [address, pool?.poolTokens?.items])
+    console.log(balances)
 
     let userPosition: Position
 
     if (pool?.positions?.items && address) {
-        userPosition = pool.positions.items.find(
+        userPosition = pool?.positions?.items?.find(
             (position) =>
                 position.accountId.toLowerCase() ===
                 address?.toLocaleLowerCase()
@@ -98,6 +100,11 @@ function Pool() {
             <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center gap-2">
                     <div className="flex flex-row items-center">
+                        <div className="flex flex-initial flex-row gap-2 mr-10">
+                            <div className="self-center bg-purple-600 px-2 rounded-full text-[18px]">
+                                {pool?.name}
+                            </div>
+                        </div>
                         {pool?.poolTokens?.items?.map((poolToken) => {
                             return (
                                 <>
@@ -130,15 +137,8 @@ function Pool() {
                             )
                         })}
                     </div>
-                    <div className="flex flex-initial flex-row gap-2">
-                        <div className="self-center bg-blue-600 px-2 rounded-full text-[14px]">
-                            {parameters.swapFee}%
-                        </div>
-                        <div className="self-center bg-purple-600 px-2 rounded-full text-[14px]">
-                            {pool?.name}
-                        </div>
-                    </div>
                 </div>
+                <hr />
                 <div className="flex flex-row items-center gap-5">
                     {pool.poolTokens.items.map((poolToken, i) => {
                         return (
@@ -150,7 +150,9 @@ function Pool() {
                                     href={`https://sepolia-optimistic.etherscan.io/address/${poolToken?.token?.id}`}
                                     className="flex flex-row gap-1 text-sm"
                                 >
-                                    {shortAddress(poolToken?.token?.id)}
+                                    {shortAddress(
+                                        poolToken?.token?.id as `0x${string}`
+                                    )}
                                     <LinkIcon />
                                 </a>
                             </div>
@@ -188,7 +190,8 @@ function Pool() {
                                  */}{' '}
                                 {poolToken.token.symbol}{' '}
                                 <span className="text-xs">
-                                    per {pool.poolTokens.items[0].token.symbol}
+                                    per{' '}
+                                    {pool?.poolTokens?.items[0].token.symbol}
                                 </span>
                             </p>
                         </div>
@@ -200,18 +203,18 @@ function Pool() {
                 <div className="flex flex-col gap-8">
                     <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
                         <div className="flex flex-col gap-4">
-                            <div className="flex flex-col">
+                            <div className="flex flex-row items-center justify-between">
                                 <p className="text-lg font-bold">My Position</p>
-                                <p className="text-dagger3 text-xs">
+                                <p className="text-dagger3 text-sm">
                                     {userPosition!
                                         ? (userPosition.liquidity /
                                               pool.liquidity) *
                                           pool.reserves[0]
                                         : '0.0'}{' '}
-                                    {pool.poolTokens.items[0].token.symbol}
                                     {' LPT'}
                                 </p>
                             </div>
+                            <hr />
                             {pool.poolTokens.items.map((poolToken, i) => {
                                 return (
                                     <div key={i} className="flex flex-col">
@@ -231,39 +234,25 @@ function Pool() {
                                                 {poolToken.token.symbol}
                                             </p>
                                         </div>
-                                        <p className="font-bold">
-                                            {userPosition!
-                                                ? (userPosition.liquidity /
-                                                      pool.liquidity) *
-                                                  pool.reserves[i]
-                                                : '0.0'}{' '}
-                                            {
-                                                pool.poolTokens.items[i].token
-                                                    .symbol
-                                            }{' '}
-                                            <span className="text-xs font-normal text-dagger3">
-                                                (
+                                        <div className="font-bold flex-row justify-between">
+                                            <>
                                                 {userPosition!
-                                                    ? userPosition!.liquidity
-                                                    : '0.0'}
-                                                LPT)
+                                                    ? (userPosition.liquidity /
+                                                          pool?.liquidity) *
+                                                      pool.reserves[i]
+                                                    : '0.0'}{' '}
+                                                {
+                                                    pool?.poolTokens?.items[i]
+                                                        .token.symbol
+                                                }{' '}
+                                            </>
+                                            <span className="text-sm font-normal text-dagger3">
+                                                / {pool?.reserves[i] * 1e8}
                                             </span>
-                                        </p>
+                                        </div>
                                     </div>
                                 )
                             })}
-                            <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">
-                                    Total Liquidity
-                                </p>
-                                <p className="font-bold">
-                                    {userPosition!
-                                        ? userPosition.liquidity.toLocaleString(
-                                              undefined
-                                          )
-                                        : '0.0'}
-                                </p>
-                            </div>
                         </div>
                     </div>
 
@@ -325,9 +314,9 @@ function Pool() {
                                     </div>
                                 </button>
                             </div>
-                            {/**
-                             * {isAddLiquidity ? (
-                                <div className="flex flex-col gap-4">
+                            {isAddLiquidity ? (
+                                <></> /**
+                             <div className="flex flex-col gap-4">
                                     <div className="flex flex-col">
                                         <p className="text-lg font-bold">
                                             Add Liquidity
@@ -347,6 +336,7 @@ function Pool() {
                                         setAmount={(setAmounts, i)}
                                         />
                                 </div>
+                            */
                             ) : (
                                 <div className="flex flex-col gap-4">
                                     <div className="flex flex-col">
@@ -401,56 +391,64 @@ function Pool() {
                                         <p className="text-dagger3 text-xs">
                                             You'll receive at least
                                         </p>
-                                        <p className="text-dagger4 text-sm">
-                                            {userPosition!
-                                                ? (
-                                                      ((userPosition.liquidity /
-                                                          pool.liquidity) *
-                                                          pool.reserveX *
-                                                          range) /
-                                                      100
-                                                  ).toLocaleString(undefined)
-                                                : '0.0'}
-                                        </p>
-                                        <img
-                                            src={tokenXLogo}
-                                            alt={pool.tokenX.symbol}
-                                            className="rounded-full size-4"
-                                        />
-                                        <p className="text-dagger4 text-sm">
-                                            {pool.tokenX.symbol}
-                                        </p>
-                                        <p className="text-dagger3 text-xs">
-                                            and
-                                        </p>
-                                        <p className="text-dagger4 text-sm">
-                                            {userPosition!
-                                                ? (
-                                                      ((userPosition.liquidity /
-                                                          pool.liquidity) *
-                                                          pool.reserveY *
-                                                          range) /
-                                                      100
-                                                  ).toLocaleString(undefined)
-                                                : '0.0'}
-                                        </p>
-                                        <img
-                                            src={tokenYLogo}
-                                            alt={pool.tokenY.symbol}
-                                            className="rounded-full size-4"
-                                        />
-                                        <p className="text-dagger4 text-sm">
-                                            {pool.tokenY.symbol}
-                                            <span className="text-dagger3">
-                                                .
-                                            </span>
-                                        </p>
+                                        {pool.poolTokens.items.map(
+                                            (poolToken, i) => {
+                                                return (
+                                                    <>
+                                                        <p className="text-dagger4 text-sm">
+                                                            {userPosition!
+                                                                ? (
+                                                                      ((userPosition.liquidity /
+                                                                          pool.liquidity) *
+                                                                          pool
+                                                                              .reserves[
+                                                                              i
+                                                                          ] *
+                                                                          range) /
+                                                                      100
+                                                                  ).toLocaleString(
+                                                                      undefined
+                                                                  )
+                                                                : '0.0'}
+                                                        </p>
+                                                        <img
+                                                            src={
+                                                                tokens[
+                                                                    chainId
+                                                                ].find(
+                                                                    (tkn) =>
+                                                                        tkn.symbol.toLowerCase() ===
+                                                                        poolToken.token.symbol.toLowerCase()
+                                                                )?.logo
+                                                            }
+                                                            alt={
+                                                                poolToken.token
+                                                                    .symbol
+                                                            }
+                                                            className="rounded-full size-4"
+                                                        />
+                                                        <p className="text-dagger4 text-sm">
+                                                            {
+                                                                poolToken.token
+                                                                    .symbol
+                                                            }
+                                                        </p>
+                                                        {(i + 1) === (pool?.poolTokens?.items?.length) ? (
+                                                            <></>
+                                                        ) : (
+                                                            <p className="text-dagger3">
+                                                                +
+                                                            </p>
+                                                        )}
+                                                    </>
+                                                )
+                                            }
+                                        )}
                                     </div>
                                 </div>
                             )}
-                             * 
-                             */}
-                            <button
+                            {/**
+                             * <button
                                 onClick={async () => {
                                     if (address === undefined) {
                                         connect({ connector: connectors[0] })
@@ -494,6 +492,8 @@ function Pool() {
                                     ? 'Connect Wallet'
                                     : 'Confirm'}
                             </button>
+                             * 
+                             */}
                         </div>
                     </div>
                 </div>
@@ -502,100 +502,8 @@ function Pool() {
                     <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
                         <div className="grid gap-4 grid-cols-2">
                             <div className="flex flex-col col-span-2">
-                                <p className="text-lg font-bold">Statistics</p>
-                                <p className="text-dagger3 text-xs">
-                                    Lorem ipsum at dolor simet.
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">TVL</p>
-                                {/**
-                                 * <p className="font-bold">
-                                    $
-                                    {(
-                                        pool.reserveX *
-                                            prices[pool.tokenX.symbol] +
-                                        pool.reserveY *
-                                            prices[pool.tokenY.symbol]
-                                    ).toLocaleString(undefined)}
-                                </p>
-                                */}
-                            </div>
-                            <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">
-                                    Volume (24h)
-                                </p>
-                                <p className="font-bold">$0.0</p>
-                            </div>
-                            <div className="flex flex-col">
-                                {/**
-                                 * <div className="flex flex-row gap-1 items-center">
-                                    <img
-                                        src={tokenXLogo}
-                                        alt={pool.tokenX.symbol}
-                                        className="rounded-full size-4"
-                                    />
-                                    <p className="text-xs text-dagger3">
-                                        {pool.tokenX.symbol}
-                                    </p>
-                                </div>
-                                <p className="font-bold">
-                                    {pool.reserveX.toLocaleString(undefined)}{' '}
-                                    {pool.tokenX.symbol}{' '}
-                                    <span className="text-xs font-normal text-dagger3">
-                                        ($
-                                        {(
-                                            prices[pool.tokenX.symbol] *
-                                            pool.reserveX
-                                        ).toLocaleString(undefined)}
-                                        )
-                                    </span>
-                                </p>
-                                */}
-                            </div>
-                            <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">
-                                    Fees (24h)
-                                </p>
-                                <p className="font-bold">$0.0</p>
-                            </div>
-                            <div className="flex flex-col">
-                                {/**
-                                 *   <div className="flex flex-row gap-1 items-center">
-                                    <img
-                                        src={tokenYLogo}
-                                        alt={pool.tokenY.symbol}
-                                        className="rounded-full size-4"
-                                    />
-                                    <p className="text-xs text-dagger3">
-                                        {pool.tokenY.symbol}
-                                    </p>
-                                </div>
-                                <p className="font-bold">
-                                    {pool.reserveY.toLocaleString(undefined)}{' '}
-                                    {pool.tokenY.symbol}{' '}
-                                    <span className="text-xs font-normal text-dagger3">
-                                        ($
-                                        {(
-                                            prices[pool.tokenY.symbol] *
-                                            pool.reserveY
-                                        ).toLocaleString(undefined)}
-                                        )
-                                    </span>
-                                </p>
-                                 * 
-                                 */}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
-                        <div className="grid gap-4 grid-cols-2">
-                            <div className="flex flex-col col-span-2">
                                 <p className="text-lg font-bold">
                                     Pool Details
-                                </p>
-                                <p className="text-dagger3 text-xs">
-                                    Specific pool parameters goes here.
                                 </p>
                             </div>
                             <div className="flex flex-col">
@@ -623,22 +531,29 @@ function Pool() {
                                 </a>
                             </div>
                             <div className="flex flex-col">
-                                {parameters.lastComputedWeights.map(
-                                    (weight, i) => {
-                                        return (
-                                            <div
-                                                key={i}
-                                                className="flex flex-col"
-                                            >
-                                                <p className="text-xs text-dagger3">
-                                                    Weight #{i}
-                                                </p>
-                                                <p className="font-bold">
-                                                    {weight}%
-                                                </p>
-                                            </div>
-                                        )
-                                    }
+                                {pool?.strategy?.name !== 'ConstantSum' ? (
+                                    parameters.lastComputedWeights.map(
+                                        (weight: number, i: number) => {
+                                            return (
+                                                <div
+                                                    key={i}
+                                                    className="flex flex-col"
+                                                >
+                                                    <p className="text-xs text-dagger3">
+                                                        Weight #{i}
+                                                    </p>
+                                                    <p className="font-bold">
+                                                        {(weight / 1e18) * 100}%
+                                                    </p>
+                                                </div>
+                                            )
+                                        }
+                                    )
+                                ) : (
+                                    <>
+                                        {parameters.lastComputedPrice}{' '}
+                                        {pool.poolTokens.items[0].token.symbol}
+                                    </>
                                 )}
                             </div>
                         </div>

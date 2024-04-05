@@ -20,3 +20,24 @@ export const nGParamsQueryDocument = graphql(/* GraphQL */ `
         }
     }
 `)
+
+export const csParamsFragment = graphql(`
+    fragment CSParamsItem on ConstantSumParams {
+        id
+        poolId
+        swapFee
+        controller
+        lastComputedPrice
+        priceUpdatePerSecond
+        priceUpdateEnd
+        lastPriceUpdate
+    }
+`)
+
+export const csParamsQueryDocument = graphql(/* GraphQL */ `
+    query csParams($id: BigInt!) {
+        constantSumParams(id: $id) {
+            ...CSParamsItem
+        }
+    }
+`)
