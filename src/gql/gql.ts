@@ -17,12 +17,14 @@ const documents = {
     "\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NgParamsItem\n        }\n    }\n": types.NGParamsDocument,
     "\n    fragment CSParamsItem on ConstantSumParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedPrice\n        priceUpdatePerSecond\n        priceUpdateEnd\n        lastPriceUpdate\n    }\n": types.CsParamsItemFragmentDoc,
     "\n    query csParams($id: BigInt!) {\n        constantSumParams(id: $id) {\n            ...CSParamsItem\n        }\n    }\n": types.CsParamsDocument,
+    "\n    fragment lNParamsItem on LogNormalParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedMean\n        lastComputedWidth\n        lastMeanUpdate\n        lastWidthUpdate\n        meanUpdateEnd\n        meanUpdatePerSecond\n        widthUpdateEnd\n        widthUpdatePerSecond\n    }\n": types.LNParamsItemFragmentDoc,
+    "\n    query lNParams($id: BigInt!) {\n        logNormalParams(id: $id) {\n            ...lNParamsItem\n        }\n    }\n": types.LNParamsDocument,
     "\n    fragment PoolTokenItem on PoolToken {\n        token {\n            id\n            name\n            symbol\n            decimals\n        }\n    }\n": types.PoolTokenItemFragmentDoc,
     "\n    fragment PoolItem on Pool {\n        id\n        poolTokens {\n            items {\n                ...PoolTokenItem\n            }\n        }\n        strategy {\n            name\n        }\n        tokens\n        reserves\n        liquidity\n        lpToken\n        name\n        initTimestamp\n    }\n": types.PoolItemFragmentDoc,
     "\n    query allPools($limit: Int!) {\n        pools(limit: $limit) {\n            items {\n                ...PoolItem\n            }\n        }\n    }\n": types.AllPoolsDocument,
     "\n    fragment PoolWithTokens on Pool {\n        id\n        poolTokens {\n            items {\n                token {\n                    id\n                    name\n                    symbol\n                    decimals\n                }\n            }\n        }\n        strategy {\n            name\n        }\n        positions {\n            items {\n                accountId\n            }\n        }\n        tokens\n        reserves\n        liquidity\n        lpToken\n        name\n        initTimestamp\n    }\n": types.PoolWithTokensFragmentDoc,
     "\n    query poolInfo($id: BigInt!) {\n        pool(id: $id) {\n            ...PoolWithTokens\n        }\n    }\n": types.PoolInfoDocument,
-    "\n    fragment PositionItem on Position {\n        id\n        accountId\n        liquidity\n        poolId\n        pool {\n            ...PoolWithTokens\n        }\n    }\n": types.PositionItemFragmentDoc,
+    "\n    fragment PositionItem on Position {\n        id\n        accountId\n        liquidity\n        liquidityWad\n        poolId\n        pool {\n            ...PoolWithTokens\n        }\n    }\n": types.PositionItemFragmentDoc,
     "\n    query allPositions($limit: Int!) {\n        positions(limit: $limit) {\n            items {\n                ...PositionItem\n            }\n        }\n    }\n": types.AllPositionsDocument,
     "\n    fragment SwapItem on Swap {\n        id\n        poolId\n        pool {\n            ...PoolItem\n        }\n        sender\n        amountIn\n        amountOut\n        tokenIn\n        tokenOut\n        timestamp\n        block\n    }\n": types.SwapItemFragmentDoc,
     "\n    query allSwaps($poolId: BigInt!) {\n        swaps(where: { poolId: $poolId }) {\n            items {\n                ...SwapItem\n            }\n        }\n    }\n": types.AllSwapsDocument,
@@ -61,6 +63,14 @@ export function graphql(source: "\n    query csParams($id: BigInt!) {\n        c
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n    fragment lNParamsItem on LogNormalParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedMean\n        lastComputedWidth\n        lastMeanUpdate\n        lastWidthUpdate\n        meanUpdateEnd\n        meanUpdatePerSecond\n        widthUpdateEnd\n        widthUpdatePerSecond\n    }\n"): (typeof documents)["\n    fragment lNParamsItem on LogNormalParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedMean\n        lastComputedWidth\n        lastMeanUpdate\n        lastWidthUpdate\n        meanUpdateEnd\n        meanUpdatePerSecond\n        widthUpdateEnd\n        widthUpdatePerSecond\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query lNParams($id: BigInt!) {\n        logNormalParams(id: $id) {\n            ...lNParamsItem\n        }\n    }\n"): (typeof documents)["\n    query lNParams($id: BigInt!) {\n        logNormalParams(id: $id) {\n            ...lNParamsItem\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n    fragment PoolTokenItem on PoolToken {\n        token {\n            id\n            name\n            symbol\n            decimals\n        }\n    }\n"): (typeof documents)["\n    fragment PoolTokenItem on PoolToken {\n        token {\n            id\n            name\n            symbol\n            decimals\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -81,7 +91,7 @@ export function graphql(source: "\n    query poolInfo($id: BigInt!) {\n        p
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    fragment PositionItem on Position {\n        id\n        accountId\n        liquidity\n        poolId\n        pool {\n            ...PoolWithTokens\n        }\n    }\n"): (typeof documents)["\n    fragment PositionItem on Position {\n        id\n        accountId\n        liquidity\n        poolId\n        pool {\n            ...PoolWithTokens\n        }\n    }\n"];
+export function graphql(source: "\n    fragment PositionItem on Position {\n        id\n        accountId\n        liquidity\n        liquidityWad\n        poolId\n        pool {\n            ...PoolWithTokens\n        }\n    }\n"): (typeof documents)["\n    fragment PositionItem on Position {\n        id\n        accountId\n        liquidity\n        liquidityWad\n        poolId\n        pool {\n            ...PoolWithTokens\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

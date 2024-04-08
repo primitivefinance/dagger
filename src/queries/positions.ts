@@ -5,6 +5,7 @@ export const PositionFragment = graphql(/* GraphQL */ `
         id
         accountId
         liquidity
+        liquidityWad
         poolId
         pool {
             ...PoolWithTokens

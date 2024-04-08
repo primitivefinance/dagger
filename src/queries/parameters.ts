@@ -41,3 +41,28 @@ export const csParamsQueryDocument = graphql(/* GraphQL */ `
         }
     }
 `)
+
+export const lNParamsFragment = graphql(`
+    fragment lNParamsItem on LogNormalParams {
+        id
+        poolId
+        swapFee
+        controller
+        lastComputedMean
+        lastComputedWidth
+        lastMeanUpdate
+        lastWidthUpdate
+        meanUpdateEnd
+        meanUpdatePerSecond
+        widthUpdateEnd
+        widthUpdatePerSecond
+    }
+`)
+
+export const lNParamsQueryDocument = graphql(`
+    query lNParams($id: BigInt!) {
+        logNormalParams(id: $id) {
+            ...lNParamsItem
+        }
+    }
+`)
