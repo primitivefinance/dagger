@@ -26,3 +26,7 @@ The goal of Dagger is to provide a simple and secure web application to use DFMM
 2. Use [Bun](https://bun.sh/) to install the dependencies with `bun install`.
 3. Run `bun run dev` to launch run the app locally.
 4. Have fun.
+
+
+## GraphQL Queries
+After editing GraphQL queries, run `bun codegen` to regenerate types.  
