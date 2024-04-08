@@ -49,6 +49,8 @@ function Pool() {
 
     const [balances, setBalances] = useState<number[]>([])
     const [amount, setAmount] = useState<string>('') // numeraire input amount
+    const [allocAmounts, setAllocAmounts] = useState<number[]>([]) // set by the return of allocateGivenNumeraire()
+
     const { data } = useGraphQL(poolInfoQueryDocument, { id: poolId })
     const pool = useFragment(PoolWithTokensFragment, data?.pool)
     const ng3mParams = useGraphQL(nGParamsQueryDocument, { id: poolId })
@@ -63,6 +65,7 @@ function Pool() {
               : ng3mParams?.data?.nTokenGeometricMeanParams
 
     useEffect(() => {
+        setAllocAmounts([0, 0, 0, 0])
         async function fetchBalances() {
             if (!pool?.poolTokens?.items) return
 
@@ -256,8 +259,7 @@ function Pool() {
                                         <div className="text-xs w-full flex-row justify-between">
                                             <>
                                                 {'Token Balance: '}
-                                                {balances[i]}
-                                                {' '}
+                                                {balances[i]}{' '}
                                                 {
                                                     pool?.poolTokens?.items[i]
                                                         .token.symbol
@@ -360,6 +362,63 @@ function Pool() {
                                         amount={amount}
                                         setAmount={setAmount}
                                     />
+                                    <div className="flex flex-row gap-1 items-center justify-end">
+                                        {pool.poolTokens.items.map(
+                                            (poolToken, i) => {
+                                                return (
+                                                    <>
+                                                        <p className="text-dagger4 text-xs">
+                                                            {userPosition!
+                                                                ? (
+                                                                      ((userPosition.liquidity /
+                                                                          pool.liquidity) *
+                                                                          pool
+                                                                              .reserves[
+                                                                              i
+                                                                          ] *
+                                                                          range) /
+                                                                      100
+                                                                  ).toLocaleString(
+                                                                      undefined
+                                                                  )
+                                                                : '0.0'}
+                                                        </p>
+                                                        <img
+                                                            src={
+                                                                tokens[
+                                                                    chainId
+                                                                ].find(
+                                                                    (tkn) =>
+                                                                        tkn.symbol.toLowerCase() ===
+                                                                        poolToken.token.symbol.toLowerCase()
+                                                                )?.logo
+                                                            }
+                                                            alt={
+                                                                poolToken.token
+                                                                    .symbol
+                                                            }
+                                                            className="rounded-full size-3"
+                                                        />
+                                                        <p className="text-dagger4 text-sm">
+                                                            {
+                                                                poolToken.token
+                                                                    .symbol
+                                                            }
+                                                        </p>
+                                                        {i + 1 ===
+                                                        pool?.poolTokens?.items
+                                                            ?.length ? (
+                                                            <></>
+                                                        ) : (
+                                                            <p className="text-dagger3">
+                                                                +
+                                                            </p>
+                                                        )}
+                                                    </>
+                                                )
+                                            }
+                                        )}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="flex flex-col gap-4">
@@ -417,20 +476,11 @@ function Pool() {
                                                 return (
                                                     <>
                                                         <p className="text-dagger4 text-xs">
-                                                            {userPosition!
-                                                                ? (
-                                                                      ((userPosition.liquidity /
-                                                                          pool.liquidity) *
-                                                                          pool
-                                                                              .reserves[
-                                                                              i
-                                                                          ] *
-                                                                          range) /
-                                                                      100
-                                                                  ).toLocaleString(
-                                                                      undefined
-                                                                  )
-                                                                : '0.0'}
+                                                            {allocAmounts[
+                                                                i
+                                                            ].toLocaleString(
+                                                                undefined
+                                                            )}
                                                         </p>
                                                         <img
                                                             src={
