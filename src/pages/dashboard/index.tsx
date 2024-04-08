@@ -19,7 +19,7 @@ function Dashboard() {
         limit: 20,
     })
     const chainId = useChainId()
-    if (!data?.positions?.items[0]?.pool.poolTokens || !chainId) return <></>
+    if (!data?.positions?.items[0]?.pool?.poolTokens || !chainId) return <></>
     return (
         <div className="container mx-auto max-w-4xl gap-2 flex flex-col my-12">
             <div className="flex flex-row items-center w-full justify-between">
@@ -62,25 +62,25 @@ function Dashboard() {
                     </TableHeader>
                     <TableBody className="cursor-pointer">
                         {data.positions.items.length > 0 &&
-                            data.positions.items.map((position) => (
+                            data.positions.items.map((position, i) => (
                                 <TableRow
-                                    key={position.pool.id.toString()}
+                                    key={i}
                                     onClick={() =>
-                                        (location.href = `/pool/${position.pool.id.toString()}`)
+                                        (location.href = `/pool/${position?.pool?.id.toString()}`)
                                     }
                                 >
                                     <TableCell>
                                         <div className="flex flex-row items-right gap-2">
                                             <div className="bg-purple-600 px-2 rounded-full text-xs">
-                                                {position.pool.name}
+                                                {position?.pool?.name}
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex flex-row items-center gap-2">
                                             <div className="flex flex-row items-center">
-                                                {position.pool.poolTokens.items.map(
-                                                    (poolToken) => {
+                                                {position?.pool?.poolTokens.items.map(
+                                                    (poolToken: any) => {
                                                         return (
                                                             <>
                                                                 <img
@@ -131,16 +131,16 @@ function Dashboard() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {shortAddress(position.accountId)}
+                                        {shortAddress(position?.accountId)}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {position.liquidity.toLocaleString(
+                                        {position?.liquidity.toLocaleString(
                                             undefined
                                         )}{' '}
                                         LP
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {position.pool.liquidity.toLocaleString(
+                                        {position?.pool?.liquidity.toLocaleString(
                                             undefined
                                         )}{' '}
                                         LP

@@ -40,7 +40,7 @@ function TokenAmountInput(props: TokenAmountInputProps) {
                     ? '0.0'
                     : (
                           props.tokenPrice * parseFloat(props.amount)
-                      ).toLocaleString(undefined)}
+                      )?.toLocaleString(undefined)}
             </Label>
             <button className="p-0 border-0 hover:opacity-100 bg-transparent">
                 <div className="flex flex-row gap-1 justify-end items-center group">
@@ -66,7 +66,9 @@ function TokenAmountInput(props: TokenAmountInputProps) {
                             props.setAmount(props.tokenBalance.toString())
                         }
                     >
-                        {props.tokenBalance.toLocaleString(undefined)}{' '}
+                        {props.tokenBalance
+                            ? props.tokenBalance.toLocaleString(undefined)
+                            : '0.0'}{' '}
                         {props.tokenSymbol}
                     </Label>
                 </div>
