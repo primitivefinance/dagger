@@ -18,6 +18,7 @@ import {
 } from '../../queries/parameters'
 
 import TokenAmountInput from '@/components/TokenAmountInput'
+import TransactionTable from '@/components/TransactionTable'
 
 const LinkIcon = () => (
     <svg
@@ -698,60 +699,7 @@ function Pool() {
             <div className="my-8">
                 <p className="text-lg font-bold mb-2">Recent Transactions</p>
                 <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th className="text-left">Action</th>
-                                {pool.poolTokens.items.map((poolToken, i) => {
-                                    return (
-                                        <th key={i}>
-                                            <div className="flex flex-row gap-1 items-center justify-end">
-                                                <img
-                                                    src={
-                                                        tokens[chainId].find(
-                                                            (tkn) =>
-                                                                tkn.symbol.toLowerCase() ===
-                                                                poolToken.token.symbol.toLowerCase()
-                                                        )?.logo
-                                                    }
-                                                    alt={poolToken.token.symbol}
-                                                    className="rounded-full size-4"
-                                                />
-                                                <p className="text-xs text-dagger3">
-                                                    {poolToken.token.symbol}
-                                                </p>
-                                            </div>
-                                        </th>
-                                    )
-                                })}
-                                <th className="text-right">Value</th>
-                                <th className="text-right">Account</th>
-                                <th className="text-right">Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td className="text-left font-bold">
-                                    Add liquidity
-                                </td>
-                                <td className="text-right">1.432</td>
-                                <td className="text-right">2,414.42</td>
-                                <td className="text-right">$4,256</td>
-                                <td className="text-right">$4,256</td>
-                                <td className="text-right">
-                                    <a
-                                        href="#"
-                                        className="flex flex-row gap-1 font-bold justify-end"
-                                    >
-                                        0xbeef...cafe <LinkIcon />
-                                    </a>
-                                </td>
-                                <td className="text-right text-sm">
-                                    3 hours ago
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <TransactionTable poolId={poolId} poolTokens={pool?.poolTokens?.items} />
                 </div>
             </div>
         </div>
