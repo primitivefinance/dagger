@@ -73,7 +73,7 @@ const TransactionTable: FC<TransactionTableProps> = ({
             })
         })
         setEvents(parsed)
-    }, [swaps.data])
+    }, [swaps, allocs, deallocs])
 
     if (!swaps.data) return <>Loading Transactions...</>
     return (
