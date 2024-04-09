@@ -89,11 +89,15 @@ const TransactionTable: FC<TransactionTableProps> = ({
             </TableHeader>
             <TableBody>
                 {events
-                    .sort((a, b) => a.timestamp - b.timestamp)
+                    .sort((a, b) => a.timestamp + b.timestamp)
                     .map((event, i) => {
                         return (
                             <TableRow key={i}>
-                                <TableCell>{event.action}</TableCell>
+                                <TableCell>
+                                    {!event.deltas
+                                        ? 'Pool Created'
+                                        : event.action}
+                                </TableCell>
                                 <TableCell>
                                     {event.deltas?.map((d, z) => (
                                         <div
