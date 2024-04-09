@@ -39,6 +39,32 @@ const LinkIcon = () => (
     </svg>
 )
 
+function Overview({ src, alt }: { src: string; alt: string }) {
+    return (
+        <section id="overview">
+            <div className="flex flex-col gap-lg">
+                <img
+                    src={src}
+                    alt={alt}
+                    className="rounded-full size-24"
+                    style={{
+                        zIndex: 1,
+                        opacity: '70%',
+                    }}
+                />
+                <div className="flex flex-col gap-md">
+                    <h3>Overview</h3>
+                    <p>
+                        The overview page provides a high-level summary of the
+                        pool&#39;s details and statistics. It also provides a
+                        list of recent transactions and actions taken by users.
+                    </p>
+                </div>
+            </div>
+        </section>
+    )
+}
+
 function Pool() {
     const { id } = useParams()
     const { address } = useAccount()
@@ -104,9 +130,13 @@ function Pool() {
     const ref = useRef(null)
     const [range, setRange] = useState<number>(0)
 
+    const isUserConnected = address !== undefined
+
     if (!pool?.poolTokens?.items || !parameters) return <></>
     return (
         <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
+            <Overview src={tokens[chainId][0].logo} alt="pool" />
+
             <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center gap-2">
                     <div className="flex flex-row items-center">
