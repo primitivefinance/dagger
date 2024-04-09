@@ -111,7 +111,10 @@ const TransactionTable: FC<TransactionTableProps> = ({
                                                         {d}
                                                     </>
                                                 ) : (
-                                                    d
+                                                    <>
+                                                        {'+'}
+                                                        {d}
+                                                    </>
                                                 )}
                                             </>
                                         </div>
