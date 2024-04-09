@@ -134,7 +134,7 @@ function Pool() {
                                         }}
                                     />
                                     <div
-                                        className="bg-gray-600 px-2 rounded-full text-xs"
+                                        className="bg-gray-600 px-2 rounded-full"
                                         style={{
                                             zIndex: 2,
                                             marginLeft: '-1rem',
@@ -158,7 +158,7 @@ function Pool() {
                                 </p>
                                 <a
                                     href={`https://sepolia-optimistic.etherscan.io/address/${poolToken?.token?.id}`}
-                                    className="flex flex-row gap-1 text-sm"
+                                    className="flex flex-row gap-1"
                                 >
                                     {shortAddress(
                                         poolToken?.token?.id as `0x${string}`
@@ -189,7 +189,7 @@ function Pool() {
                                 alt={poolToken.token.symbol}
                                 className="rounded-full size-6"
                             />
-                            <p className="text-sm">
+                            <p>
                                 {/**
                                  * {computePrice(
                                     pool.reserveX,
@@ -199,10 +199,10 @@ function Pool() {
                                 ).toLocaleString(undefined)}
                                  */}{' '}
                                 {poolToken.token.symbol}{' '}
-                                <span className="text-xs">
+                                <small>
                                     per{' '}
                                     {pool?.poolTokens?.items[0].token.symbol}
-                                </span>
+                                </small>
                             </p>
                         </div>
                     )
@@ -214,8 +214,8 @@ function Pool() {
                     <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-row items-center justify-between">
-                                <p className="text-lg font-bold">My Position</p>
-                                <p className="text-dagger3 text-sm">
+                                <p>My Position</p>
+                                <p>
                                     {userPosition!
                                         ? (userPosition.liquidity /
                                               pool.liquidity) *
@@ -240,11 +240,9 @@ function Pool() {
                                                 alt={poolToken.token.symbol}
                                                 className="rounded-full size-4"
                                             />
-                                            <p className="text-xs text-dagger3">
-                                                {poolToken.token.symbol}
-                                            </p>
+                                            <p>{poolToken.token.symbol}</p>
                                         </div>
-                                        <div className="font-bold w-full flex-row justify-between">
+                                        <div className="w-full flex-row justify-between">
                                             <>
                                                 {userPosition!
                                                     ? (userPosition.liquidity /
@@ -257,7 +255,7 @@ function Pool() {
                                                 }{' '}
                                             </>
                                         </div>
-                                        <div className="text-xs w-full flex-row justify-between">
+                                        <div className="w-full flex-row justify-between">
                                             <>
                                                 {'Token Balance: '}
                                                 {balances[i]}{' '}
@@ -334,10 +332,8 @@ function Pool() {
                             {isAddLiquidity ? (
                                 <div className="flex flex-col gap-4">
                                     <div className="flex flex-col">
-                                        <p className="text-lg font-bold">
-                                            Add Liquidity
-                                        </p>
-                                        <p className="text-dagger3 text-xs">
+                                        <p>Add Liquidity</p>
+                                        <p>
                                             Increase your position by adding
                                             liquidity into the pool.
                                         </p>
@@ -368,7 +364,7 @@ function Pool() {
                                             (poolToken, i) => {
                                                 return (
                                                     <>
-                                                        <p className="text-dagger4 text-xs">
+                                                        <p>
                                                             {userPosition!
                                                                 ? (
                                                                       ((userPosition.liquidity /
@@ -400,7 +396,7 @@ function Pool() {
                                                             }
                                                             className="rounded-full size-3"
                                                         />
-                                                        <p className="text-dagger4 text-sm">
+                                                        <p>
                                                             {
                                                                 poolToken.token
                                                                     .symbol
@@ -411,9 +407,7 @@ function Pool() {
                                                             ?.length ? (
                                                             <></>
                                                         ) : (
-                                                            <p className="text-dagger3">
-                                                                +
-                                                            </p>
+                                                            <p>+</p>
                                                         )}
                                                     </>
                                                 )
@@ -424,16 +418,14 @@ function Pool() {
                             ) : (
                                 <div className="flex flex-col gap-4">
                                     <div className="flex flex-col">
-                                        <p className="text-lg font-bold">
-                                            Remove Liquidity
-                                        </p>
-                                        <p className="text-dagger3 text-xs">
+                                        <p>Remove Liquidity</p>
+                                        <p>
                                             Decrease your position by removing
                                             liquidity from the pool.
                                         </p>
                                     </div>
                                     <div className="flex flex-row justify-between items-center">
-                                        <p className="text-xl">{range}%</p>
+                                        <p>{range}%</p>
                                         <div className="flex flex-row gap-2">
                                             <button
                                                 onClick={() => setRange(25)}
@@ -476,7 +468,7 @@ function Pool() {
                                             (poolToken, i) => {
                                                 return (
                                                     <>
-                                                        <p className="text-dagger4 text-xs">
+                                                        <p>
                                                             {allocAmounts[
                                                                 i
                                                             ].toLocaleString(
@@ -499,7 +491,7 @@ function Pool() {
                                                             }
                                                             className="rounded-full size-3"
                                                         />
-                                                        <p className="text-dagger4 text-sm">
+                                                        <p>
                                                             {
                                                                 poolToken.token
                                                                     .symbol
@@ -510,9 +502,7 @@ function Pool() {
                                                             ?.length ? (
                                                             <></>
                                                         ) : (
-                                                            <p className="text-dagger3">
-                                                                +
-                                                            </p>
+                                                            <p>+</p>
                                                         )}
                                                     </>
                                                 )
@@ -579,24 +569,20 @@ function Pool() {
                     <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
                         <div className="grid gap-4 grid-cols-2">
                             <div className="flex flex-col col-span-2">
-                                <p className="text-lg font-bold">
-                                    Pool Details
-                                </p>
+                                <h3>Pool Details</h3>
                             </div>
                             <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">Strategy</p>
+                                <p>Strategy</p>
                                 <p className="font-bold">{pool.name}</p>
                             </div>
                             <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">Fee Rate</p>
+                                <p>Fee Rate</p>
                                 <p className="font-bold">
                                     {parameters.swapFee}%
                                 </p>
                             </div>
                             <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">
-                                    Controller
-                                </p>
+                                <p>Controller</p>
                                 <a
                                     href="#"
                                     className="flex flex-row gap-1 font-bold"
@@ -616,9 +602,7 @@ function Pool() {
                                                     key={i}
                                                     className="flex flex-col"
                                                 >
-                                                    <p className="text-xs text-dagger3">
-                                                        Weight #{i}
-                                                    </p>
+                                                    <p>Weight #{i}</p>
                                                     <p className="font-bold">
                                                         {(weight / 1e18) * 100}%
                                                     </p>
@@ -637,9 +621,7 @@ function Pool() {
                         <br />
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-col col-span-2">
-                                <p className="text-lg font-bold">
-                                    Pool Reserves
-                                </p>
+                                <h4>Pool Reserves</h4>
                             </div>
                             <hr />
                             {pool.poolTokens.items.map((poolToken, i) => {
@@ -660,18 +642,16 @@ function Pool() {
                                                 alt={poolToken.token.symbol}
                                                 className="rounded-full size-4"
                                             />
-                                            <p className="text-xs text-dagger3">
-                                                {poolToken.token.symbol}
-                                            </p>
+                                            <p>{poolToken.token.symbol}</p>
                                         </div>
-                                        <div className="font-bold w-full flex-row justify-between">
-                                            <>
+                                        <div className="w-full flex-row justify-between">
+                                            <p>
                                                 {pool.reserves[i]}
                                                 {
                                                     pool?.poolTokens?.items[i]
                                                         .token.symbol
                                                 }{' '}
-                                            </>
+                                            </p>
                                         </div>
                                     </div>
                                 )
@@ -682,12 +662,10 @@ function Pool() {
                     <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-col">
-                                <p className="text-lg font-bold">Strategy</p>
-                                <p className="text-dagger3 text-xs">
-                                    {pool.name}
-                                </p>
+                                <h4>Strategy</h4>
+                                <p>{pool.name}</p>
                             </div>
-                            <p className="text-sm text-dagger3">
+                            <p>
                                 Lorem ipsum dolor sit amet, consectetur
                                 adipiscing elit. Nulla nec dui eget urna aliquet
                                 aliquam.
@@ -697,9 +675,12 @@ function Pool() {
                 </div>
             </div>
             <div className="my-8">
-                <p className="text-lg font-bold mb-2">Recent Transactions</p>
+                <p>Recent Transactions</p>
                 <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
-                    <TransactionTable poolId={poolId} poolTokens={pool?.poolTokens?.items} />
+                    <TransactionTable
+                        poolId={poolId}
+                        poolTokens={pool?.poolTokens?.items}
+                    />
                 </div>
             </div>
         </div>
