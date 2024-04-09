@@ -15,7 +15,7 @@ type TokenAmountInputProps = {
 Label
 function TokenAmountInput(props: TokenAmountInputProps) {
     return (
-        <div className="grid grid-cols-2 bg-dagger1 border border-solid border-dagger2 p-3 rounded-xl gap-2 w-full">
+        <div className="grid grid-cols-2 bg-dagger1 rounded-xl gap-2 w-full">
             <Input
                 value={props.amount}
                 onChange={(e) => props.setAmount(e.target.value)}
