@@ -65,8 +65,8 @@ const TransactionTable: FC<TransactionTableProps> = ({
         })
         deallocs?.data?.deallocates.items.map((dealloc) => {
             parsed.push({
-                action: 'Allocate',
-                deltas: dealloc.deltas?.concat().map((d) => d.toFixed(3)),
+                action: 'Deallocate',
+                deltas: dealloc.deltaLiquidity?.toFixed(3),
                 sender: dealloc.sender,
                 timestamp: dealloc.timestamp,
                 transaction: dealloc.id,
@@ -89,40 +89,49 @@ const TransactionTable: FC<TransactionTableProps> = ({
             </TableHeader>
             <TableBody>
                 {events
-                    .sort((a, b) => a.timestamp + b.timestamp)
+                    .sort((a, b) => b.timestamp - a.timestamp)
                     .map((event, i) => {
                         return (
                             <TableRow key={i}>
+                                <TableCell>{event.action}</TableCell>
                                 <TableCell>
-                                    {!event.deltas
-                                        ? 'Pool Created'
-                                        : event.action}
-                                </TableCell>
-                                <TableCell>
-                                    {event.deltas?.map((d, z) => (
-                                        <div
-                                            key={z}
-                                            className="flex flex-row justify-between"
-                                        >
-                                            <div>
-                                                {poolTokens[z].token.symbol}
-                                            </div>
-                                            <>
-                                                {event.action === 'Swap' &&
-                                                z === 0 ? (
-                                                    <>
-                                                        {'-'}
-                                                        {d}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {'+'}
-                                                        {d}
-                                                    </>
-                                                )}
-                                            </>
+                                    {event.action === 'Deallocate' ? (
+                                        <div className="flex flex-row justify-between">
+                                            <div>{'LPT'}</div>
+                                            {'-' + event.deltas}
                                         </div>
-                                    ))}
+                                    ) : (
+                                        event?.deltas?.map((d, z) => {
+                                            return (
+                                                <div
+                                                    key={z}
+                                                    className="flex flex-row justify-between"
+                                                >
+                                                    <div>
+                                                        {
+                                                            poolTokens[z].token
+                                                                .symbol
+                                                        }
+                                                    </div>
+                                                    <>
+                                                        {event.action ===
+                                                            'Swap' &&
+                                                        z === 0 ? (
+                                                            <>
+                                                                {'-'}
+                                                                {d}
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                {'+'}
+                                                                {d}
+                                                            </>
+                                                        )}
+                                                    </>
+                                                </div>
+                                            )
+                                        })
+                                    )}
                                 </TableCell>
                                 <TableCell>
                                     {shortAddress(event.sender)}
