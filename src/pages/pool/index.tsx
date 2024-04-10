@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAccount, useChainId } from 'wagmi'
 
@@ -49,7 +49,7 @@ function Overview({
     src: string
     alt: string
     pool?: PoolWithTokensFragment
-}) {
+}): JSX.Element {
     const chainId = useChainId()
 
     return (
@@ -66,7 +66,7 @@ function Overview({
                     />
                 </div>
 
-                <div className="flex flex-row items-start justify-between w-full">
+                <div className="flex flex-row items-start gap-lg w-full">
                     <div className="flex flex-col gap-sm w-1/2">
                         <h2>{title}</h2>
                         <p className="text-muted-foreground dark:text-muted-foreground">
@@ -76,40 +76,41 @@ function Overview({
                             taken by users.
                         </p>
                     </div>
-                    <div className="flex flex-col gap-sm">
-                        <h3>Asset Universe</h3>
-                        <div className="flex flex-row items-center">
-                            {pool?.poolTokens?.items?.map((poolToken) => {
-                                return (
-                                    <>
-                                        <img
-                                            src={
-                                                tokens?.[chainId].find(
-                                                    (tkn: any) =>
-                                                        tkn.symbol.toLowerCase() ===
-                                                        poolToken.token.symbol.toLowerCase()
-                                                )?.logo
-                                            }
-                                            alt={poolToken?.token?.symbol}
-                                            className="rounded-full size-8"
-                                            style={{
-                                                zIndex: 1,
-                                                opacity: '70%',
-                                            }}
-                                        />
-                                        <div
-                                            className="bg-gray-600 px-2 rounded-full"
-                                            style={{
-                                                zIndex: 2,
-                                                marginLeft: '-1rem',
-                                                marginTop: '1rem',
-                                            }}
-                                        >
-                                            {poolToken?.token.symbol}
-                                        </div>
-                                    </>
-                                )
-                            })}
+                    <div className="flex flex-col gap-md items-end w-1/2">
+                        <h4>Asset Universe</h4>
+                        <div className="flex flex-row items-center ">
+                            {pool?.poolTokens?.items?.map(
+                                (poolToken: PoolToken) => {
+                                    return (
+                                        <>
+                                            <img
+                                                src={
+                                                    tokens[chainId].find(
+                                                        (tkn) =>
+                                                            tkn.symbol.toLowerCase() ===
+                                                            poolToken.token.symbol.toLowerCase()
+                                                    )?.logo
+                                                }
+                                                alt={poolToken?.token?.symbol}
+                                                className="rounded-full size-12"
+                                                style={{
+                                                    zIndex: 1,
+                                                }}
+                                            />
+                                            <div
+                                                className="bg-gray-600 px-2 rounded-full text-xs"
+                                                style={{
+                                                    zIndex: 2,
+                                                    marginLeft: '-1rem',
+                                                    marginTop: '1rem',
+                                                }}
+                                            >
+                                                {poolToken?.token.symbol}
+                                            </div>
+                                        </>
+                                    )
+                                }
+                            )}
                         </div>
                     </div>
                 </div>
@@ -131,7 +132,7 @@ function PoolInfo({
     pool: PoolWithTokensFragment
     items?: PoolInfoItem[]
     title?: string
-}) {
+}): JSX.Element {
     items = [
         {
             key: 'Name',
@@ -151,7 +152,7 @@ function PoolInfo({
         },
         {
             key: 'Tokens',
-            value: pool.poolTokens.items.map((poolToken) => {
+            value: pool.poolTokens.items.map((poolToken: PoolToken) => {
                 return (
                     <div
                         key={poolToken.token.id}
@@ -255,7 +256,11 @@ function PoolInfo({
     )
 }
 
-function PoolBreakdown({ pool }: { pool?: PoolWithTokensFragment }) {
+function PoolBreakdown({
+    pool,
+}: {
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
     return (
         <section id="pool-breakdown">
             <div className="flex flex-row w-full gap-0">
@@ -274,16 +279,18 @@ function PoolBreakdown({ pool }: { pool?: PoolWithTokensFragment }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {pool?.poolTokens?.items?.map((poolToken, i) => {
-                            return (
-                                <TableRow key={i}>
-                                    <TableCell>100%</TableCell>
-                                    <TableCell>Token</TableCell>
-                                    <TableCell>100</TableCell>
-                                    <TableCell>100000</TableCell>
-                                </TableRow>
-                            )
-                        })}
+                        {pool?.poolTokens?.items?.map(
+                            (poolToken: PoolToken) => {
+                                return (
+                                    <TableRow key={poolToken.id}>
+                                        <TableCell>100%</TableCell>
+                                        <TableCell>Token</TableCell>
+                                        <TableCell>100</TableCell>
+                                        <TableCell>100000</TableCell>
+                                    </TableRow>
+                                )
+                            }
+                        )}
                     </TableBody>
                 </Table>
             </div>
@@ -291,7 +298,11 @@ function PoolBreakdown({ pool }: { pool?: PoolWithTokensFragment }) {
     )
 }
 
-function RecentTransactions({ pool }: { pool?: PoolWithTokensFragment }) {
+function RecentTransactions({
+    pool,
+}: {
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
     return (
         <section id="recent-transactions">
             <div className="flex flex-row w-full gap-0">
@@ -329,19 +340,20 @@ function RecentTransactions({ pool }: { pool?: PoolWithTokensFragment }) {
     )
 }
 
-function AddLiquidity({ pool }: { pool?: PoolWithTokensFragment }) {
+function AddLiquidity({
+    pool,
+}: {
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
     const { id } = useParams()
     const { address } = useAccount()
     const chainId = useChainId()
-    const poolId = id ? id : '0' // return to pool #0 if null
 
     const [balances, setBalances] = useState<number[]>([])
     const [amount, setAmount] = useState<string>('') // numeraire input amount
-    const [allocAmounts, setAllocAmounts] = useState<number[]>([]) // set by the return of allocateGivenNumeraire()
 
     useEffect(() => {
-        setAllocAmounts([0, 0, 0, 0])
-        async function fetchBalances() {
+        async function fetchBalances(): Promise<void> {
             if (!pool?.poolTokens?.items) return
 
             const newBalances: number[] = []
@@ -362,21 +374,8 @@ function AddLiquidity({ pool }: { pool?: PoolWithTokensFragment }) {
             fetchBalances()
         }
     }, [address, pool?.poolTokens?.items])
-    console.log(balances)
-
-    let userPosition: Position
-
-    if (pool?.positions?.items && address) {
-        userPosition = pool?.positions?.items?.find(
-            (position) =>
-                position.accountId.toLowerCase() ===
-                address?.toLocaleLowerCase()
-        )!
-    }
 
     const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true)
-    const ref = useRef(null)
-    const [range, setRange] = useState<number>(0)
 
     return (
         <section id="user-actions">
@@ -495,9 +494,13 @@ function AddLiquidity({ pool }: { pool?: PoolWithTokensFragment }) {
     )
 }
 
-function UserPositions({ pool }: { pool: PoolWithTokensFragment }) {
+function UserPositions({
+    pool,
+}: {
+    pool: PoolWithTokensFragment
+}): JSX.Element {
     const [range, setRange] = useState<number>(0)
-    const ref = useRef(null)
+
     return (
         <section id="user-positions">
             <div className="flex flex-row w-full gap-lg">
@@ -515,9 +518,9 @@ function UserPositions({ pool }: { pool: PoolWithTokensFragment }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {pool?.positions?.items?.map((position, i) => {
+                        {pool?.positions?.items?.map((position: Position) => {
                             return (
-                                <TableRow key={i}>
+                                <TableRow key={position.id}>
                                     <TableCell>ETH</TableCell>
                                     <TableCell>1.432</TableCell>
                                     <TableCell>2,414.42</TableCell>
@@ -608,7 +611,7 @@ function UserPositions({ pool }: { pool: PoolWithTokensFragment }) {
     )
 }
 
-function TokenPrices({ pool }: { pool: PoolWithTokensFragment }) {
+function TokenPrices({ pool }: { pool: PoolWithTokensFragment }): JSX.Element {
     const chainId = useChainId()
     return (
         <section id="token-prices">
@@ -626,10 +629,10 @@ function TokenPrices({ pool }: { pool: PoolWithTokensFragment }) {
                 </Table>
 
                 <div className="flex flex-row gap-4">
-                    {pool.poolTokens.items.map((poolToken, i) => {
+                    {pool.poolTokens.items.map((poolToken: PoolToken) => {
                         return (
                             <div
-                                key={i}
+                                key={poolToken.token.id}
                                 className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center"
                             >
                                 <img
@@ -684,18 +687,10 @@ function TokenPrices({ pool }: { pool: PoolWithTokensFragment }) {
     )
 }
 
-function Pool() {
+function Pool(): JSX.Element {
     const { id } = useParams()
     const { address } = useAccount()
-    const chainId = useChainId()
-    // const { connectors, connect } = useConnect()
-    // const { state } = usePrices();
-    // const { prices } = state;
     const poolId = id ? id : '0' // return to pool #0 if null
-
-    const [balances, setBalances] = useState<number[]>([])
-    const [amount, setAmount] = useState<string>('') // numeraire input amount
-    const [allocAmounts, setAllocAmounts] = useState<number[]>([]) // set by the return of allocateGivenNumeraire()
 
     const { data } = useGraphQL(poolInfoQueryDocument, { id: poolId })
     const pool = useFragment(PoolWithTokensFragment, data?.pool)
@@ -709,45 +704,6 @@ function Pool() {
             : pool?.strategy?.name === 'LogNormal'
               ? lNParams?.data?.LogNormalParams
               : ng3mParams?.data?.nTokenGeometricMeanParams
-
-    useEffect(() => {
-        setAllocAmounts([0, 0, 0, 0])
-        async function fetchBalances() {
-            if (!pool?.poolTokens?.items) return
-
-            const newBalances: number[] = []
-
-            for (const poolToken of pool.poolTokens.items) {
-                const balance = await balanceOf(
-                    poolToken.token.id as `0x${string}`,
-                    address!
-                )
-                newBalances.push(balance)
-            }
-            setBalances(newBalances)
-            console.log('balances', newBalances)
-        }
-
-        if (address && pool?.poolTokens?.items) {
-            console.log('fetching balances')
-            fetchBalances()
-        }
-    }, [address, pool?.poolTokens?.items])
-    console.log(balances)
-
-    let userPosition: Position
-
-    if (pool?.positions?.items && address) {
-        userPosition = pool?.positions?.items?.find(
-            (position) =>
-                position.accountId.toLowerCase() ===
-                address?.toLocaleLowerCase()
-        )!
-    }
-
-    const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true)
-    const ref = useRef(null)
-    const [range, setRange] = useState<number>(0)
 
     const isUserConnected = true // todo: fix
 
