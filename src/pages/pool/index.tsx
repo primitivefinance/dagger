@@ -313,7 +313,7 @@ function NTokenGeometricMeanWeights({
                             <TableCell>{formatWadPercentage(weight)}</TableCell>
                             <TableCell>{poolToken?.token?.symbol}</TableCell>
                             <TableCell>{formatNumber(reserve)}</TableCell>
-                            <TableCell>n/a</TableCell>
+                            <TableCell>todo</TableCell>
                         </TableRow>
                     )
                 })}
@@ -669,8 +669,44 @@ function UserPositions({
     )
 }
 
-function TokenPrices({ pool }: { pool: PoolWithTokensFragment }): JSX.Element {
+/**
+ * @notice For an asset of a pool, computes how many tokens are in each liquidity pool token.
+ * @param reserve Amount of tokens in the reserve of a pool in decimal units.
+ * @param poolLiquidity Amount of total liquidity of the pool in decimal units.
+ * @param liquidityTokenSupply Total supply of the liquidity pool token in decimal units.
+ * @returns Proportion of a given token per pool liquidity token.
+ */
+function computeTokenBreakdown(
+    reserve: number,
+    poolLiquidity: number,
+    liquidityTokenSupply: number
+): number {
+    return reserve / poolLiquidity / liquidityTokenSupply
+}
+
+/**
+ * @notice Computes the proportion of reserves to pool liquidity to lp token for each pool asset.
+ */
+function TokenBreakdown({
+    pool,
+}: {
+    pool: PoolWithTokensFragment
+}): JSX.Element {
     const chainId = useChainId()
+    const [totalLpt, setTotalSupply] = useState<bigint>(BigInt(0))
+
+    // todo: make sure we are making use of query under the hood of wagmi
+    useEffect(() => {
+        async function fetchTotalSupply(): Promise<void> {
+            const supply = await totalSupply(pool.lpToken)
+            setTotalSupply(supply)
+        }
+
+        if (pool.lpToken) {
+            fetchTotalSupply()
+        }
+    }, [])
+
     return (
         <section id="token-prices">
             <div className="flex flex-col gap-md">
@@ -687,7 +723,7 @@ function TokenPrices({ pool }: { pool: PoolWithTokensFragment }): JSX.Element {
                 </Table>
 
                 <div className="flex flex-row gap-4">
-                    {pool.poolTokens.items.map((poolToken: PoolToken) => {
+                    {pool.poolTokens.items.map((poolToken: PoolToken, i) => {
                         return (
                             <div
                                 key={poolToken.token.id}
@@ -705,21 +741,19 @@ function TokenPrices({ pool }: { pool: PoolWithTokensFragment }): JSX.Element {
                                     className="rounded-full size-6"
                                 />
                                 <p>
-                                    {/**
-                                 * {computePrice(
-                                    pool.reserveX,
-                                    pool.reserveY,
-                                    pool.parameters.weightX,
-                                    pool.parameters.weightY
-                                ).toLocaleString(undefined)}
-                                 */}{' '}
-                                    {poolToken.token.symbol}{' '}
-                                    <small>
-                                        per{' '}
-                                        {
-                                            pool?.poolTokens?.items[0].token
-                                                .symbol
-                                        }
+                                    {formatNumber(
+                                        computeTokenBreakdown(
+                                            pool.reserves[i],
+                                            pool.liquidity,
+                                            parseFloat(
+                                                formatUnits(totalLpt, 18)
+                                            )
+                                        )
+                                    )}
+                                    {poolToken.token.symbol} /{' '}
+                                    <small className="dark:text-muted-foreground text-muted">
+                                        {' '}
+                                        {pool.name.slice(0, 5).toUpperCase()}
                                     </small>
                                 </p>
                             </div>
@@ -774,7 +808,7 @@ function Pool(): JSX.Element {
             {isUserConnected && <UserPositions pool={pool} />}
 
             <PoolInfo pool={pool} />
-            <TokenPrices pool={pool} />
+            <TokenBreakdown pool={pool} />
             <PoolBreakdown pool={pool} />
             <RecentTransactions pool={pool} />
         </div>
