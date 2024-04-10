@@ -28,13 +28,18 @@ export const tags: Tag[] = [
 export const strats: CardToggleOption[] = [
     {
         value: 'GeometricMean',
-        title: 'G3M',
-        description: 'Geometric mean strategy.',
+        title: 'Weighted Portfolio',
+        description: 'Geometric mean strategy with any amount of tokens.',
     },
     {
-        value: 'CLP',
-        title: 'CLP',
-        description: 'Concentrated liquidity strategy',
+        value: 'LogNormal',
+        title: 'Concentrated Liquidity',
+        description: 'Dynamically concentrated liquidity strategy.',
+    },
+    {
+        value: 'ConstantSum',
+        title: 'Fixed Order',
+        description: 'Offer to buy or sell an asset at a single price.'
     },
 ]
 

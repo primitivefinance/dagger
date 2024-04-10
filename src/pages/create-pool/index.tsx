@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useAccount, useConnect } from 'wagmi'
-import { parseEther, parseUnits } from 'viem'
+import { useAccount, useConnect, useChainId } from 'wagmi'
+import { NumberToHexOpts, parseEther, parseUnits } from 'viem'
 import CardToggleGroup from '@/components/CardRadioGroup'
 
 import { balanceOf, allowance, approve } from '@/lib/erc20'
@@ -31,43 +31,49 @@ import { Label } from '@radix-ui/react-label'
 function CreatePool() {
     const { address } = useAccount()
     const { connectors, connect } = useConnect()
-    const { prices } = usePrices().state
-    const { checkPrices } = usePrices()
+    const chainId = useChainId()
 
     const [strategy, setStrategy] = useState(strats[0].value)
     const [feeRate, setFeeRate] = useState(feeLevels[0].value)
     const [weight, setWeight] = useState(weights[0].value)
 
-    const [tokenX, setTokenX] = useState<`0x${string}`>(tokens[4].address)
-    const [tokenY, setTokenY] = useState<`0x${string}`>(tokens[3].address)
+    const [poolTokens, setPoolTokens] = useState<`0x${string}`[]>([
+        tokens[chainId][0].address,
+        tokens[chainId][1].address,
+    ])
+
     const [controller, setController] = useState<string>('')
-    const [reserveX, setReserveX] = useState<string>('')
-    const [reserveY, setReserveY] = useState<string>('')
-    const [tokenXBalance, setTokenXBalance] = useState<number>(0)
-    const [tokenYBalance, setTokenYBalance] = useState<number>(0)
+    const [reserves, setReserves] = useState<string[]>(['', ''])
+    const [tokensBalance, setTokensBalance] = useState<number[]>([0, 0])
+
+    const addToken = (tokenAddress: `0x${string}`) => {
+        setPoolTokens([...poolTokens, tokenAddress])
+    }
+
+    const removeToken = (tokenAddress: `0x${string}`) => {
+        const _poolTokens = poolTokens.filter((tkn) => tkn !== tokenAddress)
+        setPoolTokens(_poolTokens)
+    }
+
+    const setToken = (tokenAddress: `0x${string}`, position: number) => {
+        const _poolTokens = poolTokens.map((token, i) =>
+            i === position ? tokenAddress : token
+        )
+        setPoolTokens(_poolTokens)
+    }
 
     useEffect(() => {
         ;(async () => {
             if (address) {
-                const balance = await balanceOf(tokenX, address)
-                setTokenXBalance(balance)
-                checkPrices(_tokenX.symbol) // add whenever we NEED to check prices
+                const _balances: number[] = []
+                for (const _token of poolTokens) {
+                    const balance = await balanceOf(_token, address)
+                    _balances.push(balance)
+                }
+                setTokensBalance(_balances)
             }
         })()
-    }, [address, tokenX])
-
-    useEffect(() => {
-        ;(async () => {
-            if (address) {
-                const balance = await balanceOf(tokenY, address)
-                setTokenYBalance(balance)
-                checkPrices(_tokenY.symbol)
-            }
-        })()
-    }, [address, tokenY])
-
-    const _tokenX = tokens.find((token) => token.address === tokenX)!
-    const _tokenY = tokens.find((token) => token.address === tokenY)!
+    }, [address, poolTokens])
 
     return (
         <div className="py-16 container mx-auto max-w-6xl gap-14 flex flex-col">
@@ -84,28 +90,54 @@ function CreatePool() {
                 </Card>
 
                 <div className="flex flex-row gap-4 items-center">
-                    <TokenSelector
-                        tokenLogo={
-                            tokens.find((token) => token.address === tokenX)
-                                ?.logo || ''
+                    {poolTokens.map((token, i) => {
+                        const _setToken = (tkn: `0x${string}`) => {
+                            setToken(tkn, i)
                         }
-                        tokenSymbol={
-                            tokens.find((token) => token.address === tokenX)
-                                ?.symbol || ''
-                        }
-                        setToken={setTokenX}
-                    />
-                    <TokenSelector
-                        tokenLogo={
-                            tokens.find((token) => token.address === tokenY)
-                                ?.logo || ''
-                        }
-                        tokenSymbol={
-                            tokens.find((token) => token.address === tokenY)
-                                ?.symbol || ''
-                        }
-                        setToken={setTokenY}
-                    />
+                        return (
+                            <div className="flex flex-col" key={i}>
+                                <TokenSelector
+                                    tokenLogo={
+                                        tokens[chainId].find(
+                                            (tkn) => tkn.address === token
+                                        )?.logo || ''
+                                    }
+                                    tokenSymbol={
+                                        tokens[chainId].find(
+                                            (tkn) => tkn.address === token
+                                        )?.symbol || ''
+                                    }
+                                    setToken={_setToken}
+                                    disabledTokens={poolTokens}
+                                />
+                                {i < 2 ? (
+                                    <Button disabled>Token {i + 1}</Button>
+                                ) : (
+                                    <Button onClick={() => removeToken(token)}>
+                                        Remove Token {i + 1}
+                                    </Button>
+                                )}
+                            </div>
+                        )
+                    })}
+                    {tokens[chainId].find(
+                        (tkn) => !poolTokens.includes(tkn.address)
+                    )?.address === undefined ? (
+                        <Button disabled>No More Tokens!</Button>
+                    ) : (
+                        <Button
+                            onClick={() =>
+                                addToken(
+                                    tokens[chainId].find(
+                                        (tkn) =>
+                                            !poolTokens.includes(tkn.address)
+                                    )?.address as `0x${string}`
+                                )
+                            }
+                        >
+                            Add Token
+                        </Button>
+                    )}
                 </div>
 
                 <Card>
@@ -181,6 +213,9 @@ function CreatePool() {
                         <CardDescription>{tags[5].sub}</CardDescription>
                     </CardHeader>
                 </Card>
+                {/***
+                 * 
+
 
                 <div className="flex flex-col gap-4 items-start">
                     <TokenAmountInput
@@ -262,9 +297,11 @@ function CreatePool() {
                         </p>
                     </div>
                 </div>
+                */}
             </div>
-
-            <Button
+            {/**
+             * 
+<Button
                 variant="default"
                 onClick={async () => {
                     if (address === undefined) {
@@ -314,6 +351,8 @@ function CreatePool() {
             >
                 {address === undefined ? 'Connect Wallet' : 'Create Pool'}
             </Button>
+
+             */}
         </div>
     )
 }
