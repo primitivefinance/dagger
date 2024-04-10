@@ -102,19 +102,19 @@
 
 @layer base {
     h1 {
-        @apply text-3xl leading-none font-bold;
+        @apply text-3xl leading-none font-semibold;
     }
     h2 {
-        @apply text-2xl font-semibold;
+        @apply text-2xl font-medium;
     }
     h3 {
-        @apply text-xl font-semibold;
+        @apply text-xl font-medium;
     }
     h4 {
-        @apply text-xl font-semibold;
+        @apply text-lg font-medium;
     }
     h5 {
-        @apply text-xl font-semibold;
+        @apply text-lg;
     }
     a {
         @apply text-base;
