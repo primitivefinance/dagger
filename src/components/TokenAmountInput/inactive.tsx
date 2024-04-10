@@ -14,29 +14,32 @@ type TokenAmountInputProps = {
     disabled?: boolean
 }
 Label
-function TokenAmountInput(props: TokenAmountInputProps) {
+export function TokenAmountInactive(props: TokenAmountInputProps): JSX.Element {
     return (
-        <div className="grid grid-cols-2 bg-dagger1 rounded-xl gap-2 w-full">
+        <div className="flex flex-row bg-dagger1 rounded-xl gap-sm w-full justify-between">
+            <Button
+                variant="secondary"
+                disabled={props.disabled}
+                className="w-1/4"
+            >
+                <div className="flex flex-row items-center gap-xs w-full">
+                    <img
+                        src={props.tokenLogo}
+                        alt={props.tokenSymbol}
+                        className="rounded-full w-4 h-4 mr-auto"
+                    />
+                    <span className="truncate">{props.tokenSymbol}</span>
+                </div>
+            </Button>
+
             <Input
                 value={props.amount}
                 onChange={(e) => props.setAmount(e.target.value)}
                 placeholder="0.0"
                 disabled={props.disabled}
+                className="w-1/2"
             />
-            <div className="flex flex-row items-center justify-end">
-                <Button variant="secondary" disabled={props.disabled}>
-                    <div className="flex flex-row items-center">
-                        <img
-                            src={props.tokenLogo}
-                            alt={props.tokenSymbol}
-                            className="rounded-full w-4 h-4 mr-2"
-                        />
-                        {props.tokenSymbol}
-                        <CaretDownIcon className="w-4 h-4 ml-1" />
-                    </div>
-                </Button>
-            </div>
-            <Label className="text-sm font-semibold ml-1">
+            <Label className="text-sm font-semibold ml-1 w-1/4">
                 $
                 {isNaN(parseFloat(props.amount))
                     ? '0.0'
@@ -83,5 +86,3 @@ function TokenAmountInput(props: TokenAmountInputProps) {
         </div>
     )
 }
-
-export default TokenAmountInput

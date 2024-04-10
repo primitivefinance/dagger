@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAccount, useChainId } from 'wagmi'
 
@@ -117,12 +117,12 @@ function LabelWithEtherscan({
     label,
     address,
 }: {
-    label: string
+    label: React.ReactNode
     address: `0x${string}`
 }): JSX.Element {
     return (
         <div className="flex flex-row gap-1 items-center justify-between">
-            <p className="text-sm">{label}</p>
+            {label}
             <a
                 href={OP_SEPOLIA_ETHERSCAN + address}
                 className="flex flex-row gap-1"
@@ -396,6 +396,352 @@ function RecentTransactions({
     )
 }
 
+function computeAllocationDeltasGivenDeltaT(
+    deltaT: number,
+    indexT: number,
+    reserves: number[],
+    liquidity: number
+): { reserveDeltas: number[]; deltaL: number } {
+    console.log({ deltaT, indexT, reserves, liquidity })
+    const a = deltaT / reserves[indexT]
+    const reserveDeltas = []
+    reserveDeltas[indexT] = deltaT
+
+    for (let i = 0; i < reserves.length; i++) {
+        if (i !== indexT) {
+            reserveDeltas[i] = a * reserves[i]
+        }
+    }
+
+    const deltaL = a * liquidity
+    return { reserveDeltas, deltaL }
+}
+
+function TransactionView({
+    selectedTokens,
+    pool,
+    balanceMapping,
+}): JSX.Element {
+    const { address } = useAccount()
+    const chainId = useChainId()
+    const [amount, setAmount] = useState<string>('')
+    const [dependentAmounts, setDependentAmounts] = useState<{
+        reserveDeltas: number[]
+        deltaL: number
+    }>()
+
+    const depositAll = true // todo: make conditional once single sided deposits are available
+
+    const computeDependentAmounts = useCallback(() => {
+        const indexOfIndependent = pool.poolTokens.items.findIndex(
+            (pt) => pt.token.id === selectedTokens[0]
+        )
+
+        console.log({ amount })
+
+        const { reserveDeltas, deltaL } = computeAllocationDeltasGivenDeltaT(
+            parseFloat(amount),
+            indexOfIndependent,
+            pool.reserves,
+            pool.liquidity
+        )
+
+        console.log({ reserveDeltas, deltaL })
+
+        return {
+            reserveDeltas,
+            deltaL,
+        }
+    }, [selectedTokens, amount, setAmount])
+
+    useEffect(() => {
+        if (amount) {
+            setDependentAmounts(computeDependentAmounts())
+        }
+    }, [amount, setAmount, computeDependentAmounts])
+
+    const [isUSD, setIsUSD] = useState<boolean>(false)
+
+    return (
+        <Sheet>
+            <SheetTrigger className="bg-blue-600 rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 w-full">
+                Deposit{' '}
+                {selectedTokens
+                    ?.map(
+                        (t) =>
+                            pool.poolTokens.items.filter(
+                                (pt) => pt.token.id === t
+                            )[0]?.token.symbol
+                    )
+                    .join(', ')}
+            </SheetTrigger>
+            <SheetContent side="bottom">
+                <SheetHeader className="max-w-4xl mx-auto justify-center flex flex-col gap-sm">
+                    <SheetTitle>
+                        Deposit{' '}
+                        {selectedTokens
+                            ?.map(
+                                (t) =>
+                                    pool.poolTokens.items.filter(
+                                        (pt) => pt.token.id === t
+                                    )[0]?.token.symbol
+                            )
+                            .join(', ')}{' '}
+                        to {pool.name}
+                    </SheetTitle>
+                    <SheetDescription>
+                        Deposit tokens into a pool to mint liquidity tokens.
+                    </SheetDescription>
+                </SheetHeader>
+                <div className="max-w-4xl my-8 mx-auto justify-center flex flex-row gap-md">
+                    <div
+                        id="deposit-form"
+                        className="flex flex-col gap-sm w-1/2"
+                    >
+                        <div className="flex flex-row gap-md justify-between w-full">
+                            <p>Amount</p>
+                            <div className="flex flex-row gap-sm items-center">
+                                <Label
+                                    htmlFor="currency-mode"
+                                    className={`${!isUSD ? '' : 'dark:text-muted-foreground'}`}
+                                >
+                                    {pool?.poolTokens?.items?.find(
+                                        (pt) =>
+                                            pt.token.id === selectedTokens[0]
+                                    )?.token.symbol || 'Asset'}
+                                </Label>
+                                <Switch
+                                    id="currency-mode"
+                                    checked={isUSD}
+                                    onCheckedChange={() => setIsUSD(!isUSD)}
+                                />
+                                <Label
+                                    htmlFor="currency-mode"
+                                    className={`${isUSD ? '' : 'dark:text-muted-foreground'}`}
+                                >
+                                    USD
+                                </Label>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-md my-4">
+                            <Input
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                placeholder="0.0"
+                                disabled={false}
+                                className="py-8 px-4 text-4xl"
+                            />
+                            {/* <TokenAmountInput
+                                size="py-8 px-4 text-4xl"
+                                tokenAddress={
+                                    selectedTokens[0] as `0x${string}`
+                                }
+                                tokenSymbol={
+                                    pool.poolTokens.items.filter(
+                                        (pt) =>
+                                            pt.token.id === selectedTokens[0]
+                                    )[0]?.token.symbol ||
+                                    tokens[chainId]?.filter(
+                                        (tkn) =>
+                                            tkn.address === selectedTokens[0]
+                                    )[0]?.symbol
+                                }
+                                tokenBalance={
+                                    balanceMapping[
+                                        selectedTokens[0] as `0x${string}`
+                                    ]
+                                }
+                                tokenLogo={
+                                    tokens[chainId].find(
+                                        (tkn) =>
+                                            tkn?.symbol.toLowerCase() ===
+                                            pool?.poolTokens?.items
+                                                .find(
+                                                    (pt) =>
+                                                        pt.token.id ===
+                                                        selectedTokens[0]
+                                                )
+                                                ?.token.symbol.toLowerCase()
+                                    )?.logo ||
+                                    tokens[chainId]?.filter(
+                                        (tkn) =>
+                                            tkn.address === selectedTokens[0]
+                                    )[0]?.logo
+                                }
+                                tokenPrice={3000} // no price provider
+                                amount={amount}
+                                setAmount={setAmount}
+                            /> */}
+                            <p className="py-2 border-b">Breakdown</p>
+                            <div className="flex flex-col gap-md w-full">
+                                <div className="flex flex-col gap-sm w-full">
+                                    {depositAll &&
+                                        pool?.poolTokens?.items?.map((pt) => {
+                                            return (
+                                                <TokenAmountInactive
+                                                    key={pt.id}
+                                                    disabled
+                                                    tokenAddress={
+                                                        pt.token
+                                                            .id as `0x${string}`
+                                                    }
+                                                    tokenSymbol={
+                                                        pt.token.symbol
+                                                    }
+                                                    tokenBalance={
+                                                        balanceMapping[
+                                                            pt.token
+                                                                .id as `0x${string}`
+                                                        ]
+                                                    }
+                                                    tokenLogo={
+                                                        tokens[chainId].find(
+                                                            (tkn) =>
+                                                                tkn.symbol.toLowerCase() ===
+                                                                pt.token.symbol.toLowerCase()
+                                                        )?.logo ||
+                                                        tokens[chainId]?.filter(
+                                                            (tkn) =>
+                                                                tkn.address ===
+                                                                selectedTokens[0]
+                                                        )[0]?.logo
+                                                    }
+                                                    tokenPrice={3000} // no price provider
+                                                    amount={
+                                                        dependentAmounts?.reserveDeltas[
+                                                            pool.poolTokens.items.findIndex(
+                                                                (p) =>
+                                                                    p.token
+                                                                        .id ===
+                                                                    pt.token.id
+                                                            )
+                                                        ].toString() ?? '0'
+                                                    }
+                                                    setAmount={() => {}}
+                                                />
+                                            )
+                                        })}
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-md w-full text-sm">
+                                <div className="flex flex-row gap-sm justify-between w-full py-2 border-b">
+                                    <p>Subtotal</p>
+                                    <p>$100,000.00</p>
+                                </div>
+                                <div className="flex flex-row gap-sm justify-between w-full">
+                                    <p className="text-muted dark:text-muted-foreground">
+                                        Fee
+                                    </p>
+
+                                    <p className="text-muted dark:text-muted-foreground">
+                                        $100.00
+                                    </p>
+                                </div>
+                                <div className="flex flex-row gap-sm justify-between w-full py-2 border-t">
+                                    <p>Total</p>
+                                    <p>$100,100.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        id="deposit-review"
+                        className="flex flex-col w-1/2 gap-lg"
+                    >
+                        <p className="pb-2 border-b">Review Details</p>
+                        <div className="flex flex-col gap-sm">
+                            <small>Transaction information</small>
+                            <div className="flex flex-row gap-xs justify-between w-full">
+                                <small className="text-muted dark:text-muted-foreground">
+                                    Est. LPT received
+                                </small>
+                                <small>100</small>
+                            </div>
+                            <div className="flex flex-row gap-xs justify-between w-full">
+                                <small className="text-muted dark:text-muted-foreground">
+                                    Est. LPT price
+                                </small>
+                                <small>1.03</small>
+                            </div>
+                            <div className="flex flex-row gap-xs justify-between w-full">
+                                <small className="text-muted dark:text-muted-foreground">
+                                    Est. tx fee
+                                </small>
+                                <small>0.0001 ETH</small>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-sm">
+                            <small>Payment information</small>
+                            <div className="flex flex-row gap-xs justify-between w-full">
+                                <small className="text-muted dark:text-muted-foreground">
+                                    From
+                                </small>
+                                <small>
+                                    <LabelWithEtherscan
+                                        label={shortAddress(address!)}
+                                        address={address!}
+                                    />
+                                </small>
+                            </div>
+                            <div className="flex flex-row gap-xs justify-between w-full">
+                                <small className="text-muted dark:text-muted-foreground">
+                                    Protocol
+                                </small>
+                                <small>
+                                    <LabelWithEtherscan
+                                        label={'DFMM v0.2.0'}
+                                        address={dfmmAddress as `0x${string}`}
+                                    />
+                                </small>
+                            </div>
+                            <div className="flex flex-row gap-xs justify-between w-full">
+                                <small className="text-muted dark:text-muted-foreground">
+                                    LPT
+                                </small>
+                                <small>
+                                    <LabelWithEtherscan
+                                        label={pool.name}
+                                        address={pool.lpToken}
+                                    />
+                                </small>
+                            </div>
+                        </div>
+                        <div className="flex flex-row gap-sm w-full items-center">
+                            <input
+                                type="checkbox"
+                                className="form-checkbox"
+                                id="depositAll"
+                                name="depositAll"
+                                required
+                                checked={depositAll}
+                                onChange={() => {
+                                    // todo: keep selected.
+                                }}
+                                disabled={true}
+                            />{' '}
+                            <label
+                                htmlFor="depositAll"
+                                className="flex items-center"
+                            >
+                                <small>Deposit all tokens</small>
+                            </label>
+                        </div>
+                        <button
+                            onClick={async () => {
+                                // allocate
+                            }}
+                            className="bg-blue-600 rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600"
+                            disabled
+                        >
+                            Deposit
+                        </button>
+                    </div>
+                </div>
+            </SheetContent>
+        </Sheet>
+    )
+}
+
 function AddLiquidity({
     pool,
 }: {
@@ -473,8 +819,8 @@ function AddLiquidity({
                 <div className="bg-dagger1 self-start w-full">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-4">
-                            <div className="flex flex-row gap-lg w-full">
-                                <div className="flex flex-col gap-sm w-full">
+                            <div className="flex flex-row gap-md w-full">
+                                <div className="flex flex-col gap-sm w-2/3">
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
@@ -607,84 +953,59 @@ function AddLiquidity({
                                                 </TableRow>
                                             )}
                                             <TableRow>
-                                                <button
-                                                    onClick={() =>
-                                                        setExpandEligibleTokens(
-                                                            !expandEligibleTokens
-                                                        )
-                                                    }
-                                                    className="p-2 flex flex-row items-center gap-xs"
-                                                >
-                                                    {expandEligibleTokens
-                                                        ? 'Show less'
-                                                        : 'Show eligible'}{' '}
-                                                    {expandEligibleTokens ? (
-                                                        <CaretUpIcon />
-                                                    ) : (
-                                                        <CaretDownIcon />
-                                                    )}
-                                                </button>
+                                                <TableCell>
+                                                    <button
+                                                        onClick={() =>
+                                                            setExpandEligibleTokens(
+                                                                !expandEligibleTokens
+                                                            )
+                                                        }
+                                                        className="p-2 flex flex-row items-center gap-xs"
+                                                    >
+                                                        {expandEligibleTokens
+                                                            ? 'Show less'
+                                                            : 'Show eligible'}{' '}
+                                                        {expandEligibleTokens ? (
+                                                            <CaretUpIcon />
+                                                        ) : (
+                                                            <CaretDownIcon />
+                                                        )}
+                                                    </button>
+                                                </TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>
                                 </div>
-                                <div className="flex flex-col gap-md">
-                                    <h5>Amount</h5>
-                                    <div className="flex flex-row gap-md">
-                                        <TokenAmountInput
-                                            tokenAddress={
-                                                selectedTokens[0] as `0x${string}`
-                                            }
-                                            tokenSymbol={
-                                                pool.poolTokens.items.filter(
-                                                    (pt) =>
-                                                        pt.token.id ===
-                                                        selectedTokens[0]
-                                                )[0]?.token.symbol ||
-                                                tokens[chainId]?.filter(
-                                                    (tkn) =>
-                                                        tkn.address ===
-                                                        selectedTokens[0]
-                                                )[0]?.symbol
-                                            }
-                                            tokenBalance={
-                                                balanceMapping[
-                                                    selectedTokens[0] as `0x${string}`
-                                                ]
-                                            }
-                                            tokenLogo={
-                                                tokens[chainId].find(
-                                                    (tkn) =>
-                                                        tkn?.symbol.toLowerCase() ===
-                                                        pool?.poolTokens?.items
-                                                            .find(
-                                                                (pt) =>
-                                                                    pt.token
-                                                                        .id ===
-                                                                    selectedTokens[0]
-                                                            )
-                                                            ?.token.symbol.toLowerCase()
-                                                )?.logo ||
-                                                tokens[chainId]?.filter(
-                                                    (tkn) =>
-                                                        tkn.address ===
-                                                        selectedTokens[0]
-                                                )[0]?.logo
-                                            }
-                                            tokenPrice={3000} // no price provider
-                                            amount={amount}
-                                            setAmount={setAmount}
-                                        />
+
+                                <div className="flex flex-col w-1/3 items-start gap-md bg-gray-900 shadow-lg p-4 rounded-lg">
+                                    <div className="flex flex-col gap-sm">
+                                        <p>Review</p>
+                                        <p className="text-muted-foreground dark:text-muted-foreground text-sm">
+                                            {selectedTokens?.[0] ? (
+                                                <>
+                                                    Start a deposit transaction
+                                                    for{' '}
+                                                    <strong>
+                                                        {selectedTokens.length}
+                                                    </strong>{' '}
+                                                    selected tokens.
+                                                </>
+                                            ) : (
+                                                'Select tokens to deposit.'
+                                            )}
+                                        </p>
                                     </div>
-                                    <button
-                                        onClick={async () => {
-                                            // allocate
-                                        }}
-                                        className="bg-blue-600 rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600"
-                                        disabled
-                                    >
-                                        Deposit
-                                    </button>
+                                    <TransactionView
+                                        selectedTokens={selectedTokens}
+                                        pool={pool}
+                                        balanceMapping={balanceMapping}
+                                    />
+                                    <div className="flex flex-row gap-sm justify-between w-full border-t py-2">
+                                        <small className="text-muted-foreground dark:text-muted-foreground">
+                                            Estimated tx fee
+                                        </small>
+                                        <small>0.0001 ETH</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
