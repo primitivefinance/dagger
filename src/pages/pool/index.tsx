@@ -165,7 +165,6 @@ function PoolInfo({
         }
     }, [])
 
-    console.log(pool.lpToken)
     items = [
         {
             key: 'Name',
@@ -299,7 +298,6 @@ function NTokenGeometricMeanWeights({
 }): JSX.Element {
     const { data } = useGraphQL(nGParamsQueryDocument, { id: pool.id })
     const params = data?.nTokenGeometricMeanParams
-    console.log('params', params)
 
     return (
         <TableBody>
@@ -452,8 +450,7 @@ function AddLiquidity({
     const [expandEligibleTokens, setExpandEligibleTokens] =
         useState<boolean>(false)
 
-    console.log({ selectedTokens })
-
+    /// todo: need single sided deposits in dfmm...
     async function prepareAllocate(): Promise<void> {
         if (!selectedTokens || selectedTokens.length === 0) {
             return
@@ -705,6 +702,14 @@ function UserPositions({
 }): JSX.Element {
     const [range, setRange] = useState<number>(0)
 
+    const { address } = useAccount()
+
+    const userPositions = pool?.positions?.items?.filter(
+        (position: Position) => position?.id === address
+    )
+
+    const noExistingPositions = userPositions?.length === 0
+
     return (
         <section id="user-positions">
             <div className="flex flex-row w-full gap-lg">
@@ -717,24 +722,31 @@ function UserPositions({
                         </TableRow>
                         <TableRow>
                             <TableHead>Token</TableHead>
-                            <TableHead>Balance</TableHead>
+                            <TableHead>Holdings</TableHead>
                             <TableHead>Value</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {pool?.positions?.items?.map((position: Position) => {
+                        {noExistingPositions && (
+                            <TableRow>
+                                <p className="dark:text-muted-foreground m-auto p-2 text-sm">
+                                    No positions
+                                </p>
+                            </TableRow>
+                        )}
+                        {userPositions.map((position: Position) => {
                             return (
                                 <TableRow key={position.id}>
-                                    <TableCell>ETH</TableCell>
-                                    <TableCell>1.432</TableCell>
-                                    <TableCell>2,414.42</TableCell>
+                                    <TableCell>{pool?.name}</TableCell>
+                                    <TableCell>{position.liquidity}</TableCell>
+                                    <TableCell>todo</TableCell>
                                 </TableRow>
                             )
                         })}
                     </TableBody>
                 </Table>
                 <div className="flex flex-col gap-md">
-                    <h5>Amount</h5>
+                    <h5>Withdraw</h5>
                     <form
                         className="flex flex-col gap-lg"
                         onSubmit={(e) => {
@@ -801,10 +813,11 @@ function UserPositions({
                         </div>
                         <button
                             type="submit"
-                            className="bg-blue-600 rounded px-4 py-2"
+                            className="bg-blue-600 rounded px-4 py-2 disabled:opacity-50 hover:bg-blue-700 disabled:hover:bg-blue-600"
                             onClick={() => {
                                 // deallocate
                             }}
+                            disabled={noExistingPositions}
                         >
                             Withdraw
                         </button>
@@ -943,7 +956,7 @@ function Pool(): JSX.Element {
               ? lNParams?.data?.LogNormalParams
               : ng3mParams?.data?.nTokenGeometricMeanParams
 
-    const isUserConnected = true // todo: fix
+    const isUserConnected = typeof address !== 'undefined'
 
     if (!pool?.poolTokens?.items || !parameters) return <></>
     return (
