@@ -408,6 +408,7 @@ function AddLiquidity({
     const chainId = useChainId()
 
     const [balances, setBalances] = useState<number[]>([])
+    const [balanceMapping, setBalance] = useState<{ [key: string]: number }>({})
     const [amount, setAmount] = useState<string>('') // numeraire input amount
 
     useEffect(() => {
@@ -415,6 +416,7 @@ function AddLiquidity({
             if (!pool?.poolTokens?.items) return
 
             const newBalances: number[] = []
+            let setInitialToken = false
 
             for (const poolToken of pool.poolTokens.items) {
                 const balance = await balanceOf(
@@ -422,18 +424,51 @@ function AddLiquidity({
                     address!
                 )
                 newBalances.push(balance)
+                setBalance((prev) => ({
+                    ...prev,
+                    [poolToken.token.id as `0x${string}`]: balance,
+                }))
+
+                // Sets the first eligible token as the token in the amount form.
+                if (balance > 0 && !setInitialToken) {
+                    setSelectedTokens((prev) => [poolToken.token.id])
+                    setInitialToken = true
+                }
             }
             setBalances(newBalances)
-            console.log('balances', newBalances)
         }
 
         if (address && pool?.poolTokens?.items) {
-            console.log('fetching balances')
             fetchBalances()
         }
     }, [address, pool?.poolTokens?.items])
 
-    const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true)
+    const [selectedTokens, setSelectedTokens] = useState<string[]>([
+        pool?.poolTokens?.items?.[0]?.token.id as `0x${string}`,
+    ])
+
+    const noEligibleTokens = !balances || balances.every((b) => b === 0)
+
+    const [expandEligibleTokens, setExpandEligibleTokens] =
+        useState<boolean>(false)
+
+    console.log({ selectedTokens })
+
+    async function prepareAllocate(): Promise<void> {
+        if (!selectedTokens || selectedTokens.length === 0) {
+            return
+        }
+
+        if (!address) {
+            return
+        }
+
+        if (!amount || parseFloat(amount) === 0) {
+            return
+        }
+
+        // Need the pool id, token index, and amount.
+    }
 
     return (
         <section id="user-actions">
@@ -442,91 +477,202 @@ function AddLiquidity({
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-row gap-lg w-full">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>
-                                                <h5 className="text-primary">
-                                                    Deposit
-                                                </h5>
-                                            </TableHead>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableHead>
-                                                Eligible Token
-                                            </TableHead>
-                                            <TableHead>Your Balance</TableHead>
-                                            <TableHead>Selection</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell>ETH</TableCell>
-                                            <TableCell>$100,000.00</TableCell>
-                                            <TableCell>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isAddLiquidity}
-                                                    onChange={() =>
-                                                        setIsAddLiquidity(
-                                                            !isAddLiquidity
+                                <div className="flex flex-col gap-sm w-full">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>
+                                                    <h5 className="text-primary">
+                                                        Deposit
+                                                    </h5>
+                                                </TableHead>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableHead>
+                                                    Eligible Tokens
+                                                </TableHead>
+                                                <TableHead>
+                                                    Your Balance
+                                                </TableHead>
+                                                <TableHead>Selection</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {pool?.poolTokens?.items
+                                                ?.filter(
+                                                    (_: any, index: number) =>
+                                                        balances?.[index] > 0 ||
+                                                        expandEligibleTokens
+                                                )
+                                                .map((poolToken: PoolToken) => {
+                                                    const token =
+                                                        poolToken.token.id
+                                                    const balance =
+                                                        balanceMapping[
+                                                            poolToken.token
+                                                                .id as `0x${string}`
+                                                        ]
+                                                    const isDisabled =
+                                                        !token ||
+                                                        !balance ||
+                                                        balance === 0
+
+                                                    return (
+                                                        <TableRow
+                                                            key={poolToken.id}
+                                                            className={`${isDisabled ? 'hover:bg-transparent' : ''}`}
+                                                        >
+                                                            <TableCell
+                                                                className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
+                                                            >
+                                                                <div className="flex flex-row gap-sm items-center">
+                                                                    <img
+                                                                        src={
+                                                                            tokens?.[
+                                                                                chainId
+                                                                            ].find(
+                                                                                (
+                                                                                    tkn
+                                                                                ) =>
+                                                                                    tkn.symbol.toLowerCase() ===
+                                                                                    poolToken.token.symbol.toLowerCase()
+                                                                            )
+                                                                                ?.logo
+                                                                        }
+                                                                        alt={
+                                                                            poolToken
+                                                                                .token
+                                                                                .symbol
+                                                                        }
+                                                                        className={`${isDisabled ? 'dark:opacity-70' : ''} rounded-full size-6`}
+                                                                        style={{
+                                                                            zIndex: 1,
+                                                                        }}
+                                                                    />
+
+                                                                    {
+                                                                        poolToken
+                                                                            .token
+                                                                            .symbol
+                                                                    }
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell
+                                                                className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
+                                                            >
+                                                                {formatNumber(
+                                                                    balance
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    onChange={() =>
+                                                                        setSelectedTokens(
+                                                                            (
+                                                                                prev
+                                                                            ) =>
+                                                                                prev.includes(
+                                                                                    token
+                                                                                )
+                                                                                    ? prev.filter(
+                                                                                          (
+                                                                                              t
+                                                                                          ) =>
+                                                                                              t !==
+                                                                                              token
+                                                                                      )
+                                                                                    : [
+                                                                                          ...prev,
+                                                                                          token,
+                                                                                      ]
+                                                                        )
+                                                                    }
+                                                                    checked={
+                                                                        selectedTokens.includes(
+                                                                            token
+                                                                        ) &&
+                                                                        !isDisabled
+                                                                    }
+                                                                    disabled={
+                                                                        isDisabled
+                                                                    }
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )
+                                                })}
+                                            {noEligibleTokens && (
+                                                <TableRow>
+                                                    <p className="dark:text-muted-foreground m-auto p-2 text-sm">
+                                                        No tokens to deposit
+                                                    </p>
+                                                </TableRow>
+                                            )}
+                                            <TableRow>
+                                                <button
+                                                    onClick={() =>
+                                                        setExpandEligibleTokens(
+                                                            !expandEligibleTokens
                                                         )
                                                     }
-                                                />
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>ETH</TableCell>
-                                            <TableCell>$100,000.00</TableCell>
-                                            <TableCell>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isAddLiquidity}
-                                                    onChange={() =>
-                                                        setIsAddLiquidity(
-                                                            !isAddLiquidity
-                                                        )
-                                                    }
-                                                />
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>ETH</TableCell>
-                                            <TableCell>$100,000.00</TableCell>
-                                            <TableCell>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isAddLiquidity}
-                                                    onChange={() =>
-                                                        setIsAddLiquidity(
-                                                            !isAddLiquidity
-                                                        )
-                                                    }
-                                                />
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow></TableRow>
-                                    </TableBody>
-                                </Table>
+                                                    className="p-2 flex flex-row items-center gap-xs"
+                                                >
+                                                    {expandEligibleTokens
+                                                        ? 'Show less'
+                                                        : 'Show eligible'}{' '}
+                                                    {expandEligibleTokens ? (
+                                                        <CaretUpIcon />
+                                                    ) : (
+                                                        <CaretDownIcon />
+                                                    )}
+                                                </button>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </div>
                                 <div className="flex flex-col gap-md">
                                     <h5>Amount</h5>
                                     <div className="flex flex-row gap-md">
                                         <TokenAmountInput
                                             tokenAddress={
-                                                pool?.poolTokens?.items[0]
-                                                    ?.token?.id as `0x${string}`
+                                                selectedTokens[0] as `0x${string}`
                                             }
                                             tokenSymbol={
-                                                pool.poolTokens.items[0].token
-                                                    .symbol
+                                                pool.poolTokens.items.filter(
+                                                    (pt) =>
+                                                        pt.token.id ===
+                                                        selectedTokens[0]
+                                                )[0]?.token.symbol ||
+                                                tokens[chainId]?.filter(
+                                                    (tkn) =>
+                                                        tkn.address ===
+                                                        selectedTokens[0]
+                                                )[0]?.symbol
                                             }
-                                            tokenBalance={balances[0]}
+                                            tokenBalance={
+                                                balanceMapping[
+                                                    selectedTokens[0] as `0x${string}`
+                                                ]
+                                            }
                                             tokenLogo={
                                                 tokens[chainId].find(
                                                     (tkn) =>
                                                         tkn?.symbol.toLowerCase() ===
-                                                        pool?.poolTokens?.items[0].token.symbol.toLowerCase()
-                                                )?.logo || ''
+                                                        pool?.poolTokens?.items
+                                                            .find(
+                                                                (pt) =>
+                                                                    pt.token
+                                                                        .id ===
+                                                                    selectedTokens[0]
+                                                            )
+                                                            ?.token.symbol.toLowerCase()
+                                                )?.logo ||
+                                                tokens[chainId]?.filter(
+                                                    (tkn) =>
+                                                        tkn.address ===
+                                                        selectedTokens[0]
+                                                )[0]?.logo
                                             }
                                             tokenPrice={3000} // no price provider
                                             amount={amount}

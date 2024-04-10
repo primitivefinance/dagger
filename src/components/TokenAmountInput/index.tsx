@@ -42,7 +42,7 @@ function TokenAmountInput(props: TokenAmountInputProps) {
                           props.tokenPrice * parseFloat(props.amount)
                       )?.toLocaleString(undefined)}
             </Label>
-            <button className="p-0 border-0 hover:opacity-100 bg-transparent">
+            <button className="p-0 border-0 hover:opacity-100 bg-transparent ">
                 <div className="flex flex-row gap-1 justify-end items-center group">
                     <svg
                         className="w-4 h-4"
