@@ -31,6 +31,21 @@ export async function balanceOf(
     }
 }
 
+export async function totalSupply(token: `0x${string}`): Promise<bigint> {
+    try {
+        const result = await readContract(config, {
+            abi: erc20Abi,
+            address: token,
+            functionName: 'totalSupply',
+        })
+
+        return result
+    } catch (e) {
+        console.error(e)
+        throw new Error('Failed to fetch total supply')
+    }
+}
+
 export async function allowance(
     token: `0x${string}`,
     owner: `0x${string}`,

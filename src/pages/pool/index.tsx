@@ -4,7 +4,7 @@ import { useAccount, useChainId } from 'wagmi'
 
 import { tokens } from '../../data/tokens'
 import { shortAddress } from '../../utils/address'
-import { balanceOf } from '../../lib/erc20'
+import { balanceOf, totalSupply } from '../../lib/erc20'
 import { useGraphQL } from '../../useGraphQL'
 import {
     PoolWithTokensFragment,
@@ -39,36 +39,30 @@ const LinkIcon = () => (
     </svg>
 )
 
-function Overview({
-    title,
-    src,
-    alt,
-    pool,
-}: {
-    title: string
-    src: string
-    alt: string
-    pool?: PoolWithTokensFragment
-}): JSX.Element {
+function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
     const chainId = useChainId()
 
     return (
         <section id="overview">
             <div className="flex flex-col gap-xl">
                 <div className="rounded-full size-3xl bg-gray-900 flex">
-                    <img
-                        src={src}
-                        alt={alt}
-                        className="dark:invert items-center justify-center m-auto h-16 pl-3"
-                        style={{
-                            zIndex: 1,
-                        }}
-                    />
+                    {pool?.logo ? (
+                        <img
+                            src={pool?.logo}
+                            alt={pool?.symbol ?? 'token icon'}
+                            className="dark:invert items-center justify-center m-auto h-16 pl-3"
+                            style={{
+                                zIndex: 1,
+                            }}
+                        />
+                    ) : (
+                        <QuestionMarkIcon className="w-full h-full p-6" />
+                    )}
                 </div>
 
                 <div className="flex flex-row items-start gap-lg w-full">
                     <div className="flex flex-col gap-sm w-1/2">
-                        <h2>{title}</h2>
+                        <h2>{pool?.name ?? 'na'}</h2>
                         <p className="text-muted-foreground dark:text-muted-foreground">
                             The overview page provides a high-level summary of
                             the pool&#39;s details and statistics. It also
@@ -119,6 +113,29 @@ function Overview({
     )
 }
 
+function LabelWithEtherscan({
+    label,
+    address,
+}: {
+    label: string
+    address: `0x${string}`
+}): JSX.Element {
+    return (
+        <div className="flex flex-row gap-1 items-center justify-between">
+            <p className="text-sm">{label}</p>
+            <a
+                href={OP_SEPOLIA_ETHERSCAN + address}
+                className="flex flex-row gap-1"
+                target="_blank"
+                rel="noreferrer"
+            >
+                <small>{shortAddress(address)}</small>
+                <LinkIcon />
+            </a>
+        </div>
+    )
+}
+
 type PoolInfoItem = {
     key: React.ReactNode
     value: React.ReactNode
@@ -133,75 +150,94 @@ function PoolInfo({
     items?: PoolInfoItem[]
     title?: string
 }): JSX.Element {
+    const poolType = getPoolType(pool)
+
+    const [lpTokenSupply, setLpTokenSupply] = useState<bigint>(BigInt(0))
+
+    useEffect(() => {
+        async function fetchLpTokenSupply(): Promise<void> {
+            const supply = await totalSupply(pool.lpToken)
+            setLpTokenSupply(supply)
+        }
+
+        if (pool.lpToken) {
+            fetchLpTokenSupply()
+        }
+    }, [])
+
+    console.log(pool.lpToken)
     items = [
         {
             key: 'Name',
-            value: pool.name,
+            value: (
+                <LabelWithEtherscan label={pool.name} address={pool.lpToken} />
+            ),
         },
+
         {
-            key: 'ID',
-            value: pool.id,
-        },
-        {
-            key: 'Type',
-            value: pool.strategy.name,
+            key: 'Strategy',
+            value: (
+                <LabelWithEtherscan
+                    label={pool.strategy.name}
+                    address={
+                        poolType == PoolTypes.nTokenGeometricMean
+                            ? nG3mStrategy
+                            : nG3mStrategy
+                    }
+                />
+            ),
         },
         {
             key: 'Curator',
-            value: pool.strategy.controller,
+            value: (
+                <LabelWithEtherscan
+                    label={
+                        pool.strategy.controller == zeroAddress ||
+                        !pool.strategy.controller
+                            ? 'None'
+                            : 'Curated'
+                    }
+                    address={pool.strategy.controller ?? zeroAddress}
+                />
+            ),
+        },
+        {
+            key: 'Protocol',
+            value: (
+                <LabelWithEtherscan
+                    label={'DFMM v0.2.0'}
+                    address={dfmmAddress as `0x${string}`}
+                />
+            ),
         },
         {
             key: 'Tokens',
             value: pool.poolTokens.items.map((poolToken: PoolToken) => {
                 return (
-                    <div
+                    <LabelWithEtherscan
                         key={poolToken.token.id}
-                        className="flex flex-row text-center w-full gap-xs items-center"
-                    >
-                        {poolToken.token.symbol}{' '}
-                        <a
-                            href={`https://sepolia-optimistic.etherscan.io/address/${poolToken.token.id}`}
-                            className="flex flex-row gap-1"
-                        >
-                            <small>
-                                {shortAddress(
-                                    poolToken.token.id as `0x${string}`
-                                )}
-                            </small>
-                            <LinkIcon />
-                        </a>
-                    </div>
+                        label={poolToken.token.symbol}
+                        address={poolToken.token.id as `0x${string}`}
+                    />
                 )
             }),
         },
+
         {
-            key: 'Swap Fee',
-            value: pool.strategy.swapFee,
+            key: 'Ticker',
+            value: 'TODO',
         },
         {
-            key: 'Liquidity',
-            value: pool.liquidity,
+            key: 'Pool #',
+            value: pool.id,
         },
         {
-            key: 'Reserves',
-            value: pool.reserves,
+            key: 'Created',
+            value: new Date(pool.initTimestamp * 1000).toISOString(),
         },
         {
-            key: 'Weights',
-            value: (
-                <div>
-                    {pool?.parameters?.lastComputedWeights.map(
-                        (weight: number, i: number) => {
-                            return (
-                                <div key={i} className="flex flex-col">
-                                    <p>Weight #{i}</p>
-                                    <p>{(weight / 1e18) * 100}%</p>
-                                </div>
-                            )
-                        }
-                    )}
-                </div>
-            ),
+            key: 'Total Supply',
+            value: <p className="text-sm">{formatWad(lpTokenSupply)}</p>,
         },
     ]
 
@@ -256,11 +292,42 @@ function PoolInfo({
     )
 }
 
+function NTokenGeometricMeanWeights({
+    pool,
+}: {
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
+    const { data } = useGraphQL(nGParamsQueryDocument, { id: pool.id })
+    const params = data?.nTokenGeometricMeanParams
+    console.log('params', params)
+
+    return (
+        <TableBody>
+            {pool &&
+                params?.lastComputedWeights.map((weight, i) => {
+                    const poolToken = pool.poolTokens.items[i]
+                    const reserve = pool.reserves[i]
+
+                    return (
+                        <TableRow key={poolToken.id}>
+                            <TableCell>{formatWadPercentage(weight)}</TableCell>
+                            <TableCell>{poolToken?.token?.symbol}</TableCell>
+                            <TableCell>{formatNumber(reserve)}</TableCell>
+                            <TableCell>n/a</TableCell>
+                        </TableRow>
+                    )
+                })}
+        </TableBody>
+    )
+}
+
 function PoolBreakdown({
     pool,
 }: {
     pool?: PoolWithTokensFragment
 }): JSX.Element {
+    const poolType = getPoolType(pool)
+
     return (
         <section id="pool-breakdown">
             <div className="flex flex-row w-full gap-0">
@@ -278,20 +345,11 @@ function PoolBreakdown({
                             <TableHead>Value</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
-                        {pool?.poolTokens?.items?.map(
-                            (poolToken: PoolToken) => {
-                                return (
-                                    <TableRow key={poolToken.id}>
-                                        <TableCell>100%</TableCell>
-                                        <TableCell>Token</TableCell>
-                                        <TableCell>100</TableCell>
-                                        <TableCell>100000</TableCell>
-                                    </TableRow>
-                                )
-                            }
-                        )}
-                    </TableBody>
+                    {poolType === PoolTypes.nTokenGeometricMean ? (
+                        <NTokenGeometricMeanWeights pool={pool} />
+                    ) : (
+                        <NTokenGeometricMeanWeights pool={pool} />
+                    )}
                 </Table>
             </div>
         </section>
@@ -710,12 +768,7 @@ function Pool(): JSX.Element {
     if (!pool?.poolTokens?.items || !parameters) return <></>
     return (
         <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-2xl">
-            <Overview
-                title="Superliquid ETH"
-                src={'/plogodarksvg.svg'}
-                alt="pool"
-                pool={pool}
-            />
+            <Overview pool={pool} />
 
             {isUserConnected && <AddLiquidity pool={pool} />}
             {isUserConnected && <UserPositions pool={pool} />}
