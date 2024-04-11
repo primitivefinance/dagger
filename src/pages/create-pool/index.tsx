@@ -81,7 +81,7 @@ function CreatePool() {
                     _weights.push(
                         (
                             (100 - parseFloat(inputWeight)) /
-                            poolTokens.length
+                            (poolTokens.length - 1)
                         ).toString()
                     )
                 }
