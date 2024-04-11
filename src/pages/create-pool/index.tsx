@@ -62,12 +62,32 @@ function CreatePool() {
         setPoolTokens(_poolTokens)
     }
 
-    const calculateWeights = () => {
+    const calculateWeights = (
+        inputWeightToken?: `0x${string}`,
+        inputWeight?: string
+    ) => {
         const _weights: string[] = []
-        const w = 100 / parseFloat(poolTokens.length.toString())
-        poolTokens.map(() => {
-            _weights.push(w.toString())
-        })
+        if (!inputWeight || !inputWeightToken) {
+            poolTokens.map(() => {
+                _weights.push(
+                    (100 / parseFloat(poolTokens.length.toString())).toString()
+                )
+            })
+        } else {
+            poolTokens.map((tkn) => {
+                if (tkn === inputWeightToken) {
+                    _weights.push(inputWeight)
+                } else {
+                    _weights.push(
+                        (
+                            (100 - parseFloat(inputWeight)) /
+                            poolTokens.length
+                        ).toString()
+                    )
+                }
+            })
+        }
+        console.log(_weights)
         setWeights(_weights)
     }
 
@@ -116,7 +136,7 @@ function CreatePool() {
 
     useEffect(() => {
         calculateWeights()
-    }, [calculateWeights, poolTokens])
+    }, [poolTokens])
 
     return (
         <div className="py-16 container mx-auto max-w-6xl gap-14 flex flex-col">
@@ -229,12 +249,10 @@ function CreatePool() {
                                             }
                                             value={weights[i]}
                                             onChange={(e) => {
-                                                const _weights = weights.splice(
-                                                    i,
-                                                    1,
+                                                calculateWeights(
+                                                    token,
                                                     e.target.value
                                                 )
-                                                setWeights(_weights)
                                             }}
                                         />
                                     </TableCell>
