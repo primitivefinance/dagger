@@ -409,7 +409,6 @@ function computeAllocationDeltasGivenDeltaT(
     reserves: number[],
     liquidity: number
 ): { reserveDeltas: number[]; deltaL: number } {
-    console.log({ deltaT, indexT, reserves, liquidity })
     const a = deltaT / reserves[indexT]
     const reserveDeltas = []
     reserveDeltas[indexT] = deltaT
@@ -424,7 +423,7 @@ function computeAllocationDeltasGivenDeltaT(
     return { reserveDeltas, deltaL }
 }
 
-function toWad(amount: number): bigint {
+export function toWad(amount: number): bigint {
     return parseEther(amount.toString())
 }
 
@@ -461,7 +460,7 @@ function TransactionView({
         }
 
         fetchAllowances()
-    }, [selectedTokens])
+    }, [selectedTokens, address])
 
     const depositAll = true // todo: make conditional once single sided deposits are available
 
@@ -470,16 +469,12 @@ function TransactionView({
             (pt) => pt.token.id === selectedTokens[0]
         )
 
-        console.log({ amount })
-
         const { reserveDeltas, deltaL } = computeAllocationDeltasGivenDeltaT(
             parseFloat(amount),
             indexOfIndependent,
             pool.reserves,
             pool.liquidity
         )
-
-        console.log({ reserveDeltas, deltaL })
 
         return {
             reserveDeltas,
@@ -496,82 +491,7 @@ function TransactionView({
     const [isUSD, setIsUSD] = useState<boolean>(false)
     const { toast } = useToast()
 
-    const [txHash, setTxHash] = useState<string | null>(null)
-
-    const { data: txReceipt, isSuccess } = useWaitForTransactionReceipt({
-        hash: txHash, // The transaction hash you got from writeContract onSuccess
-    })
-
-    useEffect(() => {
-        if (isSuccess && txReceipt) {
-            // Transaction confirmed
-            console.log('Transaction confirmed:', txReceipt.transactionHash)
-            // Update the toast here
-            toast({
-                title: 'Transaction success',
-                description: (
-                    <div>
-                        Transaction confirmed!{' '}
-                        <a
-                            href={`${OP_SEPOLIA_ETHERSCAN}/tx/${txReceipt.transactionHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            View on Etherscan
-                        </a>
-                    </div>
-                ),
-                // Adjust toast options as needed
-            })
-        }
-    }, [isSuccess, txReceipt])
-
-    const {
-        writeContract,
-        isPending: isApproving,
-        isError: approvalError,
-        isSuccess: approvalSuccess,
-        failureReason: approvalFailureReason,
-        reset: resetApproval,
-    } = useWriteContract({
-        config,
-        mutation: {
-            onSuccess: (res) => {
-                console.log('Success!', res)
-                const hash = res // Capture the transaction hash
-                setTxHash(hash)
-                console.log('Transaction sent:', hash)
-                // Display initial toast with transaction hash
-                toast({
-                    title: 'Transaction sent',
-                    description: `Transaction hash: ${hash}`,
-                    // You can add an action to copy the hash or open it in Etherscan
-                })
-                // Proceed to watch for the transaction receipt
-                waitForTransactionReceipt(config, {
-                    hash: hash,
-                    confirmations: 1,
-                })
-            },
-            onError: (err) => {
-                console.error(err)
-                toast({
-                    variant: 'destructive',
-                    title: 'Uh oh! Something went wrong.',
-                    description:
-                        'There was a problem with your request: ' + err.name,
-                    action: (
-                        <ToastAction
-                            altText="Try again"
-                            onClick={resetApproval}
-                        >
-                            Try again
-                        </ToastAction>
-                    ),
-                })
-            },
-        },
-    })
+    const [txHash, setTxHash] = useState<string | undefined>(undefined)
 
     const {
         writeContract: executeAllocate,
@@ -584,7 +504,6 @@ function TransactionView({
         config,
         mutation: {
             onSuccess: (res) => {
-                console.log('Success!', res)
                 const hash = res // Capture the transaction hash
                 setTxHash(hash)
                 console.log('Transaction sent:', hash)
@@ -649,8 +568,6 @@ function TransactionView({
         )
         const deltaT = parseFloat(amount)
 
-        console.log({ poolId, tokenIndex, deltaT })
-
         const result = await readContract(config, {
             abi: nG3mSolverAbi,
             address: nG3mSolver,
@@ -672,13 +589,10 @@ function TransactionView({
                 BigInt(poolsSnapshot.reserves[0]) -
             10n // 10n because the computation is slightly off from rounding, so the rounded token amounts expect less liquidity
 
-        console.log({ deltas, liquidity })
         const payload = encodeAbiParameters(
             parseAbiParameters('uint256[], uint256'),
             [deltas, liquidity]
         )
-
-        console.log({ result })
 
         function computeAllowanceSlot(
             slot: number,
@@ -733,8 +647,6 @@ function TransactionView({
                     )
                 ) + BigInt(reserveIndex)
             )
-
-            console.log({ storageSlot })
         }
 
         computeReservesStorageSlot(poolId, 0)
@@ -777,8 +689,6 @@ function TransactionView({
             }
         }
 
-        console.log({ txResult })
-
         if (txResult) {
             setPayloadToExecute(payload)
             setSimulating(false)
@@ -788,11 +698,7 @@ function TransactionView({
 
     const ApprovalAction = () => {
         if (approvalError) {
-            return (
-                <span className="text-red-500">
-                    Approval failed <small>{approvalFailureReason?.name}</small>
-                </span>
-            )
+            return <span className="text-red-500">Approval failed</span>
         }
 
         if (approvalSuccess) {
@@ -835,33 +741,31 @@ function TransactionView({
     }
 
     const remainingAllowances = Object.keys(allowances).filter(
-        (key) => allowances[key] < parseFloat(amount)
+        (key) =>
+            parseFloat(formatUnits(allowances[key], 18)) < parseFloat(amount)
     )
 
+    const { setTxHash: setTx, txReceipt } = useTransactionStatus({})
+
     const TransactionAction = ({ phase }: { phase: TransactionPhase }) => {
-        const style =
-            'text-primary bg-blue-600 rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600'
         switch (phase) {
             case TransactionPhase.Simulate:
                 return (
-                    <Button
-                        onClick={async () => {
-                            // allocate
-                            await prepareAllocate()
-                        }}
-                        className={style}
-                    >
-                        {simulating ? 'Simulating...' : 'Simulate deposit'}
-                    </Button>
+                    <>
+                        <TransactionButton
+                            onClick={async () => {
+                                // allocate
+                                await prepareAllocate()
+                            }}
+                            pattern
+                        >
+                            <h4>{simulating ? 'Simulating...' : 'Simulate'}</h4>
+                        </TransactionButton>
+                    </>
                 )
             case TransactionPhase.Approve:
-                console.log(approvalFailureReason)
-                console.log(allowances)
-
-                const token = remainingAllowances.pop() as `0x${string}`
-                console.log({ token })
-                return (
-                    <Button
+                {
+                    /* <TransactionButton
                         onClick={() =>
                             writeContract({
                                 abi: erc20Abi,
@@ -870,10 +774,31 @@ function TransactionView({
                                 args: [dfmmAddress, toWad(parseFloat(amount))],
                             })
                         }
-                        className={style}
+                        pattern
+                        isAwaitingWalletConfirmation={isApproving}
+                        isErrored={approvalError}
+                        isConfirmed={
+                            approvalSuccess &&
+                            isSuccess &&
+                            typeof txReceipt !== 'undefined'
+                        }
+                        isReload={approvalError}
+                        isBroadcasting={
+                            typeof txHash !== 'undefined' &&
+                            typeof txReceipt === 'undefined'
+                        }
                     >
                         <ApprovalAction />
-                    </Button>
+                    </TransactionButton> */
+                }
+                return (
+                    <ApproveTransaction
+                        token={remainingAllowances?.[0] as `0x${string}`}
+                        amount={amount}
+                        setTxHash={setTx}
+                        txHash={txHash as `0x${string}`}
+                        txReceipt={txReceipt}
+                    />
                 )
             case TransactionPhase.Execute:
                 return (
@@ -886,7 +811,6 @@ function TransactionView({
                                 args: [pool.id, payloadToExecute!],
                             })
                         }
-                        className={style}
                     >
                         <ExecuteAction />
                     </Button>
@@ -898,7 +822,6 @@ function TransactionView({
                             // allocate
                             await prepareAllocate()
                         }}
-                        className={style}
                     >
                         Done
                     </Button>
