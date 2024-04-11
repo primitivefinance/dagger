@@ -5,31 +5,40 @@ export const title: string = 'Create New DFMM Pool'
 export const subtitle: string =
     'Determine parameters, define a DFMM strategy contract, and deposit assets.'
 
-type Tag = { title: string; sub: string }
+type Tags = { [key: string]: { title: string; sub: string } }
 
-export const tags: Tag[] = [
-    { title: 'Pair', sub: 'Select the tokens to include in the pool.' },
-    { title: 'Strategy', sub: 'Select a DFMM strategy.' },
-    { title: 'Fee Rate', sub: 'Cost of automated portfolio rebalancing.' },
-    {
-        title: 'Pool Weights',
-        sub: 'Portfolio composition of a particular pair.',
+export const tags: Tags = {
+    ['strategy']: {
+        title: 'Strategy',
+        sub: 'Select a DFMM Strategy',
     },
-    {
-        title: 'Strategy Controller',
-        sub: 'Smart contract address of a DFMM strategy.',
+    ['controller']: {
+        title: 'Pool Controller',
+        sub: 'Identify an address that may edit pool parameters',
     },
-    {
-        title: 'Add Liquidity',
-        sub: 'Determine the required asset quantities for pool creation.',
+    ['fee']: {
+        title: 'Pool Fees',
+        sub: 'Select the cost of rebalancing your pool.  Higher fees, less arbitrage.',
     },
-]
+    ['mean']: {
+        title: 'Mean Price',
+        sub: 'Determine the target price of a concentrated liquidity pool (CLP).',
+    },
+    ['width']: {
+        title: 'Liquidity Range',
+        sub: 'Select the width of a concentrated liquidity pool (CLP).',
+    },
+    ['portfolio']: {
+        title: 'Portfolio Composition',
+        sub: 'Determine the assets included in the new pool.',
+    },
+}
 
 export const strats: CardToggleOption[] = [
     {
         value: 'GeometricMean',
         title: 'Weighted Portfolio',
-        description: 'Geometric mean strategy with any amount of tokens.',
+        description: 'Geometric mean strategy with any number of tokens.',
     },
     {
         value: 'LogNormal',
@@ -39,7 +48,7 @@ export const strats: CardToggleOption[] = [
     {
         value: 'ConstantSum',
         title: 'Fixed Order',
-        description: 'Offer to buy or sell an asset at a single price.'
+        description: 'Offer to buy or sell an asset at a single price.',
     },
 ]
 

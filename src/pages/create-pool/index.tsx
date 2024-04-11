@@ -27,6 +27,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@radix-ui/react-label'
+import {
+    Table,
+    TableCell,
+    TableRow,
+    TableBody,
+    TableHeader,
+} from '@/components/ui/table'
 
 function CreatePool() {
     const { address } = useAccount()
@@ -35,7 +42,7 @@ function CreatePool() {
 
     const [strategy, setStrategy] = useState(strats[0].value)
     const [feeRate, setFeeRate] = useState(feeLevels[0].value)
-    const [weight, setWeight] = useState(weights[0].value)
+    const [weights, setWeights] = useState<string[]>([])
 
     const [poolTokens, setPoolTokens] = useState<`0x${string}`[]>([
         tokens[chainId][0].address,
@@ -55,11 +62,39 @@ function CreatePool() {
         setPoolTokens(_poolTokens)
     }
 
+    const calculateWeights = () => {
+        const _weights: string[] = []
+        const w = 100 / parseFloat(poolTokens.length.toString())
+        poolTokens.map(() => {
+            _weights.push(w.toString())
+        })
+        setWeights(_weights)
+    }
+
     const setToken = (tokenAddress: `0x${string}`, position: number) => {
         const _poolTokens = poolTokens.map((token, i) =>
             i === position ? tokenAddress : token
         )
         setPoolTokens(_poolTokens)
+    }
+
+    const setDefaults = (strat: string) => {
+        switch (strat) {
+            case 'GeometricMean':
+                setPoolTokens([
+                    tokens[chainId][0].address,
+                    tokens[chainId][1].address,
+                    tokens[chainId][2].address,
+                    tokens[chainId][3].address,
+                ] as `0x${string}`[])
+                break
+            case 'LogNormal':
+                break
+            case 'ConstantSum':
+                break
+            default:
+                break
+        }
     }
 
     useEffect(() => {
@@ -75,6 +110,14 @@ function CreatePool() {
         })()
     }, [address, poolTokens])
 
+    useEffect(() => {
+        setDefaults(strategy)
+    }, [strategy])
+
+    useEffect(() => {
+        calculateWeights()
+    }, [calculateWeights, poolTokens])
+
     return (
         <div className="py-16 container mx-auto max-w-6xl gap-14 flex flex-col">
             <div className="flex flex-col gap-2">
@@ -84,66 +127,10 @@ function CreatePool() {
             <div className="grid grid-cols-[1fr_2fr] gap-x-14 gap-y-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>{tags[0].title}</CardTitle>
-                        <CardDescription>{tags[0].sub}</CardDescription>
-                    </CardHeader>
-                </Card>
-
-                <div className="flex flex-row gap-4 items-center">
-                    {poolTokens.map((token, i) => {
-                        const _setToken = (tkn: `0x${string}`) => {
-                            setToken(tkn, i)
-                        }
-                        return (
-                            <div className="flex flex-col" key={i}>
-                                <TokenSelector
-                                    tokenLogo={
-                                        tokens[chainId].find(
-                                            (tkn) => tkn.address === token
-                                        )?.logo || ''
-                                    }
-                                    tokenSymbol={
-                                        tokens[chainId].find(
-                                            (tkn) => tkn.address === token
-                                        )?.symbol || ''
-                                    }
-                                    setToken={_setToken}
-                                    disabledTokens={poolTokens}
-                                />
-                                {i < 2 ? (
-                                    <Button disabled>Token {i + 1}</Button>
-                                ) : (
-                                    <Button onClick={() => removeToken(token)}>
-                                        Remove Token {i + 1}
-                                    </Button>
-                                )}
-                            </div>
-                        )
-                    })}
-                    {tokens[chainId].find(
-                        (tkn) => !poolTokens.includes(tkn.address)
-                    )?.address === undefined ? (
-                        <Button disabled>No More Tokens!</Button>
-                    ) : (
-                        <Button
-                            onClick={() =>
-                                addToken(
-                                    tokens[chainId].find(
-                                        (tkn) =>
-                                            !poolTokens.includes(tkn.address)
-                                    )?.address as `0x${string}`
-                                )
-                            }
-                        >
-                            Add Token
-                        </Button>
-                    )}
-                </div>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{tags[1].title}</CardTitle>
-                        <CardDescription>{tags[1].sub}</CardDescription>
+                        <CardTitle>{tags['strategy'].title}</CardTitle>
+                        <CardDescription>
+                            {tags['strategy'].sub}
+                        </CardDescription>
                     </CardHeader>
                 </Card>
                 <CardToggleGroup
@@ -151,11 +138,33 @@ function CreatePool() {
                     value={strategy}
                     setValue={setStrategy}
                 />
-
+            </div>
+            <div className="grid w-1/2 items-center gap-1">
+                <Label className="text-sm font-semibold">
+                    {tags['controller'].title}
+                </Label>
+                <Input
+                    value={controller}
+                    onChange={(e) => setController(e.target.value)}
+                    placeholder="Use an Ethereum address or an ENS name..."
+                />
+                <div className="w-full flex justify-end -my-2">
+                    <Button
+                        variant="link"
+                        className="p-0"
+                        onClick={() =>
+                            setController(address !== undefined ? address : '')
+                        }
+                    >
+                        Use my current wallet address
+                    </Button>
+                </div>
+            </div>
+            <div className="grid grid-cols-[1fr_2fr] gap-x-14 gap-y-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>{tags[2].title}</CardTitle>
-                        <CardDescription>{tags[2].sub}</CardDescription>
+                        <CardTitle>{tags['fee'].title}</CardTitle>
+                        <CardDescription>{tags['fee'].sub}</CardDescription>
                     </CardHeader>
                 </Card>
                 <CardToggleGroup
@@ -163,56 +172,120 @@ function CreatePool() {
                     value={feeRate}
                     setValue={setFeeRate}
                 />
-
                 <Card>
                     <CardHeader>
-                        <CardTitle>{tags[3].title}</CardTitle>
-                        <CardDescription>{tags[3].sub}</CardDescription>
-                    </CardHeader>
-                </Card>
-                <CardToggleGroup
-                    options={weights}
-                    value={weight}
-                    setValue={setWeight}
-                />
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{tags[4].title}</CardTitle>
-                        <CardDescription>{tags[4].sub}</CardDescription>
+                        <CardTitle>{tags['mean'].title}</CardTitle>
+                        <CardDescription>{tags['mean'].sub}</CardDescription>
                     </CardHeader>
                 </Card>
 
-                <div className="grid w-full items-center gap-1">
-                    <Label className="text-sm font-semibold">
-                        Controller address
-                    </Label>
-                    <Input
-                        value={controller}
-                        onChange={(e) => setController(e.target.value)}
-                        placeholder="Use an Ethereum address or an ENS name..."
-                    />
-                    <div className="w-full flex justify-end -my-2">
-                        <Button
-                            variant="link"
-                            className="p-0"
-                            onClick={() =>
-                                setController(
-                                    address !== undefined ? address : ''
-                                )
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{tags['width'].title}</CardTitle>
+                        <CardDescription>{tags['width'].sub}</CardDescription>
+                    </CardHeader>
+                </Card>
+            </div>
+            <div className="flex flex-row gap-4 items-center">
+                <Table>
+                    <TableHeader>
+                        <TableCell>Tokens</TableCell>
+                        <TableCell>Amounts</TableCell>
+                        <TableCell>Weights</TableCell>
+                        <TableCell>Edit</TableCell>
+                    </TableHeader>
+                    <TableBody>
+                        {poolTokens.map((token, i) => {
+                            const _setToken = (tkn: `0x${string}`) => {
+                                setToken(tkn, i)
                             }
-                        >
-                            Use my current wallet address
-                        </Button>
-                    </div>
-                </div>
+                            return (
+                                <TableRow key={i}>
+                                    <TableCell>
+                                        <TokenSelector
+                                            tokenLogo={
+                                                tokens[chainId].find(
+                                                    (tkn) =>
+                                                        tkn.address === token
+                                                )?.logo || ''
+                                            }
+                                            tokenSymbol={
+                                                tokens[chainId].find(
+                                                    (tkn) =>
+                                                        tkn.address === token
+                                                )?.symbol || ''
+                                            }
+                                            setToken={_setToken}
+                                            disabledTokens={poolTokens}
+                                        />
+                                    </TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell>
+                                        {' '}
+                                        <Input
+                                            type="text"
+                                            disabled={
+                                                strategy !== 'GeometricMean'
+                                            }
+                                            value={weights[i]}
+                                            onChange={(e) => {
+                                                const _weights = weights.splice(
+                                                    i,
+                                                    1,
+                                                    e.target.value
+                                                )
+                                                setWeights(_weights)
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        {i < 2 ? (
+                                            <Button disabled>
+                                                Token {i + 1}
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() =>
+                                                    removeToken(token)
+                                                }
+                                            >
+                                                Remove Token {i + 1}
+                                            </Button>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        })}
+                        <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                            <TableCell>
+                                {tokens[chainId].find(
+                                    (tkn) => !poolTokens.includes(tkn.address)
+                                )?.address === undefined ? (
+                                    <Card>No More Tokens!</Card>
+                                ) : (
+                                    <Button
+                                        onClick={() =>
+                                            addToken(
+                                                tokens[chainId].find(
+                                                    (tkn) =>
+                                                        !poolTokens.includes(
+                                                            tkn.address
+                                                        )
+                                                )?.address as `0x${string}`
+                                            )
+                                        }
+                                    >
+                                        Add Token
+                                    </Button>
+                                )}
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{tags[5].title}</CardTitle>
-                        <CardDescription>{tags[5].sub}</CardDescription>
-                    </CardHeader>
-                </Card>
                 {/***
                  * 
 
