@@ -1427,10 +1427,18 @@ function UserPositions({
     const [range, setRange] = useState<number>(0)
 
     const { address } = useAccount()
-
     const userPositions = pool?.positions?.items?.filter(
-        (position: Position) => position?.id === address
+        (position: Position) =>
+            getAddress(position.accountId) === getAddress(address as string)
     )
+
+    const { data: positions } = useGraphQL(allPositionsQueryDocument, {
+        limit: 20,
+        variables: {
+            poolId: pool.id,
+            accountId: address,
+        },
+    })
 
     const noExistingPositions = userPositions?.length === 0
 
@@ -1458,15 +1466,26 @@ function UserPositions({
                                 </p>
                             </TableRow>
                         )}
-                        {userPositions.map((position: Position) => {
-                            return (
-                                <TableRow key={position.id}>
-                                    <TableCell>{pool?.name}</TableCell>
-                                    <TableCell>{position.liquidity}</TableCell>
-                                    <TableCell>todo</TableCell>
-                                </TableRow>
-                            )
-                        })}
+                        {positions &&
+                            positions?.positions?.items
+                                ?.filter(
+                                    (position) =>
+                                        getAddress(position?.accountId) ===
+                                        getAddress(address as string)
+                                )
+                                ?.map((position: Position) => {
+                                    return (
+                                        <TableRow key={position.id}>
+                                            <TableCell>{pool?.name}</TableCell>
+                                            <TableCell>
+                                                {formatWad(
+                                                    position.liquidityWad
+                                                )}
+                                            </TableCell>
+                                            <TableCell>todo</TableCell>
+                                        </TableRow>
+                                    )
+                                })}
                     </TableBody>
                 </Table>
                 <div className="flex flex-col gap-md">
