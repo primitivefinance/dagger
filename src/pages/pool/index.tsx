@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import {
     useAccount,
     useChainId,
+    useReadContract,
     useWaitForTransactionReceipt,
     useWatchPendingTransactions,
     useWriteContract,
@@ -137,6 +138,29 @@ function LabelWithEtherscan({
                 rel="noreferrer"
             >
                 <small>{shortAddress(address)}</small>
+                <LinkIcon />
+            </a>
+        </div>
+    )
+}
+
+function TxLabelEtherscan({
+    label,
+    txHash,
+}: {
+    label: React.ReactNode
+    txHash: `0x${string}`
+}): JSX.Element {
+    return (
+        <div className="flex flex-row gap-1 items-center justify-between">
+            {label}
+            <a
+                href={OP_SEPOLIA_ETHERSCAN + '/tx/' + txHash}
+                className="flex flex-row gap-1"
+                target="_blank"
+                rel="noreferrer"
+            >
+                <small>{shortAddress(txHash)}</small>
                 <LinkIcon />
             </a>
         </div>
@@ -491,8 +515,6 @@ function TransactionView({
     const [isUSD, setIsUSD] = useState<boolean>(false)
     const { toast } = useToast()
 
-    const [txHash, setTxHash] = useState<string | undefined>(undefined)
-
     const {
         writeContract: executeAllocate,
         isPending: allocatePending,
@@ -505,7 +527,6 @@ function TransactionView({
         mutation: {
             onSuccess: (res) => {
                 const hash = res // Capture the transaction hash
-                setTxHash(hash)
                 console.log('Transaction sent:', hash)
                 // Display initial toast with transaction hash
                 toast({
@@ -542,11 +563,38 @@ function TransactionView({
 
     const [simulatedResult, setSimulatedResult] = useState<any>(undefined)
     const [simulating, setSimulating] = useState<boolean>(false)
-    const [executing, setExecuting] = useState<boolean>(false)
 
     const [payloadToExecute, setPayloadToExecute] = useState<
         string | undefined
     >(undefined)
+
+    const { data: poolsSnapshot } = useReadContract({
+        abi: dfmmABI,
+        address: dfmmAddress,
+        functionName: 'pools',
+        args: [pool.id],
+    })
+
+    useEffect(() => {
+        if (!poolsSnapshot || !amount || parseFloat(amount) === 0) {
+            return
+        }
+
+        const deltaT = parseFloat(amount)
+        const deltas = poolsSnapshot.reserves.map((_, i) => toWad(deltaT))
+        // todo: assumes equal weights...
+        const liquidity =
+            (toWad(deltaT) * BigInt(poolsSnapshot.totalLiquidity)) /
+                BigInt(poolsSnapshot.reserves[0]) -
+            10n // 10n because the computation is slightly off from rounding, so the rounded token amounts expect less liquidity
+
+        const payload = encodeAbiParameters(
+            parseAbiParameters('uint256[], uint256'),
+            [deltas, liquidity]
+        )
+
+        setPayloadToExecute(payload)
+    }, [poolsSnapshot, amount])
 
     async function prepareAllocate(): Promise<void> {
         if (!selectedTokens || selectedTokens.length === 0) {
@@ -745,12 +793,23 @@ function TransactionView({
             parseFloat(formatUnits(allowances[key], 18)) < parseFloat(amount)
     )
 
-    const { setTxHash: setTx, txReceipt } = useTransactionStatus({})
+    const { setTxHash: setTx, txReceipt, txHash } = useTransactionStatus({})
+    const [successfulReceipts, setSuccessfulReceipts] = useState<any[]>([])
+
+    // Upon receiving a txReceipt, reset the form.
+    useEffect(() => {
+        if (typeof txReceipt !== 'undefined') {
+            setAmount('')
+            setDependentAmounts(undefined)
+            setPayloadToExecute(undefined)
+            setSuccessfulReceipts((prev) => [...prev, txReceipt])
+        }
+    }, [txReceipt])
 
     const TransactionAction = ({ phase }: { phase: TransactionPhase }) => {
         switch (phase) {
             case TransactionPhase.Simulate:
-                return (
+                /* return (
                     <>
                         <TransactionButton
                             onClick={async () => {
@@ -762,6 +821,16 @@ function TransactionView({
                             <h4>{simulating ? 'Simulating...' : 'Simulate'}</h4>
                         </TransactionButton>
                     </>
+                ) */
+
+                return (
+                    <AllocateTransaction
+                        poolId={pool.id}
+                        payload={payloadToExecute}
+                        setTxHash={setTx}
+                        txHash={txHash as `0x${string}`}
+                        txReceipt={txReceipt}
+                    />
                 )
             case TransactionPhase.Approve:
                 {
@@ -1061,6 +1130,46 @@ function TransactionView({
                                       : TransactionPhase.Execute
                             }
                         />
+                        {successfulReceipts.length > 0 && (
+                            <div className="flex flex-col gap-md">
+                                <p className="pb-2 border-b">
+                                    Recent Transactions
+                                </p>
+                                {successfulReceipts.map((receipt) => {
+                                    return (
+                                        <div
+                                            className="flex flex-row gap-sm justify-between w-full items-center"
+                                            key={receipt.transactionHash}
+                                        >
+                                            <small>
+                                                {receipt.status ===
+                                                'success' ? (
+                                                    <CheckCircledIcon
+                                                        color="#34d399"
+                                                        fontSize={28}
+                                                    />
+                                                ) : (
+                                                    <QuestionMarkCircledIcon />
+                                                )}
+                                            </small>
+                                            Deposit
+                                            <LabelWithEtherscan
+                                                label="From"
+                                                address={receipt.from}
+                                            />
+                                            <LabelWithEtherscan
+                                                label="To"
+                                                address={receipt.to}
+                                            />
+                                            <TxLabelEtherscan
+                                                label="Tx"
+                                                txHash={receipt.transactionHash}
+                                            />
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </div>
                 </div>
             </SheetContent>

@@ -78,7 +78,8 @@ export const useTransactionStatus = ({
     retryTx?: () => void
 }): {
     setTxHash: (txHash: `0x${string}`) => void
-    txReceipt: any
+    txReceipt: any | undefined
+    txHash: `0x${string}` | undefined
 } => {
     const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined)
     const { toast } = useToast()
@@ -111,5 +112,5 @@ export const useTransactionStatus = ({
         // This effect should only run when `isSuccess` or `isError` changes.
     }, [isSuccess, isError, txReceipt, toast, retryTx, setTxHash, txHash])
 
-    return { setTxHash, txReceipt }
+    return { setTxHash, txReceipt, txHash }
 }
