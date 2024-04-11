@@ -81,7 +81,6 @@ function AllocateTransaction({
     const needsSimulation = typeof simulation === 'undefined'
     const needsResimulation = isSimulateStale && !isPending && !toDeposit
     const awaitingDepositSignature = typeof txHash === 'undefined' && isPending
-    console.log({ txReceipt, txHash })
     const awaitingDepositConfirmation =
         typeof txReceipt === 'undefined' && typeof txHash !== 'undefined'
 

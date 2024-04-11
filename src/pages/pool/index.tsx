@@ -577,6 +577,7 @@ function TransactionView({
 
     useEffect(() => {
         if (!poolsSnapshot || !amount || parseFloat(amount) === 0) {
+            setPayloadToExecute(undefined)
             return
         }
 
@@ -809,20 +810,6 @@ function TransactionView({
     const TransactionAction = ({ phase }: { phase: TransactionPhase }) => {
         switch (phase) {
             case TransactionPhase.Simulate:
-                /* return (
-                    <>
-                        <TransactionButton
-                            onClick={async () => {
-                                // allocate
-                                await prepareAllocate()
-                            }}
-                            pattern
-                        >
-                            <h4>{simulating ? 'Simulating...' : 'Simulate'}</h4>
-                        </TransactionButton>
-                    </>
-                ) */
-
                 return (
                     <AllocateTransaction
                         poolId={pool.id}
@@ -833,33 +820,6 @@ function TransactionView({
                     />
                 )
             case TransactionPhase.Approve:
-                {
-                    /* <TransactionButton
-                        onClick={() =>
-                            writeContract({
-                                abi: erc20Abi,
-                                address: token,
-                                functionName: 'approve',
-                                args: [dfmmAddress, toWad(parseFloat(amount))],
-                            })
-                        }
-                        pattern
-                        isAwaitingWalletConfirmation={isApproving}
-                        isErrored={approvalError}
-                        isConfirmed={
-                            approvalSuccess &&
-                            isSuccess &&
-                            typeof txReceipt !== 'undefined'
-                        }
-                        isReload={approvalError}
-                        isBroadcasting={
-                            typeof txHash !== 'undefined' &&
-                            typeof txReceipt === 'undefined'
-                        }
-                    >
-                        <ApprovalAction />
-                    </TransactionButton> */
-                }
                 return (
                     <ApproveTransaction
                         token={remainingAllowances?.[0] as `0x${string}`}
