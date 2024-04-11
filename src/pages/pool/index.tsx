@@ -84,32 +84,14 @@ function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
                             {pool?.poolTokens?.items?.map(
                                 (poolToken: PoolToken) => {
                                     return (
-                                        <>
-                                            <img
-                                                src={
-                                                    tokens[chainId].find(
-                                                        (tkn) =>
-                                                            tkn.symbol.toLowerCase() ===
-                                                            poolToken.token.symbol.toLowerCase()
-                                                    )?.logo
-                                                }
-                                                alt={poolToken?.token?.symbol}
-                                                className="rounded-full size-12"
-                                                style={{
-                                                    zIndex: 1,
-                                                }}
-                                            />
-                                            <div
-                                                className="bg-gray-600 px-2 rounded-full text-xs"
-                                                style={{
-                                                    zIndex: 2,
-                                                    marginLeft: '-1rem',
-                                                    marginTop: '1rem',
-                                                }}
-                                            >
-                                                {poolToken?.token.symbol}
-                                            </div>
-                                        </>
+                                        <TokenLogo
+                                            key={poolToken.id}
+                                            chainId={chainId}
+                                            address={
+                                                poolToken?.token
+                                                    ?.id as `0x${string}`
+                                            }
+                                        />
                                     )
                                 }
                             )}
@@ -118,52 +100,6 @@ function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
                 </div>
             </div>
         </section>
-    )
-}
-
-function LabelWithEtherscan({
-    label,
-    address,
-}: {
-    label: React.ReactNode
-    address: `0x${string}`
-}): JSX.Element {
-    return (
-        <div className="flex flex-row gap-1 items-center justify-between">
-            {label}
-            <a
-                href={OP_SEPOLIA_ETHERSCAN + '/address/' + address}
-                className="flex flex-row gap-1"
-                target="_blank"
-                rel="noreferrer"
-            >
-                <small>{shortAddress(address)}</small>
-                <LinkIcon />
-            </a>
-        </div>
-    )
-}
-
-function TxLabelEtherscan({
-    label,
-    txHash,
-}: {
-    label: React.ReactNode
-    txHash: `0x${string}`
-}): JSX.Element {
-    return (
-        <div className="flex flex-row gap-1 items-center justify-between">
-            {label}
-            <a
-                href={OP_SEPOLIA_ETHERSCAN + '/tx/' + txHash}
-                className="flex flex-row gap-1"
-                target="_blank"
-                rel="noreferrer"
-            >
-                <small>{shortAddress(txHash)}</small>
-                <LinkIcon />
-            </a>
-        </div>
     )
 }
 
@@ -445,10 +381,6 @@ function computeAllocationDeltasGivenDeltaT(
 
     const deltaL = a * liquidity
     return { reserveDeltas, deltaL }
-}
-
-export function toWad(amount: number): bigint {
-    return parseEther(amount.toString())
 }
 
 function TransactionView({
@@ -1575,7 +1507,7 @@ function computeTokenBreakdown(
     poolLiquidity: number,
     liquidityTokenSupply: number
 ): number {
-    return reserve / poolLiquidity / liquidityTokenSupply
+    return reserve / liquidityTokenSupply
 }
 
 /**

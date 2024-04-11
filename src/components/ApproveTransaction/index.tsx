@@ -5,8 +5,8 @@ import { useWriteContract, useChainId } from 'wagmi'
 import { config } from '../../App'
 import TransactionButton from '../TransactionButton'
 import { dfmmAddress } from '@/data/contracts'
-import { toWad } from '@/pages/pool'
 import { tokens } from '@/data/tokens'
+import { toWad } from '@/utils/numbers'
 
 type ApproveTransactionProps = {
     token: `0x${string}`
