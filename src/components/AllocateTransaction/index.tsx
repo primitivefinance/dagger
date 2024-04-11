@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react'
-import { erc20Abi, getAddress } from 'viem'
-import { useWriteContract, useChainId, useSimulateContract } from 'wagmi'
+import { Address, erc20Abi, getAddress, maxUint256, numberToHex } from 'viem'
+import {
+    useWriteContract,
+    useChainId,
+    useSimulateContract,
+    useAccount,
+} from 'wagmi'
 
 import { dfmmAddress } from '@/data/contracts'
-import { toWad } from '@/pages/pool'
-import { tokens } from '@/data/tokens'
 
 import { config } from '../../App'
 import TransactionButton from '../TransactionButton'
 import { dfmmABI } from '@/lib/abis/dfmm'
+import { computeAllowanceSlot } from '@/utils/simulate'
 
 type AllocateTransactionProps = {
     poolId: number
+    tokens: Address[]
     payload?: string
     setTxHash: (txHash: `0x${string}`) => void
     txHash?: `0x${string}`
@@ -24,12 +29,15 @@ type AllocateTransactionProps = {
  */
 function AllocateTransaction({
     poolId,
+    tokens,
     payload,
     setTxHash,
     txHash,
     txReceipt,
 }: AllocateTransactionProps): JSX.Element {
-    const chainId = useChainId()
+    const { address: owner } = useAccount()
+    const spender = dfmmAddress
+    const maxAllowance = numberToHex(maxUint256)
 
     const [toSimulate, setToSimulate] = useState<boolean>(false)
     const [toDeposit, setToDeposit] = useState<boolean>(false)
@@ -48,8 +56,22 @@ function AllocateTransaction({
         address: dfmmAddress,
         functionName: 'allocate',
         args: [poolId, payload],
+        stateOverride: tokens.map((token) => {
+            return {
+                address: token,
+                stateDiff: [
+                    {
+                        slot: computeAllowanceSlot(
+                            owner as `0x${string}`,
+                            spender
+                        ),
+                        value: maxAllowance,
+                    },
+                ],
+            }
+        }),
         query: {
-            enabled: toSimulate,
+            enabled: toSimulate && typeof owner !== 'undefined',
             refetchInterval: false,
             staleTime: 5 * 1000,
         },

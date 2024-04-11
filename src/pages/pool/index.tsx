@@ -1,13 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
-import {
-    useAccount,
-    useChainId,
-    useReadContract,
-    useWaitForTransactionReceipt,
-    useWatchPendingTransactions,
-    useWriteContract,
-} from 'wagmi'
+import { useAccount, useChainId, useReadContract } from 'wagmi'
 
 import { tokens } from '../../data/tokens'
 import { shortAddress } from '../../utils/address'
@@ -23,7 +16,6 @@ import {
     lNParamsQueryDocument,
     nGParamsQueryDocument,
 } from '../../queries/parameters'
-import { type UseWriteContractParameters } from 'wagmi'
 
 import TokenAmountInput from '@/components/TokenAmountInput'
 import TransactionTable from '@/components/TransactionTable'
@@ -445,56 +437,6 @@ function TransactionView({
     }, [amount, setAmount, computeDependentAmounts])
 
     const [isUSD, setIsUSD] = useState<boolean>(false)
-    const { toast } = useToast()
-
-    const {
-        writeContract: executeAllocate,
-        isPending: allocatePending,
-        isError: allocateFail,
-        isSuccess: allocateSent,
-        failureReason: allocationFailureReason,
-        reset: resetAllocate,
-    } = useWriteContract({
-        config,
-        mutation: {
-            onSuccess: (res) => {
-                const hash = res // Capture the transaction hash
-                console.log('Transaction sent:', hash)
-                // Display initial toast with transaction hash
-                toast({
-                    title: 'Transaction sent',
-                    description: `Transaction hash: ${hash}`,
-                    // You can add an action to copy the hash or open it in Etherscan
-                })
-                // Proceed to watch for the transaction receipt
-                waitForTransactionReceipt(config, {
-                    hash: hash,
-                    confirmations: 1,
-                })
-            },
-            onError: (err) => {
-                console.error(err)
-                toast({
-                    variant: 'destructive',
-                    title: 'Uh oh! Something went wrong.',
-                    description:
-                        'There was a problem with your allocation request: ' +
-                        err.name,
-                    action: (
-                        <ToastAction
-                            altText="Try again"
-                            onClick={resetAllocate}
-                        >
-                            Try again
-                        </ToastAction>
-                    ),
-                })
-            },
-        },
-    })
-
-    const [simulatedResult, setSimulatedResult] = useState<any>(undefined)
-    const [simulating, setSimulating] = useState<boolean>(false)
 
     const [payloadToExecute, setPayloadToExecute] = useState<
         string | undefined
@@ -507,6 +449,7 @@ function TransactionView({
         args: [pool.id],
     })
 
+    // Update form payload when the amount changes.
     useEffect(() => {
         if (!poolsSnapshot || !amount || parseFloat(amount) === 0) {
             setPayloadToExecute(undefined)
@@ -528,191 +471,6 @@ function TransactionView({
 
         setPayloadToExecute(payload)
     }, [poolsSnapshot, amount])
-
-    async function prepareAllocate(): Promise<void> {
-        if (!selectedTokens || selectedTokens.length === 0) {
-            return
-        }
-
-        if (!address) {
-            return
-        }
-
-        if (!amount || parseFloat(amount) === 0) {
-            return
-        }
-
-        // Need the pool id, token index, and amount.
-        const poolId = pool.id
-        const tokenIndex = pool.poolTokens.items.findIndex(
-            (pt) => pt.token.id === selectedTokens[0]
-        )
-        const deltaT = parseFloat(amount)
-
-        const result = await readContract(config, {
-            abi: nG3mSolverAbi,
-            address: nG3mSolver,
-            functionName: 'getAllocationDeltasGivenDeltaT',
-            args: [poolId, tokenIndex, toWad(deltaT)],
-        })
-
-        const poolsSnapshot = await readContract(config, {
-            abi: dfmmABI,
-            address: dfmmAddress,
-            functionName: 'pools',
-            args: [poolId],
-        })
-
-        const deltas = poolsSnapshot.reserves.map((_, i) => toWad(deltaT))
-        // todo: assumes equal weights...
-        const liquidity =
-            (toWad(deltaT) * BigInt(poolsSnapshot.totalLiquidity)) /
-                BigInt(poolsSnapshot.reserves[0]) -
-            10n // 10n because the computation is slightly off from rounding, so the rounded token amounts expect less liquidity
-
-        const payload = encodeAbiParameters(
-            parseAbiParameters('uint256[], uint256'),
-            [deltas, liquidity]
-        )
-
-        function computeAllowanceSlot(
-            slot: number,
-            owner: Address,
-            spender: Address
-        ): Hex {
-            return keccak256(
-                encodePacked(
-                    ['bytes32', 'bytes32'],
-                    [
-                        padHex(spender, { size: 32 }),
-                        keccak256(
-                            encodePacked(
-                                ['bytes32', 'uint'],
-                                [padHex(owner, { size: 32 }), BigInt(slot)]
-                            )
-                        ),
-                    ]
-                )
-            )
-        }
-
-        let txResult
-        const ERC20_ALLOWANCE_SLOT = 4
-        const owner = address
-        const spender = dfmmAddress
-        const maxAllowance = numberToHex(maxUint256)
-
-        function computeReservesStorageSlot(
-            poolId: number,
-            reserveIndex: number
-        ) {
-            const mappingKey = poolId
-            const mappingSlot = 0
-            const reserveStructIndex = 5
-            const structSlot = hexToBigInt(
-                keccak256(
-                    encodeAbiParameters(parseAbiParameters('uint, uint'), [
-                        mappingKey,
-                        mappingSlot,
-                    ])
-                )
-            )
-
-            const storageSlot = toHex(
-                hexToBigInt(
-                    keccak256(
-                        encodeAbiParameters(parseAbiParameters('uint, uint'), [
-                            reserveStructIndex,
-                            structSlot,
-                        ])
-                    )
-                ) + BigInt(reserveIndex)
-            )
-        }
-
-        computeReservesStorageSlot(poolId, 0)
-
-        try {
-            setSimulating(true)
-            txResult = await simulateContract(config, {
-                abi: dfmmABI,
-                address: dfmmAddress,
-                functionName: 'allocate',
-                args: [poolId, payload],
-                stateOverride: poolsSnapshot?.tokens.map((token) => {
-                    return {
-                        address: token,
-                        stateDiff: [
-                            {
-                                slot: computeAllowanceSlot(
-                                    ERC20_ALLOWANCE_SLOT,
-                                    owner,
-                                    spender
-                                ),
-                                value: maxAllowance,
-                            },
-                        ],
-                    }
-                }),
-            })
-            console.log({ txResult })
-        } catch (err) {
-            console.error(err)
-            if (err instanceof BaseError) {
-                const revertError = err.walk(
-                    (err) => err instanceof ContractFunctionRevertedError
-                )
-                if (revertError instanceof ContractFunctionRevertedError) {
-                    const errorName = revertError.data?.errorName ?? ''
-                    // do something with `errorName`
-                    console.error({ errorName })
-                }
-            }
-        }
-
-        if (txResult) {
-            setPayloadToExecute(payload)
-            setSimulating(false)
-            setSimulatedResult(txResult)
-        }
-    }
-
-    const ApprovalAction = () => {
-        if (approvalError) {
-            return <span className="text-red-500">Approval failed</span>
-        }
-
-        if (approvalSuccess) {
-            return <span className="text-green-200">Approval sent</span>
-        }
-
-        if (isApproving) {
-            return <span>Approving...</span>
-        }
-
-        return <span>Approve</span>
-    }
-
-    const ExecuteAction = () => {
-        if (allocateFail) {
-            return (
-                <span className="text-red-500">
-                    Allocation failed{' '}
-                    <small>{allocationFailureReason?.name}</small>
-                </span>
-            )
-        }
-
-        if (allocateSent) {
-            return <span className="text-green-200">Allocation sent</span>
-        }
-
-        if (allocatePending) {
-            return <span>Allocating...</span>
-        }
-
-        return <span>Allocate</span>
-    }
 
     enum TransactionPhase {
         Simulate,
@@ -741,16 +499,6 @@ function TransactionView({
 
     const TransactionAction = ({ phase }: { phase: TransactionPhase }) => {
         switch (phase) {
-            case TransactionPhase.Simulate:
-                return (
-                    <AllocateTransaction
-                        poolId={pool.id}
-                        payload={payloadToExecute}
-                        setTxHash={setTx}
-                        txHash={txHash as `0x${string}`}
-                        txReceipt={txReceipt}
-                    />
-                )
             case TransactionPhase.Approve:
                 return (
                     <ApproveTransaction
@@ -761,31 +509,19 @@ function TransactionView({
                         txReceipt={txReceipt}
                     />
                 )
-            case TransactionPhase.Execute:
+            default:
                 return (
-                    <Button
-                        onClick={() =>
-                            executeAllocate({
-                                abi: dfmmABI,
-                                address: dfmmAddress,
-                                functionName: 'allocate',
-                                args: [pool.id, payloadToExecute!],
-                            })
+                    <AllocateTransaction
+                        poolId={pool.id}
+                        tokens={
+                            pool?.poolTokens?.items?.map((pt) => pt.token.id) ??
+                            []
                         }
-                    >
-                        <ExecuteAction />
-                    </Button>
-                )
-            case TransactionPhase.Done:
-                return (
-                    <Button
-                        onClick={async () => {
-                            // allocate
-                            await prepareAllocate()
-                        }}
-                    >
-                        Done
-                    </Button>
+                        payload={payloadToExecute}
+                        setTxHash={setTx}
+                        txHash={txHash as `0x${string}`}
+                        txReceipt={txReceipt}
+                    />
                 )
         }
     }
@@ -1015,11 +751,9 @@ function TransactionView({
                         </div>
                         <TransactionAction
                             phase={
-                                !simulatedResult
-                                    ? TransactionPhase.Simulate
-                                    : remainingAllowances.length > 0
-                                      ? TransactionPhase.Approve
-                                      : TransactionPhase.Execute
+                                remainingAllowances.length > 0
+                                    ? TransactionPhase.Approve
+                                    : TransactionPhase.Execute
                             }
                         />
                         {successfulReceipts.length > 0 && (
@@ -1046,15 +780,15 @@ function TransactionView({
                                             </small>
                                             Deposit
                                             <LabelWithEtherscan
-                                                label="From"
+                                                label={<small>From</small>}
                                                 address={receipt.from}
                                             />
                                             <LabelWithEtherscan
-                                                label="To"
+                                                label={<small>To</small>}
                                                 address={receipt.to}
                                             />
                                             <TxLabelEtherscan
-                                                label="Tx"
+                                                label={<small>Tx</small>}
                                                 txHash={receipt.transactionHash}
                                             />
                                         </div>
