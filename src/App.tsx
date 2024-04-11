@@ -12,6 +12,7 @@ import Pool from './pages/pool'
 import Faucet from './pages/faucet'
 import Dashboard from './pages/dashboard'
 import { ThemeProvider } from './components/theme-provider'
+import { Toaster } from './components/ui/toaster'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
@@ -70,6 +71,7 @@ function App() {
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
                     <RouterProvider router={router} />
+                    <Toaster />
                 </ThemeProvider>
             </QueryClientProvider>
         </WagmiProvider>

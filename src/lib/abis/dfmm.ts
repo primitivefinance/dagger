@@ -1,4 +1,6 @@
+import { IStrategyAbi } from './IStrategy'
 export const dfmmABI = [
+    ...IStrategyAbi,
     {
         type: 'constructor',
         inputs: [{ name: 'weth_', type: 'address', internalType: 'address' }],

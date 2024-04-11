@@ -43,6 +43,8 @@ export const tokens: TokenList = {
             symbol: 'rETH',
             decimals: 18,
             logo: 'https://assets.coingecko.com/coins/images/20764/standard/reth.png?1696520159',
+
+            faucet: 10,
         },
         {
             address: '0x64542b6fea64EBa7a8Ab643b6ECEbA425D4aeA1E',
@@ -50,6 +52,7 @@ export const tokens: TokenList = {
             symbol: 'mETH',
             decimals: 18,
             logo: 'https://assets.coingecko.com/coins/images/33345/standard/symbol_transparent_bg.png?1701697066',
+            faucet: 10,
         },
     ],
 }

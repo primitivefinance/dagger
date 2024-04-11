@@ -1,10 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAccount, useChainId } from 'wagmi'
+import {
+    useAccount,
+    useChainId,
+    useWaitForTransactionReceipt,
+    useWatchPendingTransactions,
+    useWriteContract,
+} from 'wagmi'
 
 import { tokens } from '../../data/tokens'
 import { shortAddress } from '../../utils/address'
-import { balanceOf, totalSupply } from '../../lib/erc20'
+import { allowance, balanceOf, totalSupply } from '../../lib/erc20'
 import { useGraphQL } from '../../useGraphQL'
 import {
     PoolWithTokensFragment,
@@ -16,6 +22,7 @@ import {
     lNParamsQueryDocument,
     nGParamsQueryDocument,
 } from '../../queries/parameters'
+import { type UseWriteContractParameters } from 'wagmi'
 
 import TokenAmountInput from '@/components/TokenAmountInput'
 import TransactionTable from '@/components/TransactionTable'
@@ -124,7 +131,7 @@ function LabelWithEtherscan({
         <div className="flex flex-row gap-1 items-center justify-between">
             {label}
             <a
-                href={OP_SEPOLIA_ETHERSCAN + address}
+                href={OP_SEPOLIA_ETHERSCAN + '/address/' + address}
                 className="flex flex-row gap-1"
                 target="_blank"
                 rel="noreferrer"
@@ -417,6 +424,10 @@ function computeAllocationDeltasGivenDeltaT(
     return { reserveDeltas, deltaL }
 }
 
+function toWad(amount: number): bigint {
+    return parseEther(amount.toString())
+}
+
 function TransactionView({
     selectedTokens,
     pool,
@@ -429,6 +440,28 @@ function TransactionView({
         reserveDeltas: number[]
         deltaL: number
     }>()
+
+    const [allowances, setAllowances] = useState<{ [key: string]: number }>({})
+
+    useEffect(() => {
+        async function fetchAllowances(): Promise<void> {
+            if (!selectedTokens || selectedTokens.length === 0) {
+                return
+            }
+
+            const newAllowances: { [key: string]: number } = {}
+            for (const token of selectedTokens) {
+                newAllowances[token] = await allowance(
+                    token,
+                    address!,
+                    dfmmAddress
+                )
+            }
+            setAllowances(newAllowances)
+        }
+
+        fetchAllowances()
+    }, [selectedTokens])
 
     const depositAll = true // todo: make conditional once single sided deposits are available
 
@@ -461,6 +494,417 @@ function TransactionView({
     }, [amount, setAmount, computeDependentAmounts])
 
     const [isUSD, setIsUSD] = useState<boolean>(false)
+    const { toast } = useToast()
+
+    const [txHash, setTxHash] = useState<string | null>(null)
+
+    const { data: txReceipt, isSuccess } = useWaitForTransactionReceipt({
+        hash: txHash, // The transaction hash you got from writeContract onSuccess
+    })
+
+    useEffect(() => {
+        if (isSuccess && txReceipt) {
+            // Transaction confirmed
+            console.log('Transaction confirmed:', txReceipt.transactionHash)
+            // Update the toast here
+            toast({
+                title: 'Transaction success',
+                description: (
+                    <div>
+                        Transaction confirmed!{' '}
+                        <a
+                            href={`${OP_SEPOLIA_ETHERSCAN}/tx/${txReceipt.transactionHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            View on Etherscan
+                        </a>
+                    </div>
+                ),
+                // Adjust toast options as needed
+            })
+        }
+    }, [isSuccess, txReceipt])
+
+    const {
+        writeContract,
+        isPending: isApproving,
+        isError: approvalError,
+        isSuccess: approvalSuccess,
+        failureReason: approvalFailureReason,
+        reset: resetApproval,
+    } = useWriteContract({
+        config,
+        mutation: {
+            onSuccess: (res) => {
+                console.log('Success!', res)
+                const hash = res // Capture the transaction hash
+                setTxHash(hash)
+                console.log('Transaction sent:', hash)
+                // Display initial toast with transaction hash
+                toast({
+                    title: 'Transaction sent',
+                    description: `Transaction hash: ${hash}`,
+                    // You can add an action to copy the hash or open it in Etherscan
+                })
+                // Proceed to watch for the transaction receipt
+                waitForTransactionReceipt(config, {
+                    hash: hash,
+                    confirmations: 1,
+                })
+            },
+            onError: (err) => {
+                console.error(err)
+                toast({
+                    variant: 'destructive',
+                    title: 'Uh oh! Something went wrong.',
+                    description:
+                        'There was a problem with your request: ' + err.name,
+                    action: (
+                        <ToastAction
+                            altText="Try again"
+                            onClick={resetApproval}
+                        >
+                            Try again
+                        </ToastAction>
+                    ),
+                })
+            },
+        },
+    })
+
+    const {
+        writeContract: executeAllocate,
+        isPending: allocatePending,
+        isError: allocateFail,
+        isSuccess: allocateSent,
+        failureReason: allocationFailureReason,
+        reset: resetAllocate,
+    } = useWriteContract({
+        config,
+        mutation: {
+            onSuccess: (res) => {
+                console.log('Success!', res)
+                const hash = res // Capture the transaction hash
+                setTxHash(hash)
+                console.log('Transaction sent:', hash)
+                // Display initial toast with transaction hash
+                toast({
+                    title: 'Transaction sent',
+                    description: `Transaction hash: ${hash}`,
+                    // You can add an action to copy the hash or open it in Etherscan
+                })
+                // Proceed to watch for the transaction receipt
+                waitForTransactionReceipt(config, {
+                    hash: hash,
+                    confirmations: 1,
+                })
+            },
+            onError: (err) => {
+                console.error(err)
+                toast({
+                    variant: 'destructive',
+                    title: 'Uh oh! Something went wrong.',
+                    description:
+                        'There was a problem with your allocation request: ' +
+                        err.name,
+                    action: (
+                        <ToastAction
+                            altText="Try again"
+                            onClick={resetAllocate}
+                        >
+                            Try again
+                        </ToastAction>
+                    ),
+                })
+            },
+        },
+    })
+
+    const [simulatedResult, setSimulatedResult] = useState<any>(undefined)
+    const [simulating, setSimulating] = useState<boolean>(false)
+    const [executing, setExecuting] = useState<boolean>(false)
+
+    const [payloadToExecute, setPayloadToExecute] = useState<
+        string | undefined
+    >(undefined)
+
+    async function prepareAllocate(): Promise<void> {
+        if (!selectedTokens || selectedTokens.length === 0) {
+            return
+        }
+
+        if (!address) {
+            return
+        }
+
+        if (!amount || parseFloat(amount) === 0) {
+            return
+        }
+
+        // Need the pool id, token index, and amount.
+        const poolId = pool.id
+        const tokenIndex = pool.poolTokens.items.findIndex(
+            (pt) => pt.token.id === selectedTokens[0]
+        )
+        const deltaT = parseFloat(amount)
+
+        console.log({ poolId, tokenIndex, deltaT })
+
+        const result = await readContract(config, {
+            abi: nG3mSolverAbi,
+            address: nG3mSolver,
+            functionName: 'getAllocationDeltasGivenDeltaT',
+            args: [poolId, tokenIndex, toWad(deltaT)],
+        })
+
+        const poolsSnapshot = await readContract(config, {
+            abi: dfmmABI,
+            address: dfmmAddress,
+            functionName: 'pools',
+            args: [poolId],
+        })
+
+        const deltas = poolsSnapshot.reserves.map((_, i) => toWad(deltaT))
+        // todo: assumes equal weights...
+        const liquidity =
+            (toWad(deltaT) * BigInt(poolsSnapshot.totalLiquidity)) /
+                BigInt(poolsSnapshot.reserves[0]) -
+            10n // 10n because the computation is slightly off from rounding, so the rounded token amounts expect less liquidity
+
+        console.log({ deltas, liquidity })
+        const payload = encodeAbiParameters(
+            parseAbiParameters('uint256[], uint256'),
+            [deltas, liquidity]
+        )
+
+        console.log({ result })
+
+        function computeAllowanceSlot(
+            slot: number,
+            owner: Address,
+            spender: Address
+        ): Hex {
+            return keccak256(
+                encodePacked(
+                    ['bytes32', 'bytes32'],
+                    [
+                        padHex(spender, { size: 32 }),
+                        keccak256(
+                            encodePacked(
+                                ['bytes32', 'uint'],
+                                [padHex(owner, { size: 32 }), BigInt(slot)]
+                            )
+                        ),
+                    ]
+                )
+            )
+        }
+
+        let txResult
+        const ERC20_ALLOWANCE_SLOT = 4
+        const owner = address
+        const spender = dfmmAddress
+        const maxAllowance = numberToHex(maxUint256)
+
+        function computeReservesStorageSlot(
+            poolId: number,
+            reserveIndex: number
+        ) {
+            const mappingKey = poolId
+            const mappingSlot = 0
+            const reserveStructIndex = 5
+            const structSlot = hexToBigInt(
+                keccak256(
+                    encodeAbiParameters(parseAbiParameters('uint, uint'), [
+                        mappingKey,
+                        mappingSlot,
+                    ])
+                )
+            )
+
+            const storageSlot = toHex(
+                hexToBigInt(
+                    keccak256(
+                        encodeAbiParameters(parseAbiParameters('uint, uint'), [
+                            reserveStructIndex,
+                            structSlot,
+                        ])
+                    )
+                ) + BigInt(reserveIndex)
+            )
+
+            console.log({ storageSlot })
+        }
+
+        computeReservesStorageSlot(poolId, 0)
+
+        try {
+            setSimulating(true)
+            txResult = await simulateContract(config, {
+                abi: dfmmABI,
+                address: dfmmAddress,
+                functionName: 'allocate',
+                args: [poolId, payload],
+                stateOverride: poolsSnapshot?.tokens.map((token) => {
+                    return {
+                        address: token,
+                        stateDiff: [
+                            {
+                                slot: computeAllowanceSlot(
+                                    ERC20_ALLOWANCE_SLOT,
+                                    owner,
+                                    spender
+                                ),
+                                value: maxAllowance,
+                            },
+                        ],
+                    }
+                }),
+            })
+            console.log({ txResult })
+        } catch (err) {
+            console.error(err)
+            if (err instanceof BaseError) {
+                const revertError = err.walk(
+                    (err) => err instanceof ContractFunctionRevertedError
+                )
+                if (revertError instanceof ContractFunctionRevertedError) {
+                    const errorName = revertError.data?.errorName ?? ''
+                    // do something with `errorName`
+                    console.error({ errorName })
+                }
+            }
+        }
+
+        console.log({ txResult })
+
+        if (txResult) {
+            setPayloadToExecute(payload)
+            setSimulating(false)
+            setSimulatedResult(txResult)
+        }
+    }
+
+    const ApprovalAction = () => {
+        if (approvalError) {
+            return (
+                <span className="text-red-500">
+                    Approval failed <small>{approvalFailureReason?.name}</small>
+                </span>
+            )
+        }
+
+        if (approvalSuccess) {
+            return <span className="text-green-200">Approval sent</span>
+        }
+
+        if (isApproving) {
+            return <span>Approving...</span>
+        }
+
+        return <span>Approve</span>
+    }
+
+    const ExecuteAction = () => {
+        if (allocateFail) {
+            return (
+                <span className="text-red-500">
+                    Allocation failed{' '}
+                    <small>{allocationFailureReason?.name}</small>
+                </span>
+            )
+        }
+
+        if (allocateSent) {
+            return <span className="text-green-200">Allocation sent</span>
+        }
+
+        if (allocatePending) {
+            return <span>Allocating...</span>
+        }
+
+        return <span>Allocate</span>
+    }
+
+    enum TransactionPhase {
+        Simulate,
+        Approve,
+        Execute,
+        Done,
+    }
+
+    const remainingAllowances = Object.keys(allowances).filter(
+        (key) => allowances[key] < parseFloat(amount)
+    )
+
+    const TransactionAction = ({ phase }: { phase: TransactionPhase }) => {
+        const style =
+            'text-primary bg-blue-600 rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600'
+        switch (phase) {
+            case TransactionPhase.Simulate:
+                return (
+                    <Button
+                        onClick={async () => {
+                            // allocate
+                            await prepareAllocate()
+                        }}
+                        className={style}
+                    >
+                        {simulating ? 'Simulating...' : 'Simulate deposit'}
+                    </Button>
+                )
+            case TransactionPhase.Approve:
+                console.log(approvalFailureReason)
+                console.log(allowances)
+
+                const token = remainingAllowances.pop() as `0x${string}`
+                console.log({ token })
+                return (
+                    <Button
+                        onClick={() =>
+                            writeContract({
+                                abi: erc20Abi,
+                                address: token,
+                                functionName: 'approve',
+                                args: [dfmmAddress, toWad(parseFloat(amount))],
+                            })
+                        }
+                        className={style}
+                    >
+                        <ApprovalAction />
+                    </Button>
+                )
+            case TransactionPhase.Execute:
+                return (
+                    <Button
+                        onClick={() =>
+                            executeAllocate({
+                                abi: dfmmABI,
+                                address: dfmmAddress,
+                                functionName: 'allocate',
+                                args: [pool.id, payloadToExecute!],
+                            })
+                        }
+                        className={style}
+                    >
+                        <ExecuteAction />
+                    </Button>
+                )
+            case TransactionPhase.Done:
+                return (
+                    <Button
+                        onClick={async () => {
+                            // allocate
+                            await prepareAllocate()
+                        }}
+                        className={style}
+                    >
+                        Done
+                    </Button>
+                )
+        }
+    }
 
     return (
         <Sheet>
@@ -531,47 +975,6 @@ function TransactionView({
                                 disabled={false}
                                 className="py-8 px-4 text-4xl"
                             />
-                            {/* <TokenAmountInput
-                                size="py-8 px-4 text-4xl"
-                                tokenAddress={
-                                    selectedTokens[0] as `0x${string}`
-                                }
-                                tokenSymbol={
-                                    pool.poolTokens.items.filter(
-                                        (pt) =>
-                                            pt.token.id === selectedTokens[0]
-                                    )[0]?.token.symbol ||
-                                    tokens[chainId]?.filter(
-                                        (tkn) =>
-                                            tkn.address === selectedTokens[0]
-                                    )[0]?.symbol
-                                }
-                                tokenBalance={
-                                    balanceMapping[
-                                        selectedTokens[0] as `0x${string}`
-                                    ]
-                                }
-                                tokenLogo={
-                                    tokens[chainId].find(
-                                        (tkn) =>
-                                            tkn?.symbol.toLowerCase() ===
-                                            pool?.poolTokens?.items
-                                                .find(
-                                                    (pt) =>
-                                                        pt.token.id ===
-                                                        selectedTokens[0]
-                                                )
-                                                ?.token.symbol.toLowerCase()
-                                    )?.logo ||
-                                    tokens[chainId]?.filter(
-                                        (tkn) =>
-                                            tkn.address === selectedTokens[0]
-                                    )[0]?.logo
-                                }
-                                tokenPrice={3000} // no price provider
-                                amount={amount}
-                                setAmount={setAmount}
-                            /> */}
                             <p className="py-2 border-b">Breakdown</p>
                             <div className="flex flex-col gap-md w-full">
                                 <div className="flex flex-col gap-sm w-full">
@@ -726,15 +1129,15 @@ function TransactionView({
                                 <small>Deposit all tokens</small>
                             </label>
                         </div>
-                        <button
-                            onClick={async () => {
-                                // allocate
-                            }}
-                            className="bg-blue-600 rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600"
-                            disabled
-                        >
-                            Deposit
-                        </button>
+                        <TransactionAction
+                            phase={
+                                !simulatedResult
+                                    ? TransactionPhase.Simulate
+                                    : remainingAllowances.length > 0
+                                      ? TransactionPhase.Approve
+                                      : TransactionPhase.Execute
+                            }
+                        />
                     </div>
                 </div>
             </SheetContent>

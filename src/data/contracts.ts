@@ -1,4 +1,5 @@
-export const nG3mSolver = '0x05792cA1459699A3DA6e6E7Af295E3C792D5e038'
+export const G3mSolver = '0x05792cA1459699A3DA6e6E7Af295E3C792D5e038'
+export const nG3mSolver = '0xF00E9B380140E47B6fe0Ece62a50af75aD4FD984'
 export const lnSolver = ''
 export const csSolver = '0xf24FF07f7556BC4B9A91f88AFe8Ea7Cb5efb71CA'
 
