@@ -1,18 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Address, erc20Abi, getAddress, maxUint256, numberToHex } from 'viem'
-import {
-    useWriteContract,
-    useChainId,
-    useSimulateContract,
-    useAccount,
-} from 'wagmi'
+import { Address, TransactionReceipt } from 'viem'
+import { useWriteContract, useSimulateContract, useAccount } from 'wagmi'
 
 import { dfmmAddress } from '@/data/contracts'
+import { dfmmABI } from '@/lib/abis/dfmm'
+import { overrideAllowanceDFMM } from '@/utils/simulate'
 
 import { config } from '../../App'
 import TransactionButton from '../TransactionButton'
-import { dfmmABI } from '@/lib/abis/dfmm'
-import { computeAllowanceSlot } from '@/utils/simulate'
 
 type AllocateTransactionProps = {
     poolId: number
@@ -20,8 +15,34 @@ type AllocateTransactionProps = {
     payload?: string
     setTxHash: (txHash: `0x${string}`) => void
     txHash?: `0x${string}`
-    txReceipt?: any
+    txReceipt?: TransactionReceipt
 }
+
+/**
+ * Possible states of transactions in general.
+ */
+enum TransactionState {
+    Resting = 'Resting',
+    Simulating = 'Simulating',
+    AwaitingSignature = 'AwaitingSignature',
+    Error = 'Tx Error',
+    Broadcasted = 'Tx Broadcasted',
+    Confirmed = 'Tx Confirmed',
+}
+
+/**
+ * Possible states of the allocate transaction and its button.
+ */
+enum AllocateState {
+    SimulateReady = 'SimulateReady',
+    SimulateStale = 'SimulateStale',
+    TriggerSimulate = 'TriggerSimulate',
+    SimulateFetching = 'SimulateFetching',
+    SimulateError = 'SimulateError',
+    AllocateReady = 'AllocateReady',
+}
+
+type AllocateTransactionState = TransactionState | AllocateState
 
 /**
  * A stateful button that is "smart" about approval transactions and will
@@ -36,22 +57,11 @@ function AllocateTransaction({
     txReceipt,
 }: AllocateTransactionProps): JSX.Element {
     const { address: owner } = useAccount()
-    const spender = dfmmAddress
-    const maxAllowance = numberToHex(maxUint256)
+    const [state, setState] = useState<AllocateTransactionState>(
+        TransactionState.Resting
+    )
 
-    const [toSimulate, setToSimulate] = useState<boolean>(false)
-    const [toDeposit, setToDeposit] = useState<boolean>(false)
-
-    const {
-        data: simulation,
-        isLoading: isSimulating,
-        isError: simulationFailed,
-        isSuccess: simulationSuccess,
-        refetch: refetchSimulation,
-        failureReason: simulationFailureReason,
-        isStale: isSimulateStale,
-        isFetching: isSimulateFetching,
-    } = useSimulateContract({
+    const simulation = useSimulateContract({
         abi: dfmmABI,
         address: dfmmAddress,
         functionName: 'allocate',
@@ -59,105 +69,157 @@ function AllocateTransaction({
         stateOverride: tokens.map((token) => {
             return {
                 address: token,
-                stateDiff: [
-                    {
-                        slot: computeAllowanceSlot(
-                            owner as `0x${string}`,
-                            spender
-                        ),
-                        value: maxAllowance,
-                    },
-                ],
+                stateDiff: [overrideAllowanceDFMM(owner as `0x${string}`)],
             }
         }),
         query: {
-            enabled: toSimulate && typeof owner !== 'undefined',
+            enabled: state === AllocateState.TriggerSimulate,
             refetchInterval: false,
             staleTime: 5 * 1000,
         },
     })
 
-    useEffect(() => {
-        setToSimulate(false)
-    }, [poolId, payload])
-
-    useEffect(() => {
-        if (simulation) {
-            console.log('Simulation result:', simulation)
-        }
-
-        if (simulationFailed) {
-            console.log('params', poolId, payload)
-            console.log('Simulation failed:', simulationFailureReason)
-        }
-    }, [simulation, simulationFailed, simulationFailureReason, poolId, payload])
-
-    const { writeContract, isPending, isError, isSuccess } = useWriteContract({
+    const transaction = useWriteContract({
         config,
         mutation: {
             onSuccess: setTxHash,
         },
     })
 
-    const needsInput = typeof payload === 'undefined'
-    const needsSimulation = typeof simulation === 'undefined'
-    const needsResimulation = isSimulateStale && !isPending && !toDeposit
-    const awaitingDepositSignature = typeof txHash === 'undefined' && isPending
-    const awaitingDepositConfirmation =
-        typeof txReceipt === 'undefined' && typeof txHash !== 'undefined'
+    // Handle state changes based on prop changes.
+    useEffect(() => {
+        setState(TransactionState.Resting)
 
-    const ButtonChild = () => {
-        if (needsInput) {
-            return <span>Type an amount</span>
+        if (
+            typeof payload !== 'undefined' &&
+            typeof poolId !== 'undefined' &&
+            typeof owner !== 'undefined'
+        ) {
+            setState(AllocateState.SimulateReady)
+        }
+    }, [poolId, payload, owner])
+
+    // Handle state changes based on the simulation query.
+    useEffect(() => {
+        // If a transaction is in flight or awaiting signature, we don't want to
+        // create a race condition with state transitions from the simulation query.
+        if (
+            state === TransactionState.AwaitingSignature ||
+            state === TransactionState.Broadcasted ||
+            state === TransactionState.Confirmed
+        ) {
+            return
         }
 
-        if (needsSimulation) {
-            return <span>Simulate deposit</span>
+        if (simulation?.isStale) {
+            setState(AllocateState.SimulateStale)
         }
 
-        if (isSimulating || isSimulateFetching) {
-            return <span>Simulating...</span>
+        if (simulation?.isFetching) {
+            setState(AllocateState.SimulateFetching)
         }
 
-        if (needsResimulation) {
-            return <span>Resimulate deposit</span>
+        if (simulation?.data) {
+            setState(AllocateState.AllocateReady)
         }
 
-        if (isError) {
-            return <span className="text-red-500">Deposit failed</span>
+        if (simulation?.error) {
+            setState(AllocateState.SimulateError)
+            console.error(simulation.failureReason)
         }
 
-        if (isSuccess) {
-            return <span className="text-green-200">Deposit sent</span>
+        if (simulation?.isLoading) {
+            setState(AllocateState.SimulateFetching)
+        }
+    }, [simulation, state])
+
+    // React to changes in the transaction status.
+    useEffect(() => {
+        if (typeof txReceipt !== 'undefined') {
+            setState(TransactionState.Confirmed)
         }
 
-        if (awaitingDepositSignature) {
-            return <span>Awaiting signature...</span>
+        if (typeof txHash !== 'undefined' && typeof txReceipt === 'undefined') {
+            setState(TransactionState.Broadcasted)
+        }
+    }, [txHash, txReceipt])
+
+    useEffect(() => {
+        if (transaction?.isError) {
+            setState(TransactionState.Error)
         }
 
-        if (awaitingDepositConfirmation) {
-            return <span>Depositing...</span>
+        if (transaction?.isPending) {
+            setState(TransactionState.AwaitingSignature)
         }
 
-        return <span>Deposit</span>
+        if (transaction?.isSuccess) {
+            setState(TransactionState.Broadcasted)
+        }
+    }, [transaction])
+
+    const ButtonChild = (): JSX.Element => {
+        const defaultState = <span>Type an amount</span>
+
+        switch (state) {
+            case AllocateState.SimulateReady:
+                return <span>Simulate deposit</span>
+            case AllocateState.SimulateStale:
+                return <span>Resimulate deposit</span>
+            case AllocateState.SimulateFetching:
+                return <span>Simulating...</span>
+            case AllocateState.SimulateError:
+                return <span>Simulate failed</span>
+            case AllocateState.AllocateReady:
+                return <span>Deposit</span>
+            case TransactionState.Resting:
+                return defaultState
+            case TransactionState.AwaitingSignature:
+                return <span>Awaiting signature...</span>
+            case TransactionState.Broadcasted:
+                return <span>Depositing...</span>
+            case TransactionState.Confirmed:
+                return <span className="text-green-200">Deposit confirmed</span>
+            case TransactionState.Error:
+                return <span className="text-red-500">Deposit failed</span>
+
+            default:
+                return defaultState
+        }
     }
 
-    if (needsSimulation || isSimulating || needsResimulation) {
+    if (
+        state == TransactionState.Resting ||
+        state === AllocateState.SimulateReady ||
+        state === AllocateState.SimulateStale ||
+        state === AllocateState.SimulateFetching ||
+        state === AllocateState.SimulateError ||
+        state === AllocateState.TriggerSimulate
+    ) {
         return (
             <TransactionButton
                 onClick={() => {
-                    setToSimulate(true)
+                    setState(AllocateState.TriggerSimulate)
 
-                    if (isSimulateStale) {
-                        refetchSimulation()
+                    if (state === AllocateState.SimulateStale) {
+                        simulation?.refetch()
                     }
                 }}
                 pattern
-                isLoading={isSimulating || isSimulateFetching}
-                isErrored={simulationFailed}
-                isConfirmed={simulationSuccess && !isSimulateStale}
-                isReload={simulationFailed}
-                disabled={isSimulating || isSimulateFetching || needsInput}
+                isLoading={state === AllocateState.SimulateFetching}
+                isErrored={state === AllocateState.SimulateError}
+                isConfirmed={
+                    simulation?.isSuccess &&
+                    state !== AllocateState.SimulateStale
+                }
+                isReload={
+                    state === AllocateState.SimulateStale ||
+                    state === AllocateState.SimulateError
+                }
+                disabled={
+                    state === AllocateState.SimulateFetching ||
+                    state === TransactionState.Resting
+                }
             >
                 <ButtonChild />
             </TransactionButton>
@@ -166,28 +228,23 @@ function AllocateTransaction({
 
     return (
         <TransactionButton
-            onClick={() => {
-                setToDeposit(true)
-                writeContract({
+            onClick={() =>
+                transaction.writeContract({
                     abi: dfmmABI,
                     address: dfmmAddress,
                     functionName: 'allocate',
                     args: [poolId, payload],
                 })
-            }}
+            }
             pattern
-            isAwaitingWalletConfirmation={isPending}
-            isErrored={isError}
-            isConfirmed={
-                isSuccess &&
-                typeof txHash !== 'undefined' &&
-                typeof txReceipt !== 'undefined'
+            isAwaitingWalletConfirmation={
+                state === TransactionState.AwaitingSignature
             }
-            isReload={isError}
-            isBroadcasting={
-                typeof txHash !== 'undefined' && awaitingDepositConfirmation
-            }
-            disabled={needsInput}
+            isErrored={state === TransactionState.Error}
+            isConfirmed={state === TransactionState.Confirmed}
+            isReload={state === TransactionState.Error}
+            isBroadcasting={state === TransactionState.Broadcasted}
+            disabled={state === TransactionState.Confirmed}
         >
             <ButtonChild />
         </TransactionButton>

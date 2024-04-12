@@ -34,8 +34,8 @@ export function formatNumber(
     return new Intl.NumberFormat('en-US', options).format(amount)
 }
 
-export function formatWad(wad: bigint): string {
-    return formatNumber(Number(formatUnits(wad, 18)))
+export function formatWad(wad: bigint, decimals?: number = 18): string {
+    return formatNumber(Number(formatUnits(wad, decimals)))
 }
 
 export function formatWadPercentage(wad: bigint): string {
