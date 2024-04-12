@@ -80,7 +80,16 @@ function CreatePool() {
     const [tokensBalance, setTokensBalance] = useState<number[]>([0, 0])
 
     const lockWeight = (tokenAddress: `0x${string}`) => {
-        const _weights = poolTokens.filter((tkn) => {})
+        const _weights: { weight: string; isLocked: boolean }[] = []
+        poolTokens.map((tkn, i) => {
+            tkn === tokenAddress
+                ? _weights.push({
+                      weight: weights[i].weight,
+                      isLocked: !weights[i].isLocked,
+                  })
+                : _weights.push(weights[i])
+        })
+        setWeights(_weights)
     }
 
     const calculateWeights = (
@@ -88,7 +97,8 @@ function CreatePool() {
         inputWeight?: string
     ) => {
         const _weights: { weight: string; isLocked: boolean }[] = []
-        console.log(poolTokens.length)
+        let lockedWeights: number = 0
+        let numLocked: number = 0
         if (!inputWeight || !inputWeightToken) {
             poolTokens.map((tkn, i) => {
                 _weights.push({
@@ -99,16 +109,25 @@ function CreatePool() {
                 })
             })
         } else {
-            poolTokens.map((tkn) => {
+            weights.map((w) => {
+                if (w.isLocked) {
+                    numLocked++
+                    lockedWeights += Number(w.weight)
+                }
+            })
+            lockedWeights += parseFloat(inputWeight)
+            poolTokens.map((tkn, i) => {
                 if (inputWeightToken && tkn === inputWeightToken) {
-                    _weights.push({ weight: inputWeight, isLocked: true })
+                    _weights.push({ weight: inputWeight, isLocked: false })
                 } else {
                     _weights.push({
-                        weight: (
-                            (100 - parseFloat(inputWeight)) /
-                            (poolTokens.length - 1)
-                        ).toString(),
-                        isLocked: false,
+                        weight: weights[i].isLocked
+                            ? weights[i].weight
+                            : (
+                                  (100 - lockedWeights) /
+                                  (poolTokens.length - 1 - numLocked)
+                              ).toString(),
+                        isLocked: weights[i].isLocked,
                     })
                 }
             })
@@ -283,7 +302,8 @@ function CreatePool() {
                                         <Input
                                             type="text"
                                             disabled={
-                                                strategy !== 'GeometricMean'
+                                                strategy !== 'GeometricMean' ||
+                                                weights[i].isLocked
                                             }
                                             value={weights[i].weight}
                                             onChange={(e) => {
@@ -295,10 +315,16 @@ function CreatePool() {
                                         />
                                     </TableCell>
                                     <TableCell>
+                                        <Button
+                                            onClick={() => lockWeight(token)}
+                                        >
+                                            {weights[i].isLocked
+                                                ? 'Unlock'
+                                                : 'Lock'}{' '}
+                                            Weight
+                                        </Button>
                                         {i < 2 ? (
-                                            <Button disabled>
-                                                Token {i + 1}
-                                            </Button>
+                                            <h2>Token {i + 1}</h2>
                                         ) : (
                                             <Button
                                                 onClick={() =>
@@ -320,7 +346,7 @@ function CreatePool() {
                                 {tokens[chainId].find(
                                     (tkn) => !poolTokens.includes(tkn.address)
                                 )?.address === undefined ? (
-                                    <Card>No More Tokens!</Card>
+                                    <h2>No More Tokens!</h2>
                                 ) : (
                                     <Button
                                         onClick={() =>
