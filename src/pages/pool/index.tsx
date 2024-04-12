@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import { useAccount, useChainId, useReadContract } from 'wagmi'
 
 import { tokens } from '../../data/tokens'
-import { shortAddress } from '../../utils/address'
 import { allowance, balanceOf, totalSupply } from '../../lib/erc20'
 import { useGraphQL } from '../../useGraphQL'
 import {
@@ -389,6 +388,7 @@ function TransactionView({
     }>()
 
     const [allowances, setAllowances] = useState<{ [key: string]: number }>({})
+    const { setTxHash: setTx, txReceipt, txHash } = useTransactionStatus({})
 
     useEffect(() => {
         async function fetchAllowances(): Promise<void> {
@@ -408,7 +408,7 @@ function TransactionView({
         }
 
         fetchAllowances()
-    }, [selectedTokens, address])
+    }, [selectedTokens, address, txReceipt])
 
     const depositAll = true // todo: make conditional once single sided deposits are available
 
@@ -491,7 +491,6 @@ function TransactionView({
             parseFloat(formatUnits(allowances[key], 18)) < parseFloat(amount)
     )
 
-    const { setTxHash: setTx, txReceipt, txHash } = useTransactionStatus({})
     const [successfulReceipts, setSuccessfulReceipts] = useState<any[]>([])
 
     // Upon receiving a txReceipt, reset the form.
@@ -507,8 +506,7 @@ function TransactionView({
         }
     }, [txReceipt])
 
-    const [lockForm, setLockForm] = useState<boolean>(false)
-
+    // todo: theres a bug where the approval token does not get updated after the first approval goes through
     const TransactionAction = ({ phase }: { phase: TransactionPhase }) => {
         switch (phase) {
             case TransactionPhase.Approve:
@@ -556,279 +554,154 @@ function TransactionView({
     }
 
     return (
-        <Sheet>
-            <SheetTrigger className="bg-blue-600 rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 w-full">
-                Deposit{' '}
-                {selectedTokens
-                    ?.map(
-                        (t) =>
-                            pool.poolTokens.items.filter(
-                                (pt) => pt.token.id === t
-                            )[0]?.token.symbol
-                    )
-                    .join(', ')}
-            </SheetTrigger>
-            <SheetContent side="bottom">
-                <SheetHeader className="max-w-4xl mx-auto justify-center flex flex-col gap-sm">
-                    <SheetTitle>
-                        Deposit{' '}
-                        {selectedTokens
-                            ?.map(
-                                (t) =>
-                                    pool.poolTokens.items.filter(
-                                        (pt) => pt.token.id === t
-                                    )[0]?.token.symbol
-                            )
-                            .join(', ')}{' '}
-                        to {pool.name}
-                    </SheetTitle>
-                    <SheetDescription>
-                        Deposit tokens into a pool to mint liquidity tokens.
-                    </SheetDescription>
-                </SheetHeader>
-                <div className="max-w-4xl my-8 mx-auto justify-center flex flex-row gap-md">
-                    <div
-                        id="deposit-form"
-                        className="flex flex-col gap-sm w-1/2"
-                    >
-                        <div className="flex flex-row gap-md justify-between w-full">
-                            <p>Amount</p>
-                            <div className="flex flex-row gap-sm items-center">
-                                <Label
-                                    htmlFor="currency-mode"
-                                    className={`${!isUSD ? '' : 'dark:text-muted-foreground'}`}
-                                >
-                                    {pool?.poolTokens?.items?.find(
-                                        (pt) =>
-                                            pt.token.id === selectedTokens[0]
-                                    )?.token.symbol || 'Asset'}
-                                </Label>
-                                <Switch
-                                    id="currency-mode"
-                                    checked={isUSD}
-                                    onCheckedChange={() => setIsUSD(!isUSD)}
-                                />
-                                <Label
-                                    htmlFor="currency-mode"
-                                    className={`${isUSD ? '' : 'dark:text-muted-foreground'}`}
-                                >
-                                    USD
-                                </Label>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-md my-4">
-                            <Input
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                placeholder="0.0"
-                                disabled={lockForm}
-                                className="py-8 px-4 text-4xl"
-                            />
-                            <p className="py-2 border-b">Breakdown</p>
-                            <div className="flex flex-col gap-md w-full">
-                                <div className="flex flex-col gap-sm w-full">
-                                    {depositAll &&
-                                        pool?.poolTokens?.items?.map((pt) => {
-                                            return (
-                                                <TokenAmountInactive
-                                                    key={pt.id}
-                                                    disabled
-                                                    tokenAddress={
-                                                        pt.token
-                                                            .id as `0x${string}`
-                                                    }
-                                                    tokenSymbol={
-                                                        pt.token.symbol
-                                                    }
-                                                    tokenBalance={
-                                                        balanceMapping[
-                                                            pt.token
-                                                                .id as `0x${string}`
-                                                        ]
-                                                    }
-                                                    tokenLogo={
-                                                        tokens[chainId].find(
-                                                            (tkn) =>
-                                                                tkn.symbol.toLowerCase() ===
-                                                                pt.token.symbol.toLowerCase()
-                                                        )?.logo ||
-                                                        tokens[chainId]?.filter(
-                                                            (tkn) =>
-                                                                tkn.address ===
-                                                                selectedTokens[0]
-                                                        )[0]?.logo
-                                                    }
-                                                    tokenPrice={3000} // no price provider
-                                                    amount={
-                                                        dependentAmounts?.reserveDeltas[
-                                                            pool.poolTokens.items.findIndex(
-                                                                (p) =>
-                                                                    p.token
-                                                                        .id ===
-                                                                    pt.token.id
-                                                            )
-                                                        ].toString() ?? '0'
-                                                    }
-                                                    setAmount={() => {}}
-                                                />
-                                            )
-                                        })}
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-md w-full text-sm">
-                                <div className="flex flex-row gap-sm justify-between w-full py-2 border-b">
-                                    <p>Subtotal</p>
-                                    <p>$100,000.00</p>
-                                </div>
-                                <div className="flex flex-row gap-sm justify-between w-full">
-                                    <p className="text-muted dark:text-muted-foreground">
-                                        Fee
-                                    </p>
-
-                                    <p className="text-muted dark:text-muted-foreground">
-                                        $100.00
-                                    </p>
-                                </div>
-                                <div className="flex flex-row gap-sm justify-between w-full py-2 border-t">
-                                    <p>Total</p>
-                                    <p>$100,100.00</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        id="deposit-review"
-                        className="flex flex-col w-1/2 gap-lg"
-                    >
-                        <p className="pb-2 border-b">Review Details</p>
-                        <div className="flex flex-col gap-sm">
-                            <small>Transaction information</small>
-                            <div className="flex flex-row gap-xs justify-between w-full">
-                                <small className="text-muted dark:text-muted-foreground">
-                                    Est. LPT received
-                                </small>
-                                <small>100</small>
-                            </div>
-                            <div className="flex flex-row gap-xs justify-between w-full">
-                                <small className="text-muted dark:text-muted-foreground">
-                                    Est. LPT price
-                                </small>
-                                <small>1.03</small>
-                            </div>
-                            <div className="flex flex-row gap-xs justify-between w-full">
-                                <small className="text-muted dark:text-muted-foreground">
-                                    Est. tx fee
-                                </small>
-                                <small>0.0001 ETH</small>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <small>Payment information</small>
-                            <div className="flex flex-row gap-xs justify-between w-full">
-                                <small className="text-muted dark:text-muted-foreground">
-                                    From
-                                </small>
-                                <small>
-                                    <LabelWithEtherscan
-                                        label={shortAddress(address!)}
-                                        address={address!}
-                                    />
-                                </small>
-                            </div>
-                            <div className="flex flex-row gap-xs justify-between w-full">
-                                <small className="text-muted dark:text-muted-foreground">
-                                    Protocol
-                                </small>
-                                <small>
-                                    <LabelWithEtherscan
-                                        label={'DFMM v0.2.0'}
-                                        address={dfmmAddress as `0x${string}`}
-                                    />
-                                </small>
-                            </div>
-                            <div className="flex flex-row gap-xs justify-between w-full">
-                                <small className="text-muted dark:text-muted-foreground">
-                                    LPT
-                                </small>
-                                <small>
-                                    <LabelWithEtherscan
-                                        label={pool.name}
-                                        address={pool.lpToken}
-                                    />
-                                </small>
-                            </div>
-                        </div>
-                        <div className="flex flex-row gap-sm w-full items-center">
-                            <input
-                                type="checkbox"
-                                className="form-checkbox"
-                                id="depositAll"
-                                name="depositAll"
-                                required
-                                checked={depositAll}
-                                onChange={() => {
-                                    // todo: keep selected.
-                                }}
-                                disabled={true}
-                            />{' '}
-                            <label
-                                htmlFor="depositAll"
-                                className="flex items-center"
-                            >
-                                <small>Deposit all tokens</small>
-                            </label>
-                        </div>
-                        <TransactionAction
-                            phase={
-                                remainingAllowances.length > 0
-                                    ? TransactionPhase.Approve
-                                    : TransactionPhase.Execute
-                            }
+        <TransactionDrawer
+            transactionTokens={pool.poolTokens.items}
+            deltas={dependentAmounts?.reserveDeltas ?? []}
+            openButton={
+                <>
+                    Deposit{' '}
+                    {selectedTokens
+                        ?.map(
+                            (t) =>
+                                pool.poolTokens.items.filter(
+                                    (pt) => pt.token.id === t
+                                )[0]?.token.symbol
+                        )
+                        .join(', ')}
+                </>
+            }
+            txTitle={
+                <>
+                    Deposit{' '}
+                    {selectedTokens
+                        ?.map(
+                            (t) =>
+                                pool.poolTokens.items.filter(
+                                    (pt) => pt.token.id === t
+                                )[0]?.token.symbol
+                        )
+                        .join(', ')}{' '}
+                    to {pool.name}
+                </>
+            }
+            txDescription={
+                <>Deposit tokens into a pool to mint liquidity tokens.</>
+            }
+            txForm={
+                <>
+                    <p>Amount</p>
+                    <div className="flex flex-row gap-sm items-center">
+                        <Label
+                            htmlFor="currency-mode"
+                            className={`${!isUSD ? '' : 'dark:text-muted-foreground'}`}
+                        >
+                            {pool?.poolTokens?.items?.find(
+                                (pt) => pt.token.id === selectedTokens[0]
+                            )?.token.symbol || 'Asset'}
+                        </Label>
+                        <Switch
+                            id="currency-mode"
+                            checked={isUSD}
+                            onCheckedChange={() => setIsUSD(!isUSD)}
                         />
-                        {successfulReceipts.length > 0 && (
-                            <div className="flex flex-col gap-md">
-                                <p className="pb-2 border-b">
-                                    Recent Transactions
-                                </p>
-                                {successfulReceipts.map((receipt) => {
-                                    return (
-                                        <div
-                                            className="flex flex-row gap-sm justify-between w-full items-center"
-                                            key={receipt.transactionHash}
-                                        >
-                                            <small>
-                                                {receipt.status ===
-                                                'success' ? (
-                                                    <CheckCircledIcon
-                                                        color="#34d399"
-                                                        fontSize={28}
-                                                    />
-                                                ) : (
-                                                    <QuestionMarkCircledIcon />
-                                                )}
-                                            </small>
-                                            Deposit
-                                            <LabelWithEtherscan
-                                                label={<small>From</small>}
-                                                address={receipt.from}
-                                            />
-                                            <LabelWithEtherscan
-                                                label={<small>To</small>}
-                                                address={receipt.to}
-                                            />
-                                            <TxLabelEtherscan
-                                                label={<small>Tx</small>}
-                                                txHash={receipt.transactionHash}
-                                            />
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        )}
+                        <Label
+                            htmlFor="currency-mode"
+                            className={`${isUSD ? '' : 'dark:text-muted-foreground'}`}
+                        >
+                            USD
+                        </Label>
                     </div>
-                </div>
-            </SheetContent>
-        </Sheet>
+
+                    <Input
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="0.0"
+                        disabled={false} // todo
+                        className="py-8 px-4 text-4xl"
+                    />
+                </>
+            }
+            txSubmit={
+                <>
+                    <div className="flex flex-row gap-sm w-full items-center">
+                        <input
+                            type="checkbox"
+                            className="form-checkbox"
+                            id="depositAll"
+                            name="depositAll"
+                            required
+                            checked={depositAll}
+                            onChange={() => {
+                                // todo: keep selected.
+                            }}
+                            disabled={true}
+                        />{' '}
+                        <label
+                            htmlFor="depositAll"
+                            className="flex items-center"
+                        >
+                            <small>Deposit all tokens</small>
+                        </label>
+                    </div>
+                    <TransactionAction
+                        phase={
+                            remainingAllowances.length > 0
+                                ? TransactionPhase.Approve
+                                : TransactionPhase.Execute
+                        }
+                    />
+                    {successfulReceipts.length > 0 && (
+                        <div className="flex flex-col gap-md">
+                            <p className="pb-2 border-b">Recent Transactions</p>
+                            {successfulReceipts.map((receipt) => {
+                                return (
+                                    <div
+                                        className="flex flex-row gap-sm justify-between w-full items-center"
+                                        key={receipt.transactionHash}
+                                    >
+                                        <small>
+                                            {receipt.status === 'success' ? (
+                                                <CheckCircledIcon
+                                                    color="#34d399"
+                                                    fontSize={28}
+                                                />
+                                            ) : (
+                                                <QuestionMarkCircledIcon />
+                                            )}
+                                        </small>
+                                        Deposit
+                                        <LabelWithEtherscan
+                                            label={<small>From</small>}
+                                            address={receipt.from}
+                                        />
+                                        <LabelWithEtherscan
+                                            label={<small>To</small>}
+                                            address={receipt.to}
+                                        />
+                                        <TxLabelEtherscan
+                                            label={<small>Tx</small>}
+                                            txHash={receipt.transactionHash}
+                                        />
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
+                </>
+            }
+            externalEtherscanLinks={[
+                {
+                    name: 'LPT',
+                    label: pool.name,
+                    address: pool.lpToken,
+                },
+                {
+                    name: 'Protocol',
+                    label: 'DFMM v0.2.0',
+                    address: dfmmAddress as `0x${string}`,
+                },
+            ]}
+        />
     )
 }
 

@@ -24,7 +24,7 @@ export function formatNumber(
         }
     }
 
-    if (currency) {
+    if (typeof currency !== 'undefined') {
         options = {
             ...options,
             currency,
