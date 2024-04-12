@@ -13,6 +13,10 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n    fragment AllocateItem on Allocate {\n        id\n        poolId\n        sender\n        block\n        deltas\n        deltaLiquidity\n        timestamp\n        block\n    }\n": types.AllocateItemFragmentDoc,
+    "\n    query allAllocates($poolId: BigInt!) {\n        allocates(where: { poolId: $poolId }) {\n            items {\n                ...AllocateItem\n            }\n        }\n    }\n": types.AllAllocatesDocument,
+    "\n    fragment DeallocateItem on Deallocate {\n        id\n        poolId\n        sender\n        block\n        deltas\n        deltaLiquidity\n        timestamp\n        block\n    }\n": types.DeallocateItemFragmentDoc,
+    "\n    query allDeallocates($poolId: BigInt!) {\n        deallocates(where: { poolId: $poolId }) {\n            items {\n                ...DeallocateItem\n            }\n        }\n    }\n": types.AllDeallocatesDocument,
     "\n    fragment NgParamsItem on NTokenGeometricMeanParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedWeights\n        weightsUpdatePerSecond\n        weightsUpdateEnd\n        lastWeightsUpdate\n    }\n": types.NgParamsItemFragmentDoc,
     "\n    query nGParams($id: BigInt!) {\n        nTokenGeometricMeanParams(id: $id) {\n            ...NgParamsItem\n        }\n    }\n": types.NGParamsDocument,
     "\n    fragment CSParamsItem on ConstantSumParams {\n        id\n        poolId\n        swapFee\n        controller\n        lastComputedPrice\n        priceUpdatePerSecond\n        priceUpdateEnd\n        lastPriceUpdate\n    }\n": types.CsParamsItemFragmentDoc,
@@ -44,6 +48,22 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    fragment AllocateItem on Allocate {\n        id\n        poolId\n        sender\n        block\n        deltas\n        deltaLiquidity\n        timestamp\n        block\n    }\n"): (typeof documents)["\n    fragment AllocateItem on Allocate {\n        id\n        poolId\n        sender\n        block\n        deltas\n        deltaLiquidity\n        timestamp\n        block\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query allAllocates($poolId: BigInt!) {\n        allocates(where: { poolId: $poolId }) {\n            items {\n                ...AllocateItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query allAllocates($poolId: BigInt!) {\n        allocates(where: { poolId: $poolId }) {\n            items {\n                ...AllocateItem\n            }\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    fragment DeallocateItem on Deallocate {\n        id\n        poolId\n        sender\n        block\n        deltas\n        deltaLiquidity\n        timestamp\n        block\n    }\n"): (typeof documents)["\n    fragment DeallocateItem on Deallocate {\n        id\n        poolId\n        sender\n        block\n        deltas\n        deltaLiquidity\n        timestamp\n        block\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query allDeallocates($poolId: BigInt!) {\n        deallocates(where: { poolId: $poolId }) {\n            items {\n                ...DeallocateItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query allDeallocates($poolId: BigInt!) {\n        deallocates(where: { poolId: $poolId }) {\n            items {\n                ...DeallocateItem\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

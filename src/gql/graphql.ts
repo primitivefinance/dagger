@@ -88,6 +88,95 @@ export type AccountPage = {
   pageInfo: PageInfo;
 };
 
+export type Allocate = {
+  __typename?: 'Allocate';
+  block: Scalars['BigInt']['output'];
+  deltaLiquidity: Scalars['Float']['output'];
+  deltaLiquidityWad: Scalars['BigInt']['output'];
+  deltas: Array<Scalars['Float']['output']>;
+  deltasWad: Array<Scalars['BigInt']['output']>;
+  id: Scalars['String']['output'];
+  pool: Pool;
+  poolId: Scalars['BigInt']['output'];
+  sender: Scalars['String']['output'];
+  timestamp: Scalars['BigInt']['output'];
+};
+
+export type AllocateFilter = {
+  AND?: InputMaybe<Array<InputMaybe<AllocateFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<AllocateFilter>>>;
+  block?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  block_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidityWad?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidityWad_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_not?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity_gt?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_gte?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  deltaLiquidity_lt?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_lte?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_not?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  deltas?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  deltasWad?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltasWad_has?: InputMaybe<Scalars['BigInt']['input']>;
+  deltasWad_not?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltasWad_not_has?: InputMaybe<Scalars['BigInt']['input']>;
+  deltas_has?: InputMaybe<Scalars['Float']['input']>;
+  deltas_not?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  deltas_not_has?: InputMaybe<Scalars['Float']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  poolId_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_not?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  sender?: InputMaybe<Scalars['String']['input']>;
+  sender_gt?: InputMaybe<Scalars['String']['input']>;
+  sender_gte?: InputMaybe<Scalars['String']['input']>;
+  sender_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sender_lt?: InputMaybe<Scalars['String']['input']>;
+  sender_lte?: InputMaybe<Scalars['String']['input']>;
+  sender_not?: InputMaybe<Scalars['String']['input']>;
+  sender_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+};
+
+export type AllocatePage = {
+  __typename?: 'AllocatePage';
+  items: Array<Allocate>;
+  pageInfo: PageInfo;
+};
+
 export type ConstantSumParams = {
   __typename?: 'ConstantSumParams';
   controller: Scalars['String']['output'];
@@ -191,6 +280,95 @@ export type ConstantSumParamsFilter = {
 export type ConstantSumParamsPage = {
   __typename?: 'ConstantSumParamsPage';
   items: Array<ConstantSumParams>;
+  pageInfo: PageInfo;
+};
+
+export type Deallocate = {
+  __typename?: 'Deallocate';
+  block: Scalars['BigInt']['output'];
+  deltaLiquidity: Scalars['Float']['output'];
+  deltaLiquidityWad: Scalars['BigInt']['output'];
+  deltas?: Maybe<Array<Scalars['Float']['output']>>;
+  deltasWad?: Maybe<Array<Scalars['BigInt']['output']>>;
+  id: Scalars['String']['output'];
+  pool: Pool;
+  poolId: Scalars['BigInt']['output'];
+  sender: Scalars['String']['output'];
+  timestamp: Scalars['BigInt']['output'];
+};
+
+export type DeallocateFilter = {
+  AND?: InputMaybe<Array<InputMaybe<DeallocateFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<DeallocateFilter>>>;
+  block?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  block_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidityWad?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidityWad_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_not?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidityWad_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity_gt?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_gte?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  deltaLiquidity_lt?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_lte?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_not?: InputMaybe<Scalars['Float']['input']>;
+  deltaLiquidity_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  deltas?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  deltasWad?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltasWad_has?: InputMaybe<Scalars['BigInt']['input']>;
+  deltasWad_not?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltasWad_not_has?: InputMaybe<Scalars['BigInt']['input']>;
+  deltas_has?: InputMaybe<Scalars['Float']['input']>;
+  deltas_not?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  deltas_not_has?: InputMaybe<Scalars['Float']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  poolId_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_not?: InputMaybe<Scalars['BigInt']['input']>;
+  poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  sender?: InputMaybe<Scalars['String']['input']>;
+  sender_gt?: InputMaybe<Scalars['String']['input']>;
+  sender_gte?: InputMaybe<Scalars['String']['input']>;
+  sender_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sender_lt?: InputMaybe<Scalars['String']['input']>;
+  sender_lte?: InputMaybe<Scalars['String']['input']>;
+  sender_not?: InputMaybe<Scalars['String']['input']>;
+  sender_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+};
+
+export type DeallocatePage = {
+  __typename?: 'DeallocatePage';
+  items: Array<Deallocate>;
   pageInfo: PageInfo;
 };
 
@@ -724,8 +902,12 @@ export type Query = {
   __typename?: 'Query';
   account?: Maybe<Account>;
   accounts: AccountPage;
+  allocate?: Maybe<Allocate>;
+  allocates: AllocatePage;
   constantSumParams?: Maybe<ConstantSumParams>;
   constantSumParamss: ConstantSumParamsPage;
+  deallocate?: Maybe<Deallocate>;
+  deallocates: DeallocatePage;
   geometricMeanParams?: Maybe<GeometricMeanParams>;
   geometricMeanParamss: GeometricMeanParamsPage;
   logNormalParams?: Maybe<LogNormalParams>;
@@ -764,6 +946,23 @@ export type QueryAccountsArgs = {
 };
 
 
+export type QueryAllocateArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryAllocatesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<AllocateFilter>;
+};
+
+
 export type QueryConstantSumParamsArgs = {
   id: Scalars['BigInt']['input'];
   timestamp?: InputMaybe<Scalars['Int']['input']>;
@@ -778,6 +977,23 @@ export type QueryConstantSumParamssArgs = {
   orderDirection?: InputMaybe<Scalars['String']['input']>;
   timestamp?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ConstantSumParamsFilter>;
+};
+
+
+export type QueryDeallocateArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryDeallocatesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<DeallocateFilter>;
 };
 
 
@@ -1160,6 +1376,30 @@ export type TokenPage = {
   pageInfo: PageInfo;
 };
 
+export type AllocateItemFragment = { __typename?: 'Allocate', id: string, poolId: any, sender: string, block: any, deltas: Array<number>, deltaLiquidity: number, timestamp: any } & { ' $fragmentName'?: 'AllocateItemFragment' };
+
+export type AllAllocatesQueryVariables = Exact<{
+  poolId: Scalars['BigInt']['input'];
+}>;
+
+
+export type AllAllocatesQuery = { __typename?: 'Query', allocates: { __typename?: 'AllocatePage', items: Array<(
+      { __typename?: 'Allocate' }
+      & { ' $fragmentRefs'?: { 'AllocateItemFragment': AllocateItemFragment } }
+    )> } };
+
+export type DeallocateItemFragment = { __typename?: 'Deallocate', id: string, poolId: any, sender: string, block: any, deltas?: Array<number> | null, deltaLiquidity: number, timestamp: any } & { ' $fragmentName'?: 'DeallocateItemFragment' };
+
+export type AllDeallocatesQueryVariables = Exact<{
+  poolId: Scalars['BigInt']['input'];
+}>;
+
+
+export type AllDeallocatesQuery = { __typename?: 'Query', deallocates: { __typename?: 'DeallocatePage', items: Array<(
+      { __typename?: 'Deallocate' }
+      & { ' $fragmentRefs'?: { 'DeallocateItemFragment': DeallocateItemFragment } }
+    )> } };
+
 export type NgParamsItemFragment = { __typename?: 'NTokenGeometricMeanParams', id: any, poolId: any, swapFee: any, controller: string, lastComputedWeights: Array<any>, weightsUpdatePerSecond: Array<any>, weightsUpdateEnd: number, lastWeightsUpdate: number } & { ' $fragmentName'?: 'NgParamsItemFragment' };
 
 export type NgParamsQueryVariables = Exact<{
@@ -1255,6 +1495,8 @@ export type AllSwapsQuery = { __typename?: 'Query', swaps: { __typename?: 'SwapP
       & { ' $fragmentRefs'?: { 'SwapItemFragment': SwapItemFragment } }
     )> } };
 
+export const AllocateItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AllocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Allocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"block"}},{"kind":"Field","name":{"kind":"Name","value":"deltas"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllocateItemFragment, unknown>;
+export const DeallocateItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DeallocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Deallocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"block"}},{"kind":"Field","name":{"kind":"Name","value":"deltas"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<DeallocateItemFragment, unknown>;
 export const NgParamsItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NgParamsItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NTokenGeometricMeanParams"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"swapFee"}},{"kind":"Field","name":{"kind":"Name","value":"controller"}},{"kind":"Field","name":{"kind":"Name","value":"lastComputedWeights"}},{"kind":"Field","name":{"kind":"Name","value":"weightsUpdatePerSecond"}},{"kind":"Field","name":{"kind":"Name","value":"weightsUpdateEnd"}},{"kind":"Field","name":{"kind":"Name","value":"lastWeightsUpdate"}}]}}]} as unknown as DocumentNode<NgParamsItemFragment, unknown>;
 export const CsParamsItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CSParamsItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConstantSumParams"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"swapFee"}},{"kind":"Field","name":{"kind":"Name","value":"controller"}},{"kind":"Field","name":{"kind":"Name","value":"lastComputedPrice"}},{"kind":"Field","name":{"kind":"Name","value":"priceUpdatePerSecond"}},{"kind":"Field","name":{"kind":"Name","value":"priceUpdateEnd"}},{"kind":"Field","name":{"kind":"Name","value":"lastPriceUpdate"}}]}}]} as unknown as DocumentNode<CsParamsItemFragment, unknown>;
 export const LNParamsItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"lNParamsItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LogNormalParams"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"swapFee"}},{"kind":"Field","name":{"kind":"Name","value":"controller"}},{"kind":"Field","name":{"kind":"Name","value":"lastComputedMean"}},{"kind":"Field","name":{"kind":"Name","value":"lastComputedWidth"}},{"kind":"Field","name":{"kind":"Name","value":"lastMeanUpdate"}},{"kind":"Field","name":{"kind":"Name","value":"lastWidthUpdate"}},{"kind":"Field","name":{"kind":"Name","value":"meanUpdateEnd"}},{"kind":"Field","name":{"kind":"Name","value":"meanUpdatePerSecond"}},{"kind":"Field","name":{"kind":"Name","value":"widthUpdateEnd"}},{"kind":"Field","name":{"kind":"Name","value":"widthUpdatePerSecond"}}]}}]} as unknown as DocumentNode<LNParamsItemFragment, unknown>;
@@ -1263,6 +1505,8 @@ export const PositionItemFragmentDoc = {"kind":"Document","definitions":[{"kind"
 export const PoolTokenItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PoolTokenItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PoolToken"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}}]}}]} as unknown as DocumentNode<PoolTokenItemFragment, unknown>;
 export const PoolItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PoolItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Pool"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PoolTokenItem"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"strategy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokens"}},{"kind":"Field","name":{"kind":"Name","value":"reserves"}},{"kind":"Field","name":{"kind":"Name","value":"liquidity"}},{"kind":"Field","name":{"kind":"Name","value":"lpToken"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"initTimestamp"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PoolTokenItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PoolToken"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}}]}}]} as unknown as DocumentNode<PoolItemFragment, unknown>;
 export const SwapItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SwapItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Swap"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PoolItem"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"amountIn"}},{"kind":"Field","name":{"kind":"Name","value":"amountOut"}},{"kind":"Field","name":{"kind":"Name","value":"tokenIn"}},{"kind":"Field","name":{"kind":"Name","value":"tokenOut"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PoolTokenItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PoolToken"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PoolItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Pool"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PoolTokenItem"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"strategy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokens"}},{"kind":"Field","name":{"kind":"Name","value":"reserves"}},{"kind":"Field","name":{"kind":"Name","value":"liquidity"}},{"kind":"Field","name":{"kind":"Name","value":"lpToken"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"initTimestamp"}}]}}]} as unknown as DocumentNode<SwapItemFragment, unknown>;
+export const AllAllocatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allAllocates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BigInt"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allocates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"poolId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AllocateItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AllocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Allocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"block"}},{"kind":"Field","name":{"kind":"Name","value":"deltas"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllAllocatesQuery, AllAllocatesQueryVariables>;
+export const AllDeallocatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allDeallocates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BigInt"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deallocates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"poolId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DeallocateItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DeallocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Deallocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"block"}},{"kind":"Field","name":{"kind":"Name","value":"deltas"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllDeallocatesQuery, AllDeallocatesQueryVariables>;
 export const NGParamsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"nGParams"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BigInt"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nTokenGeometricMeanParams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NgParamsItem"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NgParamsItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NTokenGeometricMeanParams"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"swapFee"}},{"kind":"Field","name":{"kind":"Name","value":"controller"}},{"kind":"Field","name":{"kind":"Name","value":"lastComputedWeights"}},{"kind":"Field","name":{"kind":"Name","value":"weightsUpdatePerSecond"}},{"kind":"Field","name":{"kind":"Name","value":"weightsUpdateEnd"}},{"kind":"Field","name":{"kind":"Name","value":"lastWeightsUpdate"}}]}}]} as unknown as DocumentNode<NGParamsQuery, NGParamsQueryVariables>;
 export const CsParamsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"csParams"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BigInt"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"constantSumParams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CSParamsItem"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CSParamsItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConstantSumParams"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"swapFee"}},{"kind":"Field","name":{"kind":"Name","value":"controller"}},{"kind":"Field","name":{"kind":"Name","value":"lastComputedPrice"}},{"kind":"Field","name":{"kind":"Name","value":"priceUpdatePerSecond"}},{"kind":"Field","name":{"kind":"Name","value":"priceUpdateEnd"}},{"kind":"Field","name":{"kind":"Name","value":"lastPriceUpdate"}}]}}]} as unknown as DocumentNode<CsParamsQuery, CsParamsQueryVariables>;
 export const LNParamsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"lNParams"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BigInt"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logNormalParams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"lNParamsItem"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"lNParamsItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LogNormalParams"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolId"}},{"kind":"Field","name":{"kind":"Name","value":"swapFee"}},{"kind":"Field","name":{"kind":"Name","value":"controller"}},{"kind":"Field","name":{"kind":"Name","value":"lastComputedMean"}},{"kind":"Field","name":{"kind":"Name","value":"lastComputedWidth"}},{"kind":"Field","name":{"kind":"Name","value":"lastMeanUpdate"}},{"kind":"Field","name":{"kind":"Name","value":"lastWidthUpdate"}},{"kind":"Field","name":{"kind":"Name","value":"meanUpdateEnd"}},{"kind":"Field","name":{"kind":"Name","value":"meanUpdatePerSecond"}},{"kind":"Field","name":{"kind":"Name","value":"widthUpdateEnd"}},{"kind":"Field","name":{"kind":"Name","value":"widthUpdatePerSecond"}}]}}]} as unknown as DocumentNode<LNParamsQuery, LNParamsQueryVariables>;
