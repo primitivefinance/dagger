@@ -457,7 +457,14 @@ function TransactionView({
         }
 
         const deltaT = parseFloat(amount)
-        const deltas = poolsSnapshot.reserves.map((_, i) => toWad(deltaT))
+        let deltas
+
+        try {
+            deltas = poolsSnapshot.reserves.map((_, i) => toWad(deltaT))
+        } catch (e) {
+            console.error(e)
+            return
+        }
         // todo: assumes equal weights...
         const liquidity =
             (toWad(deltaT) * BigInt(poolsSnapshot.totalLiquidity)) /
@@ -489,7 +496,10 @@ function TransactionView({
 
     // Upon receiving a txReceipt, reset the form.
     useEffect(() => {
-        if (typeof txReceipt !== 'undefined') {
+        if (
+            typeof txReceipt !== 'undefined' &&
+            remainingAllowances.length === 0
+        ) {
             setAmount('')
             setDependentAmounts(undefined)
             setPayloadToExecute(undefined)
@@ -497,30 +507,49 @@ function TransactionView({
         }
     }, [txReceipt])
 
+    const [lockForm, setLockForm] = useState<boolean>(false)
+
     const TransactionAction = ({ phase }: { phase: TransactionPhase }) => {
         switch (phase) {
             case TransactionPhase.Approve:
                 return (
-                    <ApproveTransaction
-                        token={remainingAllowances?.[0] as `0x${string}`}
-                        amount={amount}
+                    <TransactionButton
+                        contractName="erc20"
+                        to={remainingAllowances?.[0] as `0x${string}`}
+                        from={address}
+                        args={[
+                            dfmmAddress,
+                            toWad(parseFloat(amount.toString())),
+                        ]}
                         setTxHash={setTx}
                         txHash={txHash as `0x${string}`}
                         txReceipt={txReceipt}
+                        functionName="approve"
                     />
                 )
             default:
                 return (
-                    <AllocateTransaction
-                        poolId={pool.id}
-                        tokens={
-                            pool?.poolTokens?.items?.map((pt) => pt.token.id) ??
-                            []
-                        }
-                        payload={payloadToExecute}
+                    <TransactionButton
+                        contractName="dfmm"
+                        to={dfmmAddress}
+                        from={address}
+                        args={[pool.id, payloadToExecute]}
                         setTxHash={setTx}
                         txHash={txHash as `0x${string}`}
                         txReceipt={txReceipt}
+                        functionName="allocate"
+                        stateOverride={pool?.poolTokens?.items
+                            ?.map((pt) => pt.token.id)
+                            ?.map((token) => {
+                                return {
+                                    address: token,
+                                    stateDiff: [
+                                        overrideAllowanceDFMM(
+                                            address as `0x${string}`
+                                        ),
+                                    ],
+                                }
+                            })}
                     />
                 )
         }
@@ -592,7 +621,7 @@ function TransactionView({
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                                 placeholder="0.0"
-                                disabled={false}
+                                disabled={lockForm}
                                 className="py-8 px-4 text-4xl"
                             />
                             <p className="py-2 border-b">Breakdown</p>
