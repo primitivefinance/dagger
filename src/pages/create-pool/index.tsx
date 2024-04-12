@@ -5,7 +5,6 @@ import CardToggleGroup from '@/components/CardRadioGroup'
 
 import { balanceOf, allowance, approve } from '@/lib/erc20'
 import TokenAmountInput from '@/components/TokenAmountInput'
-import { computeAndFormatPrice, computePrice } from '@/lib/g3m'
 import TokenSelector from '@/components/TokenSelector'
 import { LogNormal, init, G3M, DFMM } from '@/lib/dfmm'
 import { tokens } from '@/data/tokens'
@@ -16,7 +15,6 @@ import {
     strats,
     feeLevels,
 } from '@/data/copy/create-pool'
-import { usePrices } from '@/store/PricesContext'
 import {
     Card,
     CardDescription,
@@ -77,7 +75,8 @@ function CreatePool() {
         setDefaultTokens(strategy)
     )
 
-    const [tokensBalance, setTokensBalance] = useState<number[]>([0, 0])
+    const [balances, setTokenBalances] = useState<number[]>([0, 0, 0, 0])
+    const [amounts, setAmounts] = useState<string[]>(['', '', '', ''])
 
     const lockWeight = (tokenAddress: `0x${string}`) => {
         const _weights: { weight: string; isLocked: boolean }[] = []
@@ -132,7 +131,6 @@ function CreatePool() {
                 }
             })
         }
-        console.log(_weights)
         setWeights(_weights)
     }
 
@@ -160,11 +158,15 @@ function CreatePool() {
                     const balance = await balanceOf(_token, address)
                     _balances.push(balance)
                 }
-                setTokensBalance(_balances)
+                setTokenBalances(_balances)
             }
             calculateWeights()
         })()
     }, [address, poolTokens])
+
+    useEffect(() => {
+        setPoolTokens(setDefaultTokens(strategy))
+    }, [strategy])
 
     if (weights.length < 1 || poolTokens.length < 1) return <></>
     return (
@@ -241,7 +243,11 @@ function CreatePool() {
                         <TableCell>Tokens</TableCell>
                         <TableCell>Amounts</TableCell>
                         <TableCell>Weights</TableCell>
-                        <TableCell>Edit</TableCell>
+                        {strategy === 'GeometricMean' ? (
+                            <TableCell>Edit</TableCell>
+                        ) : (
+                            <></>
+                        )}
                     </TableHeader>
                     <TableBody>
                         {poolTokens.map((token, i) => {
@@ -296,9 +302,32 @@ function CreatePool() {
                                             disabledTokens={poolTokens}
                                         />
                                     </TableCell>
-                                    <TableCell></TableCell>
                                     <TableCell>
-                                        {' '}
+                                        <Input
+                                            type="text"
+                                            placeholder="0.0"
+                                            value={amounts[i]}
+                                            onChange={(e) => {
+                                                const _amounts = amounts.map(
+                                                    (a, z) =>
+                                                        z === i
+                                                            ? e.target.value
+                                                            : a
+                                                )
+                                                setAmounts(_amounts)
+                                            }}
+                                        />
+                                        <span>
+                                            {'Balance: ' + balances[i]}{' '}
+                                            {
+                                                tokens[chainId].find(
+                                                    (tkn) =>
+                                                        tkn.address === token
+                                                )?.symbol
+                                            }
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
                                         <Input
                                             type="text"
                                             disabled={
@@ -314,57 +343,68 @@ function CreatePool() {
                                             }}
                                         />
                                     </TableCell>
-                                    <TableCell>
-                                        <Button
-                                            onClick={() => lockWeight(token)}
-                                        >
-                                            {weights[i].isLocked
-                                                ? 'Unlock'
-                                                : 'Lock'}{' '}
-                                            Weight
-                                        </Button>
-                                        {i < 2 ? (
-                                            <h2>Token {i + 1}</h2>
-                                        ) : (
+                                    {strategy === 'GeometricMean' ? (
+                                        <TableCell>
                                             <Button
                                                 onClick={() =>
-                                                    removeToken(token)
+                                                    lockWeight(token)
                                                 }
                                             >
-                                                Remove Token {i + 1}
+                                                {weights[i].isLocked
+                                                    ? 'Unlock'
+                                                    : 'Lock'}{' '}
+                                                Weight
                                             </Button>
-                                        )}
-                                    </TableCell>
+                                            {i < 2 ? (
+                                                <h2>Token {i + 1}</h2>
+                                            ) : (
+                                                <Button
+                                                    onClick={() =>
+                                                        removeToken(token)
+                                                    }
+                                                >
+                                                    Remove Token {i + 1}
+                                                </Button>
+                                            )}
+                                        </TableCell>
+                                    ) : (
+                                        <></>
+                                    )}
                                 </TableRow>
                             )
                         })}
-                        <TableRow>
-                            <TableCell></TableCell>
-                            <TableCell></TableCell>
-                            <TableCell></TableCell>
-                            <TableCell>
-                                {tokens[chainId].find(
-                                    (tkn) => !poolTokens.includes(tkn.address)
-                                )?.address === undefined ? (
-                                    <h2>No More Tokens!</h2>
-                                ) : (
-                                    <Button
-                                        onClick={() =>
-                                            addToken(
-                                                tokens[chainId].find(
-                                                    (tkn) =>
-                                                        !poolTokens.includes(
-                                                            tkn.address
-                                                        )
-                                                )?.address as `0x${string}`
-                                            )
-                                        }
-                                    >
-                                        Add Token
-                                    </Button>
-                                )}
-                            </TableCell>
-                        </TableRow>
+                        {strategy === 'GeometricMean' ? (
+                            <TableRow>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                                <TableCell>
+                                    {tokens[chainId].find(
+                                        (tkn) =>
+                                            !poolTokens.includes(tkn.address)
+                                    )?.address === undefined ? (
+                                        <h2>No More Tokens!</h2>
+                                    ) : (
+                                        <Button
+                                            onClick={() =>
+                                                addToken(
+                                                    tokens[chainId].find(
+                                                        (tkn) =>
+                                                            !poolTokens.includes(
+                                                                tkn.address
+                                                            )
+                                                    )?.address as `0x${string}`
+                                                )
+                                            }
+                                        >
+                                            Add Token
+                                        </Button>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            <></>
+                        )}
                     </TableBody>
                 </Table>
 
