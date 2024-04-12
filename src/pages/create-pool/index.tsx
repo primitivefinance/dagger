@@ -15,7 +15,6 @@ import {
     tags,
     strats,
     feeLevels,
-    weights,
 } from '@/data/copy/create-pool'
 import { usePrices } from '@/store/PricesContext'
 import {
@@ -40,18 +39,83 @@ function CreatePool() {
     const { connectors, connect } = useConnect()
     const chainId = useChainId()
 
+    const setDefaultTokens: (strat: string) => `0x${string}`[] = (
+        strat: string
+    ) => {
+        switch (strat) {
+            case 'GeometricMean':
+                return [
+                    tokens[chainId][0].address,
+                    tokens[chainId][1].address,
+                    tokens[chainId][2].address,
+                    tokens[chainId][3].address,
+                ] as `0x${string}`[]
+            case 'LogNormal':
+                return [
+                    tokens[chainId][0].address,
+                    tokens[chainId][1].address,
+                ] as `0x${string}`[]
+            case 'ConstantSum':
+                return [
+                    tokens[chainId][0].address,
+                    tokens[chainId][1].address,
+                ] as `0x${string}`[]
+            default:
+                return [
+                    tokens[chainId][0].address,
+                    tokens[chainId][1].address,
+                ] as `0x${string}`[]
+        }
+    }
     const [strategy, setStrategy] = useState(strats[0].value)
-    const [feeRate, setFeeRate] = useState(feeLevels[0].value)
-    const [weights, setWeights] = useState<string[]>([])
-
-    const [poolTokens, setPoolTokens] = useState<`0x${string}`[]>([
-        tokens[chainId][0].address,
-        tokens[chainId][1].address,
-    ])
-
     const [controller, setController] = useState<string>('')
-    const [reserves, setReserves] = useState<string[]>(['', ''])
+    const [feeRate, setFeeRate] = useState(feeLevels[0].value)
+    const [weights, setWeights] = useState<
+        { weight: string; isLocked: boolean }[]
+    >([])
+    const [poolTokens, setPoolTokens] = useState<`0x${string}`[]>(
+        setDefaultTokens(strategy)
+    )
+
     const [tokensBalance, setTokensBalance] = useState<number[]>([0, 0])
+
+    const lockWeight = (tokenAddress: `0x${string}`) => {
+        const _weights = poolTokens.filter((tkn) => {})
+    }
+
+    const calculateWeights = (
+        inputWeightToken?: `0x${string}`,
+        inputWeight?: string
+    ) => {
+        const _weights: { weight: string; isLocked: boolean }[] = []
+        console.log(poolTokens.length)
+        if (!inputWeight || !inputWeightToken) {
+            poolTokens.map((tkn, i) => {
+                _weights.push({
+                    weight: (
+                        100 / parseFloat(poolTokens.length.toString())
+                    ).toString(),
+                    isLocked: weights[i]?.weight ? weights[i].isLocked : false,
+                })
+            })
+        } else {
+            poolTokens.map((tkn) => {
+                if (inputWeightToken && tkn === inputWeightToken) {
+                    _weights.push({ weight: inputWeight, isLocked: true })
+                } else {
+                    _weights.push({
+                        weight: (
+                            (100 - parseFloat(inputWeight)) /
+                            (poolTokens.length - 1)
+                        ).toString(),
+                        isLocked: false,
+                    })
+                }
+            })
+        }
+        console.log(_weights)
+        setWeights(_weights)
+    }
 
     const addToken = (tokenAddress: `0x${string}`) => {
         setPoolTokens([...poolTokens, tokenAddress])
@@ -62,59 +126,11 @@ function CreatePool() {
         setPoolTokens(_poolTokens)
     }
 
-    const calculateWeights = (
-        inputWeightToken?: `0x${string}`,
-        inputWeight?: string
-    ) => {
-        const _weights: string[] = []
-        if (!inputWeight || !inputWeightToken) {
-            poolTokens.map(() => {
-                _weights.push(
-                    (100 / parseFloat(poolTokens.length.toString())).toString()
-                )
-            })
-        } else {
-            poolTokens.map((tkn) => {
-                if (tkn === inputWeightToken) {
-                    _weights.push(inputWeight)
-                } else {
-                    _weights.push(
-                        (
-                            (100 - parseFloat(inputWeight)) /
-                            (poolTokens.length - 1)
-                        ).toString()
-                    )
-                }
-            })
-        }
-        console.log(_weights)
-        setWeights(_weights)
-    }
-
     const setToken = (tokenAddress: `0x${string}`, position: number) => {
         const _poolTokens = poolTokens.map((token, i) =>
             i === position ? tokenAddress : token
         )
         setPoolTokens(_poolTokens)
-    }
-
-    const setDefaults = (strat: string) => {
-        switch (strat) {
-            case 'GeometricMean':
-                setPoolTokens([
-                    tokens[chainId][0].address,
-                    tokens[chainId][1].address,
-                    tokens[chainId][2].address,
-                    tokens[chainId][3].address,
-                ] as `0x${string}`[])
-                break
-            case 'LogNormal':
-                break
-            case 'ConstantSum':
-                break
-            default:
-                break
-        }
     }
 
     useEffect(() => {
@@ -127,17 +143,11 @@ function CreatePool() {
                 }
                 setTokensBalance(_balances)
             }
+            calculateWeights()
         })()
     }, [address, poolTokens])
 
-    useEffect(() => {
-        setDefaults(strategy)
-    }, [strategy])
-
-    useEffect(() => {
-        calculateWeights()
-    }, [poolTokens])
-
+    if (weights.length < 1 || poolTokens.length < 1) return <></>
     return (
         <div className="py-16 container mx-auto max-w-6xl gap-14 flex flex-col">
             <div className="flex flex-col gap-2">
@@ -219,6 +229,34 @@ function CreatePool() {
                             const _setToken = (tkn: `0x${string}`) => {
                                 setToken(tkn, i)
                             }
+                            if (weights.length != poolTokens.length)
+                                return (
+                                    <TableRow key={i}>
+                                        <TableCell>
+                                            <TokenSelector
+                                                tokenLogo={
+                                                    tokens[chainId].find(
+                                                        (tkn) =>
+                                                            tkn.address ===
+                                                            token
+                                                    )?.logo || ''
+                                                }
+                                                tokenSymbol={
+                                                    tokens[chainId].find(
+                                                        (tkn) =>
+                                                            tkn.address ===
+                                                            token
+                                                    )?.symbol || ''
+                                                }
+                                                setToken={_setToken}
+                                                disabledTokens={poolTokens}
+                                            />
+                                        </TableCell>
+                                        <TableCell>...</TableCell>
+                                        <TableCell>...</TableCell>
+                                        <TableCell>...</TableCell>
+                                    </TableRow>
+                                ) //let async catch up
                             return (
                                 <TableRow key={i}>
                                     <TableCell>
@@ -247,7 +285,7 @@ function CreatePool() {
                                             disabled={
                                                 strategy !== 'GeometricMean'
                                             }
-                                            value={weights[i]}
+                                            value={weights[i].weight}
                                             onChange={(e) => {
                                                 calculateWeights(
                                                     token,

@@ -1,5 +1,5 @@
 type ListedToken = {
-    address: `0x${string}` | string
+    address: `0x${string}`
     logo: string
     decimals: number
     symbol: string

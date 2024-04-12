@@ -71,13 +71,3 @@ export const feeLevels: CardToggleOption[] = [
         description: 'Asset pairs with normal volaility.',
     },
 ]
-
-export const weights: CardToggleOption[] = [
-    { value: '80', title: '20%/80%', description: 'lorem' },
-    { value: '70', title: '30%/70%', description: 'ipsum' },
-    {
-        value: '50',
-        title: '50%/50%',
-        description: 'Even portfolio composition.',
-    },
-]
