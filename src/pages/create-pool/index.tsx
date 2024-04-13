@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useAccount, useConnect, useChainId } from 'wagmi'
-import { NumberToHexOpts, parseEther, parseUnits } from 'viem'
 import CardToggleGroup from '@/components/CardRadioGroup'
 
 import { balanceOf, allowance, approve } from '@/lib/erc20'
-import TokenAmountInput from '@/components/TokenAmountInput'
 import TokenSelector from '@/components/TokenSelector'
-import { LogNormal, init, G3M, DFMM } from '@/lib/dfmm'
 import { tokens } from '@/data/tokens'
 import {
     title,
@@ -20,6 +17,7 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
+    CardContent,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,7 +32,6 @@ import {
 
 function CreatePool() {
     const { address } = useAccount()
-    const { connectors, connect } = useConnect()
     const chainId = useChainId()
 
     const setDefaultTokens: (strat: string) => `0x${string}`[] = (
@@ -68,13 +65,19 @@ function CreatePool() {
     const [strategy, setStrategy] = useState(strats[0].value)
     const [controller, setController] = useState<string>('')
     const [feeRate, setFeeRate] = useState(feeLevels[0].value)
+    // G3M Params
     const [weights, setWeights] = useState<
         { weight: string; isLocked: boolean }[]
     >([])
+    // LN Params
+    const [mean, setMean] = useState<string>('')
+    const [width, setWidth] = useState<string>('')
+    // CS Params
+    const [price, setPrice] = useState<string>('')
+
     const [poolTokens, setPoolTokens] = useState<`0x${string}`[]>(
         setDefaultTokens(strategy)
     )
-
     const [balances, setTokenBalances] = useState<number[]>([0, 0, 0, 0])
     const [amounts, setAmounts] = useState<string[]>(['', '', '', ''])
 
@@ -223,28 +226,91 @@ function CreatePool() {
                     value={feeRate}
                     setValue={setFeeRate}
                 />
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{tags['mean'].title}</CardTitle>
-                        <CardDescription>{tags['mean'].sub}</CardDescription>
-                    </CardHeader>
-                </Card>
+                {strategy === 'LogNormal' ? (
+                    <>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>{tags['mean'].title}</CardTitle>
+                                <CardDescription>
+                                    {tags['mean'].sub}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Input
+                                    type="text"
+                                    placeholder="0.0"
+                                    value={mean}
+                                    onChange={(e) => {
+                                        setMean(e.target.value)
+                                    }}
+                                />
+                            </CardContent>
+                        </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{tags['width'].title}</CardTitle>
-                        <CardDescription>{tags['width'].sub}</CardDescription>
-                    </CardHeader>
-                </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>{tags['width'].title}</CardTitle>
+                                <CardDescription>
+                                    {tags['width'].sub}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Input
+                                    type="text"
+                                    placeholder="0.0"
+                                    value={width}
+                                    onChange={(e) => {
+                                        setWidth(e.target.value)
+                                    }}
+                                />
+                            </CardContent>
+                        </Card>
+                    </>
+                ) : (
+                    <></>
+                )}
+                {strategy === 'ConstantSum' ? (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{tags['price'].title}</CardTitle>
+                            <CardDescription>
+                                {tags['price'].sub}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Input
+                                type="text"
+                                placeholder="0.0"
+                                value={price}
+                                onChange={(e) => {
+                                    setPrice(e.target.value)
+                                }}
+                            />
+                            <p>
+                                {tokens[chainId].find(
+                                    (tkn) => tkn.address === poolTokens[0]
+                                )?.symbol || ''}{' '}
+                                /{' '}
+                                {tokens[chainId].find(
+                                    (tkn) => tkn.address === poolTokens[1]
+                                )?.symbol || ''}
+                            </p>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <></>
+                )}
             </div>
             <div className="flex flex-row gap-4 items-center">
                 <Table>
                     <TableHeader>
                         <TableCell>Tokens</TableCell>
                         <TableCell>Amounts</TableCell>
-                        <TableCell>Weights</TableCell>
                         {strategy === 'GeometricMean' ? (
-                            <TableCell>Edit</TableCell>
+                            <>
+                                <TableCell>Weights</TableCell>
+                                <TableCell>Edit</TableCell>
+                            </>
                         ) : (
                             <></>
                         )}
@@ -327,22 +393,28 @@ function CreatePool() {
                                             }
                                         </span>
                                     </TableCell>
-                                    <TableCell>
-                                        <Input
-                                            type="text"
-                                            disabled={
-                                                strategy !== 'GeometricMean' ||
-                                                weights[i].isLocked
-                                            }
-                                            value={weights[i].weight}
-                                            onChange={(e) => {
-                                                calculateWeights(
-                                                    token,
-                                                    e.target.value
-                                                )
-                                            }}
-                                        />
-                                    </TableCell>
+                                    {strategy === 'GeometricMean' ? (
+                                        <TableCell>
+                                            <Input
+                                                type="text"
+                                                disabled={
+                                                    strategy !==
+                                                        'GeometricMean' ||
+                                                    weights[i].isLocked
+                                                }
+                                                value={weights[i].weight}
+                                                onChange={(e) => {
+                                                    calculateWeights(
+                                                        token,
+                                                        e.target.value
+                                                    )
+                                                }}
+                                            />
+                                        </TableCell>
+                                    ) : (
+                                        <></>
+                                    )}
+
                                     {strategy === 'GeometricMean' ? (
                                         <TableCell>
                                             <Button
@@ -356,7 +428,7 @@ function CreatePool() {
                                                 Weight
                                             </Button>
                                             {i < 2 ? (
-                                                <h2>Token {i + 1}</h2>
+                                                <></>
                                             ) : (
                                                 <Button
                                                     onClick={() =>

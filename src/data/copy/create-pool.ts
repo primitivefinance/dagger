@@ -28,6 +28,10 @@ export const tags: Tags = {
         title: 'Liquidity Range',
         sub: 'Select the width of a concentrated liquidity pool (CLP).',
     },
+    ['price']: {
+        title: 'Asset Price',
+        sub: 'Select the price of a fixed order.'
+    },
     ['portfolio']: {
         title: 'Portfolio Composition',
         sub: 'Determine the assets included in the new pool.',
