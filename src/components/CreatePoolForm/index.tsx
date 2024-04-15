@@ -179,6 +179,47 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
         setWeights(_weights)
     }
 
+    const calculateAmounts = (
+        inputAmountToken: `0x${string}`,
+        inputAmount: string
+    ) => {
+        const _amounts: string[] = []
+        switch (strategy) {
+            case 'GeometricMean':
+                poolTokens.map((tkn, i) => {
+                    tkn === inputAmountToken
+                        ? _amounts.push(
+                              !parseFloat(inputAmount) ? '' : inputAmount
+                          )
+                        : _amounts.push(
+                              (
+                                  parseFloat(inputAmount) *
+                                  (parseFloat(weights[i].weight) / 100) *
+                                  weights.length
+                              ).toString()
+                          )
+                })
+                break
+            case 'LogNormal':
+                // TODO: add LN pricing logic, maybe reformat input to be one sided?
+                _amounts[0] === inputAmount
+                _amounts[1] === inputAmount
+                break
+            case 'ConstantSum':
+                _amounts[0] = (
+                    (parseFloat(inputAmount) * parseFloat(price)) /
+                    100
+                ).toString()
+                _amounts[1] = (
+                    (parseFloat(inputAmount) * (1 - parseFloat(price)) / 100)
+                ).toString()
+                break
+            default:
+                break
+        }
+        setAmounts(_amounts)
+    }
+
     const addToken = (tokenAddress: `0x${string}`) => {
         setPoolTokens([...poolTokens, tokenAddress])
     }
@@ -432,17 +473,19 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                                     </TableCell>
                                     <TableCell>
                                         <Input
+                                            className={
+                                                (!parseFloat(amounts[i]) && amounts[i] !== '')
+                                                    ? 'border-red-500'
+                                                    : ''
+                                            }
                                             type="text"
                                             placeholder="0.0"
                                             value={amounts[i]}
                                             onChange={(e) => {
-                                                const _amounts = amounts.map(
-                                                    (a, z) =>
-                                                        z === i
-                                                            ? e.target.value
-                                                            : a
+                                                calculateAmounts(
+                                                    token,
+                                                    e.target.value
                                                 )
-                                                setAmounts(_amounts)
                                             }}
                                         />
                                         <span>
