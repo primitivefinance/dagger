@@ -110,7 +110,7 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
     const [mean, setMean] = useState<string>('')
     const [width, setWidth] = useState<string>('')
     // CS Params
-    const [price, setPrice] = useState<string>('')
+    const [price, setPrice] = useState<string>('1')
 
     const [poolTokens, setPoolTokens] = useState<`0x${string}`[]>(
         setDefaultTokens(strategy)
@@ -183,7 +183,7 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
         inputAmountToken: `0x${string}`,
         inputAmount: string
     ) => {
-        const _amounts: string[] = []
+        let _amounts: string[] = []
         switch (strategy) {
             case 'GeometricMean':
                 poolTokens.map((tkn, i) => {
@@ -206,13 +206,18 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                 _amounts[1] === inputAmount
                 break
             case 'ConstantSum':
-                _amounts[0] = (
-                    (parseFloat(inputAmount) * parseFloat(price)) /
-                    100
+                const temp_1 = (
+                    parseFloat(!parseFloat(inputAmount) ? '' : inputAmount) *
+                    parseFloat(price)
                 ).toString()
-                _amounts[1] = (
-                    (parseFloat(inputAmount) * (1 - parseFloat(price)) / 100)
+                const temp_2 = (
+                    parseFloat(!parseFloat(inputAmount) ? '' : inputAmount) *
+                    (1 - parseFloat(price))
                 ).toString()
+                _amounts =
+                    poolTokens[0] === inputAmountToken
+                        ? [inputAmount, temp_2]
+                        : [temp_1, inputAmount]
                 break
             default:
                 break
@@ -474,7 +479,8 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                                     <TableCell>
                                         <Input
                                             className={
-                                                (!parseFloat(amounts[i]) && amounts[i] !== '')
+                                                !parseFloat(amounts[i]) &&
+                                                amounts[i] !== ''
                                                     ? 'border-red-500'
                                                     : ''
                                             }
