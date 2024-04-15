@@ -44,20 +44,19 @@ function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
     return (
         <section id="overview">
             <div className="flex flex-col gap-xl">
-                <div className="rounded-full size-3xl bg-gray-900 flex">
-                    {pool?.logo ? (
-                        <img
-                            src={pool?.logo}
-                            alt={pool?.symbol ?? 'token icon'}
-                            className="dark:invert items-center justify-center m-auto h-16 pl-3"
-                            style={{
-                                zIndex: 1,
-                            }}
-                        />
-                    ) : (
-                        <QuestionMarkIcon className="w-full h-full p-6" />
-                    )}
-                </div>
+                <TokenLogo
+                    key={pool?.symbol}
+                    chainId={chainId}
+                    custom={
+                        pool
+                            ? {
+                                  logo: pool?.logo,
+                                  symbol: pool?.name,
+                              }
+                            : undefined
+                    }
+                    size="xl"
+                />
 
                 <div className="flex flex-row items-start gap-lg w-full">
                     <div className="flex flex-col gap-sm w-1/2">
@@ -71,7 +70,7 @@ function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
                     </div>
                     <div className="flex flex-col gap-md items-end w-1/2">
                         <h4>Asset Universe</h4>
-                        <div className="flex flex-row items-center ">
+                        <div className="flex flex-wrap items-center">
                             {pool?.poolTokens?.items?.map(
                                 (poolToken: PoolToken) => {
                                     return (
@@ -89,161 +88,6 @@ function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    )
-}
-
-type PoolInfoItem = {
-    key: React.ReactNode
-    value: React.ReactNode
-}
-
-function PoolInfo({
-    pool,
-    items = [],
-    title = 'Pool Info',
-}: {
-    pool: PoolWithTokensFragment
-    items?: PoolInfoItem[]
-    title?: string
-}): JSX.Element {
-    const poolType = getPoolType(pool)
-
-    const [lpTokenSupply, setLpTokenSupply] = useState<bigint>(BigInt(0))
-
-    useEffect(() => {
-        async function fetchLpTokenSupply(): Promise<void> {
-            const supply = await totalSupply(pool.lpToken)
-            setLpTokenSupply(supply)
-        }
-
-        if (pool.lpToken) {
-            fetchLpTokenSupply()
-        }
-    }, [])
-
-    items = [
-        {
-            key: 'Name',
-            value: (
-                <LabelWithEtherscan label={pool.name} address={pool.lpToken} />
-            ),
-        },
-
-        {
-            key: 'Strategy',
-            value: (
-                <LabelWithEtherscan
-                    label={pool.strategy.name}
-                    address={
-                        poolType == PoolTypes.nTokenGeometricMean
-                            ? nG3mStrategy
-                            : nG3mStrategy
-                    }
-                />
-            ),
-        },
-        {
-            key: 'Curator',
-            value: (
-                <LabelWithEtherscan
-                    label={
-                        pool.strategy.controller == zeroAddress ||
-                        !pool.strategy.controller
-                            ? 'None'
-                            : 'Curated'
-                    }
-                    address={pool.strategy.controller ?? zeroAddress}
-                />
-            ),
-        },
-        {
-            key: 'Protocol',
-            value: (
-                <LabelWithEtherscan
-                    label={'DFMM v0.2.0'}
-                    address={dfmmAddress as `0x${string}`}
-                />
-            ),
-        },
-        {
-            key: 'Tokens',
-            value: pool.poolTokens.items.map((poolToken: PoolToken) => {
-                return (
-                    <LabelWithEtherscan
-                        key={poolToken.token.id}
-                        label={poolToken.token.symbol}
-                        address={poolToken.token.id as `0x${string}`}
-                    />
-                )
-            }),
-        },
-
-        {
-            key: 'Ticker',
-            value: 'TODO',
-        },
-        {
-            key: 'Pool #',
-            value: pool.id,
-        },
-        {
-            key: 'Created',
-            value: new Date(pool.initTimestamp * 1000).toISOString(),
-        },
-        {
-            key: 'Total Supply',
-            value: <p className="text-sm">{formatWad(lpTokenSupply)}</p>,
-        },
-    ]
-
-    const firstColumnLength = Math.max(items.length / 2)
-    return (
-        <section id="pool-info">
-            <div className="flex flex-row w-full gap-0">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>
-                                <h5 className="text-primary">{title}</h5>
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {items?.map((item, i) => {
-                            if (i < firstColumnLength) {
-                                return (
-                                    <TableRow key={i}>
-                                        <TableHead>{item.key}</TableHead>
-                                        <TableCell>{item.value}</TableCell>
-                                    </TableRow>
-                                )
-                            }
-                        })}
-                        <TableRow></TableRow>
-                    </TableBody>
-                </Table>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {items?.map((item, i) => {
-                            if (i >= firstColumnLength) {
-                                return (
-                                    <TableRow key={i}>
-                                        <TableHead>{item.key}</TableHead>
-                                        <TableCell>{item.value}</TableCell>
-                                    </TableRow>
-                                )
-                            }
-                        })}
-                        <TableRow></TableRow>
-                    </TableBody>
-                </Table>
             </div>
         </section>
     )
