@@ -43,5 +43,8 @@ export function formatWadPercentage(wad: bigint): string {
 }
 
 export function toWad(amount: number): bigint {
+    if (isNaN(amount)) {
+        throw new Error('toWad: Invalid `amount` is NaN')
+    }
     return parseEther(amount.toString())
 }

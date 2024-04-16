@@ -16,10 +16,11 @@ import {
     SheetTrigger,
 } from '../ui/sheet'
 import { Table, TableHead, TableHeader, TableRow } from '../ui/table'
+import { PoolTokenItemFragment } from 'gql/graphql'
 
 export type TransactionDrawerProps = {
-    transactionTokens: any[]
-    deltas: any[]
+    transactionTokens: PoolTokenItemFragment[]
+    deltas: number[]
     openButton: React.ReactNode
     txTitle: React.ReactNode
     txDescription: React.ReactNode
@@ -45,9 +46,9 @@ function TransactionDrawer({
     const { address } = useAccount()
 
     const balanceCalls = useReadContracts({
-        contracts: transactionTokens.map((pt) => ({
+        contracts: transactionTokens.map((pt: PoolTokenItemFragment) => ({
             abi: erc20Abi,
-            address: pt.token.id,
+            address: pt.token.id as `0x${string}`,
             functionName: 'balanceOf',
             args: [address],
         })),

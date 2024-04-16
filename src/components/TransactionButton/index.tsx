@@ -172,20 +172,6 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
         }
     }, [simulation, state])
 
-    // React to changes in a broadcasted transaction.
-    useEffect(() => {
-        if (typeof props.txReceipt !== 'undefined') {
-            setState(TransactionState.Confirmed)
-        }
-
-        if (
-            typeof props.txHash !== 'undefined' &&
-            typeof props.txReceipt === 'undefined'
-        ) {
-            setState(TransactionState.Broadcasted)
-        }
-    }, [props.txHash, props.txReceipt])
-
     // React to changes in the requested transaction.
     useEffect(() => {
         if (transaction?.isError) {
@@ -197,9 +183,39 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
         }
 
         if (transaction?.isSuccess) {
-            setState(TransactionState.Broadcasted)
+            setState((prev) => {
+                if (prev == TransactionState.Confirmed) {
+                    return TransactionState.Confirmed
+                }
+
+                return TransactionState.Broadcasted
+            })
         }
-    }, [transaction])
+    }, [transaction, props.txReceipt])
+
+    // React to changes in a broadcasted transaction.
+    useEffect(() => {
+        if (typeof props.txReceipt !== 'undefined') {
+            setState(TransactionState.Confirmed)
+        }
+
+        if (
+            typeof props.txHash !== 'undefined' &&
+            typeof props.txReceipt === 'undefined'
+        ) {
+            setState((prev) => {
+                if (prev === TransactionState.Confirmed) {
+                    return TransactionState.Confirmed
+                }
+
+                return TransactionState.Broadcasted
+            })
+        }
+    }, [props.txHash, props.txReceipt])
+
+    useEffect(() => {
+        console.log(state)
+    }, [state])
 
     const ButtonAction = ({
         functionName,

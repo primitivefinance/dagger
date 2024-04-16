@@ -1,9 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAccount, useChainId, useReadContract } from 'wagmi'
+import {
+    useAccount,
+    useChainId,
+    useReadContract,
+    useReadContracts,
+} from 'wagmi'
 
 import { tokens } from '../../data/tokens'
-import { allowance, balanceOf, totalSupply } from '../../lib/erc20'
+import { totalSupply } from '../../lib/erc20'
 import { useGraphQL } from '../../useGraphQL'
 import {
     PoolWithTokensFragment,
@@ -104,7 +109,7 @@ function NTokenGeometricMeanWeights({
     return (
         <TableBody>
             {pool &&
-                params?.lastComputedWeights.map((weight, i) => {
+                params?.lastComputedWeights.map((weight: bigint, i: number) => {
                     const poolToken = pool.poolTokens.items[i]
                     const reserve = pool.reserves[i]
 
@@ -204,13 +209,33 @@ function computeAllocationDeltasGivenDeltaT(
     reserves: number[],
     liquidity: number
 ): { reserveDeltas: number[]; deltaL: number } {
+    if (isNaN(deltaT)) {
+        throw new Error('computeAllocationDeltasGivenDeltaT: Invalid `deltaT`')
+    }
+
+    if (isNaN(indexT)) {
+        throw new Error('computeAllocationDeltasGivenDeltaT: Invalid `indexT`')
+    }
+
+    if (isNaN(liquidity) || typeof liquidity !== 'number') {
+        throw new Error(
+            'computeAllocationDeltasGivenDeltaT: Invalid `liquidity`'
+        )
+    }
+
+    if (reserves.length === 0) {
+        throw new Error(
+            'computeAllocationDeltasGivenDeltaT: Invalid `reserves`'
+        )
+    }
+
     const a = deltaT / reserves[indexT]
     const reserveDeltas = []
-    reserveDeltas[indexT] = deltaT
-
     for (let i = 0; i < reserves.length; i++) {
         if (i !== indexT) {
             reserveDeltas[i] = a * reserves[i]
+        } else {
+            reserveDeltas[indexT] = deltaT
         }
     }
 
@@ -218,214 +243,192 @@ function computeAllocationDeltasGivenDeltaT(
     return { reserveDeltas, deltaL }
 }
 
+function SuccessfulTransactions({
+    receipts,
+}: {
+    receipts: TransactionReceipt[]
+}): JSX.Element {
+    return (
+        <div className="flex flex-col gap-md">
+            <p className="pb-2 border-b">Recent Transactions</p>
+            {receipts.map((receipt: TransactionReceipt) => {
+                return (
+                    <div
+                        className="flex flex-row gap-sm justify-between w-full items-center"
+                        key={receipt.transactionHash}
+                    >
+                        <small>
+                            {receipt.status === 'success' ? (
+                                <CheckCircledIcon
+                                    color="#34d399"
+                                    fontSize={28}
+                                />
+                            ) : (
+                                <QuestionMarkCircledIcon />
+                            )}
+                        </small>
+                        Deposit
+                        <LabelWithEtherscan
+                            label={<small>From</small>}
+                            address={receipt.from}
+                        />
+                        <LabelWithEtherscan
+                            label={<small>To</small>}
+                            address={
+                                typeof receipt.to === 'string'
+                                    ? receipt.to
+                                    : zeroAddress
+                            }
+                        />
+                        <TxLabelEtherscan
+                            label={<small>Tx</small>}
+                            txHash={receipt.transactionHash}
+                        />
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+
 function TransactionView({
     selectedTokens,
     pool,
-    balanceMapping,
+}: {
+    selectedTokens: `0x${string}`[]
+    pool: PoolWithTokensFragment
 }): JSX.Element {
+    // Transaction sender and context
     const { address } = useAccount()
-    const chainId = useChainId()
-    const [amount, setAmount] = useState<string>('')
-    const [dependentAmounts, setDependentAmounts] = useState<{
-        reserveDeltas: number[]
-        deltaL: number
-    }>()
-
-    const [allowances, setAllowances] = useState<{ [key: string]: number }>({})
     const { setTxHash: setTx, txReceipt, txHash } = useTransactionStatus({})
 
-    useEffect(() => {
-        async function fetchAllowances(): Promise<void> {
-            if (!selectedTokens || selectedTokens.length === 0) {
-                return
-            }
-
-            const newAllowances: { [key: string]: number } = {}
-            for (const token of selectedTokens) {
-                newAllowances[token] = await allowance(
-                    token,
-                    address!,
-                    dfmmAddress
-                )
-            }
-            setAllowances(newAllowances)
-        }
-
-        fetchAllowances()
-    }, [selectedTokens, address, txReceipt])
-
-    const depositAll = true // todo: make conditional once single sided deposits are available
-
-    const computeDependentAmounts = useCallback(() => {
-        const indexOfIndependent = pool.poolTokens.items.findIndex(
-            (pt) => pt.token.id === selectedTokens[0]
-        )
-
-        const { reserveDeltas, deltaL } = computeAllocationDeltasGivenDeltaT(
-            parseFloat(amount),
-            indexOfIndependent,
-            pool.reserves,
-            pool.liquidity
-        )
-
-        return {
-            reserveDeltas,
-            deltaL,
-        }
-    }, [selectedTokens, amount, setAmount])
-
-    useEffect(() => {
-        if (amount) {
-            setDependentAmounts(computeDependentAmounts())
-        }
-    }, [amount, setAmount, computeDependentAmounts])
-
+    // Form settings
     const [isUSD, setIsUSD] = useState<boolean>(false)
+    const [depositAll, setDepositAll] = useState<boolean>(false) // todo: make conditional once single sided deposits are available
 
-    const [payloadToExecute, setPayloadToExecute] = useState<
-        string | undefined
-    >(undefined)
+    // Form inputs
+    const [amount, setAmount] = useState<string>('')
 
-    const { data: poolsSnapshot } = useReadContract({
-        abi: dfmmABI,
-        address: dfmmAddress,
-        functionName: 'pools',
-        args: [pool.id],
+    // Form results
+    const [successfulReceipts, setSuccessfulReceipts] = useState<
+        TransactionReceipt[]
+    >([])
+
+    // Token balances
+    const balanceCall = {
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+    }
+
+    // todo: use for delta check in future?
+    const { data: balances } = useReadContracts({
+        contracts: pool?.poolTokens?.items?.map(
+            (pt: PoolTokenItemFragment) => ({
+                address: pt.token.id as `0x${string}`,
+                args: [address],
+                ...balanceCall,
+            })
+        ),
     })
 
-    // Update form payload when the amount changes.
-    useEffect(() => {
-        if (!poolsSnapshot || !amount || parseFloat(amount) === 0) {
-            setPayloadToExecute(undefined)
-            return
-        }
-
-        const deltaT = parseFloat(amount)
-        let deltas
-
-        try {
-            deltas = poolsSnapshot.reserves.map((_, i) => toWad(deltaT))
-        } catch (e) {
-            console.error(e)
-            return
-        }
-        // todo: assumes equal weights...
-        const liquidity =
-            (toWad(deltaT) * BigInt(poolsSnapshot.totalLiquidity)) /
-                BigInt(poolsSnapshot.reserves[0]) -
-            10n // 10n because the computation is slightly off from rounding, so the rounded token amounts expect less liquidity
-
-        const payload = encodeAbiParameters(
-            parseAbiParameters('uint256[], uint256'),
-            [deltas, liquidity]
-        )
-
-        setPayloadToExecute(payload)
-    }, [poolsSnapshot, amount])
-
-    enum TransactionPhase {
-        Simulate,
-        Approve,
-        Execute,
-        Done,
+    // Token allowances
+    const allowanceCall = {
+        abi: erc20Abi,
+        functionName: 'allowance',
     }
 
-    const remainingAllowances = Object.keys(allowances).filter(
-        (key) =>
-            parseFloat(formatUnits(allowances[key], 18)) < parseFloat(amount)
-    )
+    const { data: allowances, refetch: refetchAllowances } = useReadContracts({
+        contracts: pool?.poolTokens?.items?.map(
+            (pt: PoolTokenItemFragment) => ({
+                address: pt.token.id as `0x${string}`,
+                args: [address, dfmmAddress],
+                ...allowanceCall,
+            })
+        ),
+    })
 
-    const [successfulReceipts, setSuccessfulReceipts] = useState<any[]>([])
+    // todo: update with the deposit single allocate logic
+    // Compute the transaction payload amounts.
+    const independentToken = selectedTokens?.[0]
 
-    // Upon receiving a txReceipt, reset the form.
+    const {
+        reserveDeltas: dependentAmounts,
+        deltaL: deltaLiquidity,
+    }: {
+        reserveDeltas: number[]
+        deltaL: number
+    } =
+        +amount > 0 && independentToken
+            ? computeAllocationDeltasGivenDeltaT(
+                  parseFloat(amount),
+                  pool.poolTokens.items.findIndex(
+                      (pt: PoolTokenItemFragment) =>
+                          getAddress(pt.token.id) ===
+                          getAddress(independentToken)
+                  ),
+                  pool.reserves,
+                  pool.liquidity
+              )
+            : {
+                  reserveDeltas: [],
+                  deltaL: 0,
+              }
+
+    const allocatePayload =
+        dependentAmounts.length === pool.reserves.length &&
+        parseFloat(amount) > 0
+            ? encodeAbiParameters(parseAbiParameters('uint256[], uint256'), [
+                  dependentAmounts.map(toWad),
+                  toWad(deltaLiquidity),
+              ])
+            : undefined
+
+    // todo: assumes the same dependent amounts...
+    const tokensToApprove = pool?.poolTokens?.items
+        ?.filter((pt: PoolTokenItemFragment, index: number) => {
+            const dependentAmount = dependentAmounts?.[index]
+            if (isNaN(dependentAmount)) return false
+
+            const requiredAmount = toWad(dependentAmount)
+            const allowance = allowances?.[index]?.result as bigint
+            return allowance < requiredAmount
+        })
+        .map((pt: PoolTokenItemFragment) => ({
+            to: pt.token.id as `0x${string}`,
+            spender: dfmmAddress,
+            amount: toWad(dependentAmounts[0]),
+        }))
+
+    const selectedTokenSymbols = selectedTokens
+        ?.map(
+            (t) =>
+                pool.poolTokens.items.filter(
+                    (pt: PoolTokenItemFragment) =>
+                        getAddress(pt.token.id) === getAddress(t)
+                )[0]?.token.symbol
+        )
+        .join(', ')
+
     useEffect(() => {
-        if (
-            typeof txReceipt !== 'undefined' &&
-            remainingAllowances.length === 0
-        ) {
+        refetchAllowances()
+    }, [txReceipt, refetchAllowances])
+
+    // Reset the form after a successful transaction.
+    useEffect(() => {
+        if (txReceipt?.status === 'success' && tokensToApprove.length === 0) {
             setAmount('')
-            setDependentAmounts(undefined)
-            setPayloadToExecute(undefined)
             setSuccessfulReceipts((prev) => [...prev, txReceipt])
         }
-    }, [txReceipt])
-
-    // todo: theres a bug where the approval token does not get updated after the first approval goes through
-    const TransactionAction = ({ phase }: { phase: TransactionPhase }) => {
-        switch (phase) {
-            case TransactionPhase.Approve:
-                return (
-                    <TransactionButton
-                        contractName="erc20"
-                        to={remainingAllowances?.[0] as `0x${string}`}
-                        from={address}
-                        args={[
-                            dfmmAddress,
-                            toWad(parseFloat(amount.toString())),
-                        ]}
-                        setTxHash={setTx}
-                        txHash={txHash as `0x${string}`}
-                        txReceipt={txReceipt}
-                        functionName="approve"
-                    />
-                )
-            default:
-                return (
-                    <TransactionButton
-                        contractName="dfmm"
-                        to={dfmmAddress}
-                        from={address}
-                        args={[pool.id, payloadToExecute]}
-                        setTxHash={setTx}
-                        txHash={txHash as `0x${string}`}
-                        txReceipt={txReceipt}
-                        functionName="allocate"
-                        stateOverride={pool?.poolTokens?.items
-                            ?.map((pt) => pt.token.id)
-                            ?.map((token) => {
-                                return {
-                                    address: token,
-                                    stateDiff: [
-                                        overrideAllowanceDFMM(
-                                            address as `0x${string}`
-                                        ),
-                                    ],
-                                }
-                            })}
-                    />
-                )
-        }
-    }
+    }, [txReceipt, tokensToApprove])
 
     return (
         <TransactionDrawer
             transactionTokens={pool.poolTokens.items}
-            deltas={dependentAmounts?.reserveDeltas ?? []}
-            openButton={
-                <>
-                    Deposit{' '}
-                    {selectedTokens
-                        ?.map(
-                            (t) =>
-                                pool.poolTokens.items.filter(
-                                    (pt) => pt.token.id === t
-                                )[0]?.token.symbol
-                        )
-                        .join(', ')}
-                </>
-            }
+            deltas={dependentAmounts}
+            openButton={<>Deposit {selectedTokenSymbols}</>}
             txTitle={
                 <>
-                    Deposit{' '}
-                    {selectedTokens
-                        ?.map(
-                            (t) =>
-                                pool.poolTokens.items.filter(
-                                    (pt) => pt.token.id === t
-                                )[0]?.token.symbol
-                        )
-                        .join(', ')}{' '}
-                    to {pool.name}
+                    Deposit {selectedTokenSymbols} to {pool.name}
                 </>
             }
             txDescription={
@@ -440,7 +443,9 @@ function TransactionView({
                             className={`${!isUSD ? '' : 'dark:text-muted-foreground'}`}
                         >
                             {pool?.poolTokens?.items?.find(
-                                (pt) => pt.token.id === selectedTokens[0]
+                                (pt: PoolTokenItemFragment) =>
+                                    getAddress(pt.token.id) ===
+                                    getAddress(selectedTokens[0])
                             )?.token.symbol || 'Asset'}
                         </Label>
                         <Switch
@@ -487,49 +492,52 @@ function TransactionView({
                             <small>Deposit all tokens</small>
                         </label>
                     </div>
-                    <TransactionAction
-                        phase={
-                            remainingAllowances.length > 0
-                                ? TransactionPhase.Approve
-                                : TransactionPhase.Execute
-                        }
-                    />
-                    {successfulReceipts.length > 0 && (
-                        <div className="flex flex-col gap-md">
-                            <p className="pb-2 border-b">Recent Transactions</p>
-                            {successfulReceipts.map((receipt) => {
-                                return (
-                                    <div
-                                        className="flex flex-row gap-sm justify-between w-full items-center"
-                                        key={receipt.transactionHash}
-                                    >
-                                        <small>
-                                            {receipt.status === 'success' ? (
-                                                <CheckCircledIcon
-                                                    color="#34d399"
-                                                    fontSize={28}
-                                                />
-                                            ) : (
-                                                <QuestionMarkCircledIcon />
-                                            )}
-                                        </small>
-                                        Deposit
-                                        <LabelWithEtherscan
-                                            label={<small>From</small>}
-                                            address={receipt.from}
-                                        />
-                                        <LabelWithEtherscan
-                                            label={<small>To</small>}
-                                            address={receipt.to}
-                                        />
-                                        <TxLabelEtherscan
-                                            label={<small>Tx</small>}
-                                            txHash={receipt.transactionHash}
-                                        />
-                                    </div>
+
+                    {tokensToApprove.length > 0 ? (
+                        <TransactionButton
+                            key={tokensToApprove?.[0].to} // important! resets component when changed
+                            contractName="erc20"
+                            from={address}
+                            to={tokensToApprove?.[0].to}
+                            args={[
+                                tokensToApprove?.[0].spender,
+                                tokensToApprove?.[0].amount,
+                            ]}
+                            setTxHash={setTx}
+                            txHash={txHash as `0x${string}`}
+                            txReceipt={txReceipt}
+                            functionName="approve"
+                        />
+                    ) : (
+                        <TransactionButton
+                            key={dfmmAddress}
+                            contractName="dfmm"
+                            from={address}
+                            to={dfmmAddress}
+                            args={[pool.id, allocatePayload]}
+                            setTxHash={setTx}
+                            txHash={txHash as `0x${string}`}
+                            txReceipt={txReceipt}
+                            functionName="allocate"
+                            stateOverride={pool?.poolTokens?.items
+                                ?.map(
+                                    (pt: PoolTokenItemFragment) => pt.token.id
                                 )
-                            })}
-                        </div>
+                                ?.map((token: `0x${string}`) => {
+                                    return {
+                                        address: token,
+                                        stateDiff: [
+                                            overrideAllowanceDFMM(
+                                                address as `0x${string}`
+                                            ),
+                                        ],
+                                    }
+                                })}
+                        />
+                    )}
+
+                    {successfulReceipts.length > 0 && (
+                        <SuccessfulTransactions receipts={successfulReceipts} />
                     )}
                 </>
             }
@@ -549,274 +557,193 @@ function TransactionView({
     )
 }
 
+function EligbleTokensTable({
+    selectedTokens,
+    selectToken,
+    pool,
+}: {
+    selectedTokens: `0x${string}`[]
+    selectToken: React.Dispatch<React.SetStateAction<`0x${string}`[]>>
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
+    const chainId = useChainId()
+    const { address } = useAccount()
+
+    const balanceCall = {
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+    }
+
+    const { data: balances } = useReadContracts({
+        contracts: pool?.poolTokens?.items?.map(
+            (pt: PoolTokenItemFragment) => ({
+                address: pt.token.id as `0x${string}`,
+                args: [address],
+                ...balanceCall,
+            })
+        ),
+    })
+
+    // Expands to show all eligible tokens, even if the user has no balance.
+    const [expand, setExpand] = useState<boolean>(false)
+
+    // Don't show the tokens with 0 balances.
+    const noEligible =
+        !balances || balances.every((b) => (b?.result as bigint) <= 0n)
+
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>
+                        <h5 className="text-primary">Deposit</h5>
+                    </TableHead>
+                </TableRow>
+                <TableRow>
+                    <TableHead>Eligible Tokens</TableHead>
+                    <TableHead>Your Balance</TableHead>
+                    <TableHead>Selection</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {pool?.poolTokens?.items?.map(
+                    (poolToken: PoolToken, index: number) => {
+                        const token = poolToken.token.id as `0x${string}`
+                        const balance = balances?.[index]?.result as bigint
+                        const balanceFormatted = balance
+                            ? formatNumber(
+                                  parseFloat(
+                                      formatUnits(
+                                          balance,
+                                          poolToken.token.decimals
+                                      )
+                                  )
+                              )
+                            : formatNumber(0)
+
+                        // If the user has no balance and the table is not expanded, don't show the token.
+                        if (!expand && balance <= 0n) {
+                            return null
+                        }
+
+                        const isDisabled = !token || !balance || balance <= 0n
+                        const tokenLogo =
+                            tokens?.[chainId].find(
+                                (t) =>
+                                    getAddress(t.address) === getAddress(token)
+                            )?.logo ?? DEFAULT_TOKEN_LOGO_SRC
+
+                        return (
+                            <TableRow
+                                key={poolToken.id}
+                                className={`${isDisabled ? 'hover:bg-transparent' : ''}`}
+                            >
+                                <TableCell
+                                    className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
+                                >
+                                    <div className="flex flex-row gap-sm items-center">
+                                        <img
+                                            src={tokenLogo}
+                                            alt={poolToken.token.symbol}
+                                            className={`${isDisabled ? 'dark:opacity-70' : ''} rounded-full size-6`}
+                                            style={{
+                                                zIndex: 1,
+                                            }}
+                                        />
+
+                                        {poolToken.token.symbol}
+                                    </div>
+                                </TableCell>
+                                <TableCell
+                                    className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
+                                >
+                                    {balanceFormatted}
+                                </TableCell>
+                                <TableCell>
+                                    <input
+                                        type="checkbox"
+                                        onChange={() =>
+                                            selectToken((prev) =>
+                                                prev.includes(token)
+                                                    ? prev.filter(
+                                                          (t) => t !== token
+                                                      )
+                                                    : [...prev, token]
+                                            )
+                                        }
+                                        checked={
+                                            selectedTokens.includes(token) &&
+                                            !isDisabled
+                                        }
+                                        disabled={isDisabled}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        )
+                    }
+                )}
+                {noEligible && (
+                    <TableRow>
+                        <p className="dark:text-muted-foreground m-auto p-2 text-sm">
+                            No tokens to deposit
+                        </p>
+                    </TableRow>
+                )}
+                <TableRow>
+                    <TableCell>
+                        <button
+                            onClick={() => setExpand(!expand)}
+                            className="p-2 flex flex-row items-center gap-xs"
+                        >
+                            {expand ? 'Show less' : 'Show more'}{' '}
+                            {expand ? <CaretUpIcon /> : <CaretDownIcon />}
+                        </button>
+                    </TableCell>
+                </TableRow>
+            </TableBody>
+        </Table>
+    )
+}
+
 function AddLiquidity({
     pool,
 }: {
     pool?: PoolWithTokensFragment
 }): JSX.Element {
-    const { id } = useParams()
-    const { address } = useAccount()
-    const chainId = useChainId()
-
-    const [balances, setBalances] = useState<number[]>([])
-    const [balanceMapping, setBalance] = useState<{ [key: string]: number }>({})
-    const [amount, setAmount] = useState<string>('') // numeraire input amount
-
-    useEffect(() => {
-        async function fetchBalances(): Promise<void> {
-            if (!pool?.poolTokens?.items) return
-
-            const newBalances: number[] = []
-            let setInitialToken = false
-
-            for (const poolToken of pool.poolTokens.items) {
-                const balance = await balanceOf(
-                    poolToken.token.id as `0x${string}`,
-                    address!
-                )
-                newBalances.push(balance)
-                setBalance((prev) => ({
-                    ...prev,
-                    [poolToken.token.id as `0x${string}`]: balance,
-                }))
-
-                // Sets the first eligible token as the token in the amount form.
-                if (balance > 0 && !setInitialToken) {
-                    setSelectedTokens((prev) => [poolToken.token.id])
-                    setInitialToken = true
-                }
-            }
-            setBalances(newBalances)
-        }
-
-        if (address && pool?.poolTokens?.items) {
-            fetchBalances()
-        }
-    }, [address, pool?.poolTokens?.items])
-
-    const [selectedTokens, setSelectedTokens] = useState<string[]>([
+    const [selectedTokens, setSelectedTokens] = useState<`0x${string}`[]>([
         pool?.poolTokens?.items?.[0]?.token.id as `0x${string}`,
     ])
 
-    const noEligibleTokens = !balances || balances.every((b) => b === 0)
-
-    const [expandEligibleTokens, setExpandEligibleTokens] =
-        useState<boolean>(false)
-
-    /// todo: need single sided deposits in dfmm...
-    async function prepareAllocate(): Promise<void> {
-        if (!selectedTokens || selectedTokens.length === 0) {
-            return
-        }
-
-        if (!address) {
-            return
-        }
-
-        if (!amount || parseFloat(amount) === 0) {
-            return
-        }
-
-        // Need the pool id, token index, and amount.
-    }
-
     return (
         <section id="user-actions">
-            <div className="flex flex-row w-full gap-0">
-                <div className="bg-dagger1 self-start w-full">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-4">
-                            <div className="flex flex-row gap-md w-full">
-                                <div className="flex flex-col gap-sm w-2/3">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>
-                                                    <h5 className="text-primary">
-                                                        Deposit
-                                                    </h5>
-                                                </TableHead>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableHead>
-                                                    Eligible Tokens
-                                                </TableHead>
-                                                <TableHead>
-                                                    Your Balance
-                                                </TableHead>
-                                                <TableHead>Selection</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {pool?.poolTokens?.items
-                                                ?.filter(
-                                                    (_: any, index: number) =>
-                                                        balances?.[index] > 0 ||
-                                                        expandEligibleTokens
-                                                )
-                                                .map((poolToken: PoolToken) => {
-                                                    const token =
-                                                        poolToken.token.id
-                                                    const balance =
-                                                        balanceMapping[
-                                                            poolToken.token
-                                                                .id as `0x${string}`
-                                                        ]
-                                                    const isDisabled =
-                                                        !token ||
-                                                        !balance ||
-                                                        balance === 0
+            <div className="flex flex-row w-full gap-md">
+                <div className="w-2/3">
+                    <EligbleTokensTable
+                        pool={pool}
+                        selectToken={setSelectedTokens}
+                        selectedTokens={selectedTokens}
+                    />
+                </div>
 
-                                                    return (
-                                                        <TableRow
-                                                            key={poolToken.id}
-                                                            className={`${isDisabled ? 'hover:bg-transparent' : ''}`}
-                                                        >
-                                                            <TableCell
-                                                                className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
-                                                            >
-                                                                <div className="flex flex-row gap-sm items-center">
-                                                                    <img
-                                                                        src={
-                                                                            tokens?.[
-                                                                                chainId
-                                                                            ].find(
-                                                                                (
-                                                                                    tkn
-                                                                                ) =>
-                                                                                    tkn.symbol.toLowerCase() ===
-                                                                                    poolToken.token.symbol.toLowerCase()
-                                                                            )
-                                                                                ?.logo
-                                                                        }
-                                                                        alt={
-                                                                            poolToken
-                                                                                .token
-                                                                                .symbol
-                                                                        }
-                                                                        className={`${isDisabled ? 'dark:opacity-70' : ''} rounded-full size-6`}
-                                                                        style={{
-                                                                            zIndex: 1,
-                                                                        }}
-                                                                    />
-
-                                                                    {
-                                                                        poolToken
-                                                                            .token
-                                                                            .symbol
-                                                                    }
-                                                                </div>
-                                                            </TableCell>
-                                                            <TableCell
-                                                                className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
-                                                            >
-                                                                {formatNumber(
-                                                                    balance
-                                                                )}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <input
-                                                                    type="checkbox"
-                                                                    onChange={() =>
-                                                                        setSelectedTokens(
-                                                                            (
-                                                                                prev
-                                                                            ) =>
-                                                                                prev.includes(
-                                                                                    token
-                                                                                )
-                                                                                    ? prev.filter(
-                                                                                          (
-                                                                                              t
-                                                                                          ) =>
-                                                                                              t !==
-                                                                                              token
-                                                                                      )
-                                                                                    : [
-                                                                                          ...prev,
-                                                                                          token,
-                                                                                      ]
-                                                                        )
-                                                                    }
-                                                                    checked={
-                                                                        selectedTokens.includes(
-                                                                            token
-                                                                        ) &&
-                                                                        !isDisabled
-                                                                    }
-                                                                    disabled={
-                                                                        isDisabled
-                                                                    }
-                                                                />
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    )
-                                                })}
-                                            {noEligibleTokens && (
-                                                <TableRow>
-                                                    <p className="dark:text-muted-foreground m-auto p-2 text-sm">
-                                                        No tokens to deposit
-                                                    </p>
-                                                </TableRow>
-                                            )}
-                                            <TableRow>
-                                                <TableCell>
-                                                    <button
-                                                        onClick={() =>
-                                                            setExpandEligibleTokens(
-                                                                !expandEligibleTokens
-                                                            )
-                                                        }
-                                                        className="p-2 flex flex-row items-center gap-xs"
-                                                    >
-                                                        {expandEligibleTokens
-                                                            ? 'Show less'
-                                                            : 'Show eligible'}{' '}
-                                                        {expandEligibleTokens ? (
-                                                            <CaretUpIcon />
-                                                        ) : (
-                                                            <CaretDownIcon />
-                                                        )}
-                                                    </button>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
-                                </div>
-
-                                <div className="flex flex-col w-1/3 items-start gap-md bg-gray-900 shadow-lg p-4 rounded-lg">
-                                    <div className="flex flex-col gap-sm">
-                                        <p>Review</p>
-                                        <p className="text-muted-foreground dark:text-muted-foreground text-sm">
-                                            {selectedTokens?.[0] ? (
-                                                <>
-                                                    Start a deposit transaction
-                                                    for{' '}
-                                                    <strong>
-                                                        {selectedTokens.length}
-                                                    </strong>{' '}
-                                                    selected tokens.
-                                                </>
-                                            ) : (
-                                                'Select tokens to deposit.'
-                                            )}
-                                        </p>
-                                    </div>
-                                    <TransactionView
-                                        selectedTokens={selectedTokens}
-                                        pool={pool}
-                                        balanceMapping={balanceMapping}
-                                    />
-                                    <div className="flex flex-row gap-sm justify-between w-full border-t py-2">
-                                        <small className="text-muted-foreground dark:text-muted-foreground">
-                                            Estimated tx fee
-                                        </small>
-                                        <small>0.0001 ETH</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div className="flex flex-col w-1/3 gap-md items-start bg-gray-900 shadow-lg p-4 rounded-lg mb-auto">
+                    <div className="flex flex-col gap-sm">
+                        <p>Review</p>
+                        <p className="text-muted-foreground dark:text-muted-foreground text-sm">
+                            {selectedTokens?.[0] ? (
+                                <>
+                                    Start a deposit transaction for{' '}
+                                    <strong>{selectedTokens.length}</strong>{' '}
+                                    selected tokens.
+                                </>
+                            ) : (
+                                'Select tokens to deposit.'
+                            )}
+                        </p>
                     </div>
+                    <TransactionView
+                        selectedTokens={selectedTokens}
+                        pool={pool}
+                    />
                 </div>
             </div>
         </section>
@@ -873,7 +800,7 @@ function UserPositions({
                         {positions &&
                             positions?.positions?.items
                                 ?.filter(
-                                    (position) =>
+                                    (position: Position) =>
                                         getAddress(position?.accountId) ===
                                         getAddress(address as string)
                                 )
