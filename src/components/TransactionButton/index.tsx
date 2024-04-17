@@ -191,7 +191,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
                 return TransactionState.Broadcasted
             })
         }
-    }, [transaction, props.txReceipt])
+    }, [transaction])
 
     // React to changes in a broadcasted transaction.
     useEffect(() => {

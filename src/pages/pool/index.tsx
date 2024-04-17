@@ -231,11 +231,10 @@ function computeAllocationDeltasGivenDeltaT(
 
     const a = deltaT / reserves[indexT]
     const reserveDeltas = []
+    reserveDeltas[indexT] = deltaT
     for (let i = 0; i < reserves.length; i++) {
         if (i !== indexT) {
             reserveDeltas[i] = a * reserves[i]
-        } else {
-            reserveDeltas[indexT] = deltaT
         }
     }
 
@@ -351,37 +350,41 @@ function TransactionView({
     // Compute the transaction payload amounts.
     const independentToken = selectedTokens?.[0]
 
-    const {
-        reserveDeltas: dependentAmounts,
-        deltaL: deltaLiquidity,
-    }: {
-        reserveDeltas: number[]
-        deltaL: number
-    } =
-        +amount > 0 && independentToken
-            ? computeAllocationDeltasGivenDeltaT(
-                  parseFloat(amount),
-                  pool.poolTokens.items.findIndex(
-                      (pt: PoolTokenItemFragment) =>
-                          getAddress(pt.token.id) ===
-                          getAddress(independentToken)
-                  ),
-                  pool.reserves,
-                  pool.liquidity
-              )
-            : {
-                  reserveDeltas: [],
-                  deltaL: 0,
-              }
+    const { data: poolsSnapshot } = useReadContract({
+        address: dfmmAddress,
+        abi: dfmmABI,
+        functionName: 'pools',
+        args: [pool.id],
+    })
 
-    const allocatePayload =
-        dependentAmounts.length === pool.reserves.length &&
-        parseFloat(amount) > 0
-            ? encodeAbiParameters(parseAbiParameters('uint256[], uint256'), [
-                  dependentAmounts.map(toWad),
-                  toWad(deltaLiquidity),
-              ])
-            : undefined
+    const {
+        deltas: dependentAmounts,
+        liquidity: deltaLiquidity,
+        payload: allocatePayload,
+    }: {
+        deltas: number[]
+        liquidity: number
+        payload: string
+    } = +amount > 0 && independentToken
+        ? prepareAllocate(
+              amount,
+              pool.poolTokens.items.findIndex(
+                  (pt: PoolTokenItemFragment) =>
+                      getAddress(pt.token.id) === getAddress(independentToken)
+              ),
+              (poolsSnapshot as any)?.reserves ?? pool.reserves.map(toWad),
+              (poolsSnapshot as any)?.totalLiquidity ?? toWad(pool.liquidity)
+          )
+        : {
+              deltas: [],
+              liquidity: 0,
+              payload: '',
+          }
+
+    console.log(poolsSnapshot?.reserves, pool.reserves, {
+        dependentAmounts,
+        deltaLiquidity,
+    })
 
     // todo: assumes the same dependent amounts...
     const tokensToApprove = pool?.poolTokens?.items
@@ -416,10 +419,17 @@ function TransactionView({
     // Reset the form after a successful transaction.
     useEffect(() => {
         if (txReceipt?.status === 'success' && tokensToApprove.length === 0) {
-            setAmount('')
-            setSuccessfulReceipts((prev) => [...prev, txReceipt])
+            const isReceiptAlreadyAdded = successfulReceipts.some(
+                (receipt) =>
+                    receipt.transactionHash === txReceipt.transactionHash
+            )
+
+            if (!isReceiptAlreadyAdded) {
+                setAmount('')
+                setSuccessfulReceipts((prev) => [...prev, txReceipt])
+            }
         }
-    }, [txReceipt, tokensToApprove])
+    }, [txReceipt, tokensToApprove, successfulReceipts])
 
     return (
         <TransactionDrawer

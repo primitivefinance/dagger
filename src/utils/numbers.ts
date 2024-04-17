@@ -34,7 +34,7 @@ export function formatNumber(
     return new Intl.NumberFormat('en-US', options).format(amount)
 }
 
-export function formatWad(wad: bigint, decimals?: number = 18): string {
+export function formatWad(wad: bigint, decimals: number = 18): string {
     return formatNumber(Number(formatUnits(wad, decimals)))
 }
 
@@ -47,4 +47,8 @@ export function toWad(amount: number): bigint {
         throw new Error('toWad: Invalid `amount` is NaN')
     }
     return parseEther(amount.toString())
+}
+
+export function fromWad(wad: bigint): number {
+    return parseFloat(formatUnits(wad, 18))
 }
