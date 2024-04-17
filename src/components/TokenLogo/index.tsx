@@ -17,12 +17,12 @@ interface TokenLogoProps {
 }
 
 function TokenLogo({
-    key,
     chainId,
     address,
     tokens = tokenList,
     size = 'md',
     custom,
+    ...props
 }: TokenLogoProps): JSX.Element {
     const token = tokens[chainId].find(
         (tkn) => address && getAddress(tkn.address) === getAddress(address)
@@ -52,7 +52,7 @@ function TokenLogo({
     const isLoading = !address && !custom
 
     return (
-        <React.Fragment key={key}>
+        <React.Fragment {...props}>
             <div className="flex flex-row items-center">
                 {!isLoading ? (
                     !logoData.src ? (

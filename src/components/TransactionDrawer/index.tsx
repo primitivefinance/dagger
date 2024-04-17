@@ -1,5 +1,5 @@
 import { useAccount, useChainId, useReadContracts } from 'wagmi'
-import { erc20Abi } from 'viem'
+import { erc20Abi, getAddress } from 'viem'
 import { shortAddress } from '@/utils/address'
 import { tokens } from '@/data/tokens'
 import { formatWad } from '@/utils/numbers'
@@ -97,44 +97,54 @@ function TransactionDrawer({
                             </Table>
                             <div className="flex flex-col gap-md w-full">
                                 <div className="flex flex-col gap-sm w-full">
-                                    {transactionTokens?.map((pt, i) => {
-                                        const tokenAddress = pt.token
-                                            .id as `0x${string}`
-                                        const balance = parseFloat(
-                                            formatWad(
-                                                balanceCalls?.data?.[i]
-                                                    ?.result ?? '0'
+                                    {transactionTokens?.map(
+                                        (pt: PoolTokenItemFragment, i) => {
+                                            const tokenAddress = pt.token
+                                                .id as `0x${string}`
+                                            const balance = parseFloat(
+                                                formatWad(
+                                                    balanceCalls?.data?.[i]
+                                                        ?.result ?? 0n
+                                                )
                                             )
-                                        )
-                                        const logo =
-                                            tokens[chainId].find(
-                                                (tkn) =>
-                                                    tkn.symbol.toLowerCase() ===
-                                                    pt.token.symbol.toLowerCase()
-                                            )?.logo ||
-                                            tokens[chainId]?.filter(
-                                                (tkn) =>
-                                                    tkn.address ===
-                                                    transactionTokens?.[0]
-                                            )[0]?.logo
+                                            const logo =
+                                                tokens[chainId].find(
+                                                    (tkn) =>
+                                                        tkn.symbol.toLowerCase() ===
+                                                        pt.token.symbol.toLowerCase()
+                                                )?.logo ||
+                                                tokens[chainId]?.filter(
+                                                    (tkn) =>
+                                                        getAddress(
+                                                            tkn.address
+                                                        ) ===
+                                                        getAddress(
+                                                            transactionTokens?.[0]
+                                                                ?.token?.id
+                                                        )
+                                                )[0]?.logo
 
-                                        return (
-                                            <TokenAmountInactive
-                                                key={pt.id}
-                                                disabled
-                                                tokenAddress={tokenAddress}
-                                                tokenSymbol={pt.token.symbol}
-                                                tokenBalance={balance}
-                                                tokenLogo={logo}
-                                                tokenPrice={3000} // no price provider
-                                                amount={
-                                                    deltas?.[i]?.toString() ??
-                                                    '0'
-                                                }
-                                                setAmount={() => {}}
-                                            />
-                                        )
-                                    })}
+                                            return (
+                                                <TokenAmountInactive
+                                                    key={pt?.token?.id}
+                                                    disabled
+                                                    tokenAddress={tokenAddress}
+                                                    tokenSymbol={
+                                                        pt.token.symbol
+                                                    }
+                                                    tokenBalance={balance}
+                                                    tokenLogo={logo}
+                                                    tokenPrice={3000} // no price provider
+                                                    amount={
+                                                        deltas?.[
+                                                            i
+                                                        ]?.toString() ?? '0'
+                                                    }
+                                                    setAmount={() => {}}
+                                                />
+                                            )
+                                        }
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-col gap-md w-full text-sm">

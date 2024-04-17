@@ -80,7 +80,7 @@ function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
                                 (poolToken: PoolToken) => {
                                     return (
                                         <TokenLogo
-                                            key={poolToken.id}
+                                            key={poolToken?.token?.id}
                                             chainId={chainId}
                                             address={
                                                 poolToken?.token
@@ -110,11 +110,12 @@ function NTokenGeometricMeanWeights({
         <TableBody>
             {pool &&
                 params?.lastComputedWeights.map((weight: bigint, i: number) => {
-                    const poolToken = pool.poolTokens.items[i]
+                    const poolToken: PoolTokenItemFragment =
+                        pool.poolTokens.items[i]
                     const reserve = pool.reserves[i]
 
                     return (
-                        <TableRow key={poolToken.id}>
+                        <TableRow key={poolToken?.token?.id}>
                             <TableCell>{formatWadPercentage(weight)}</TableCell>
                             <TableCell>{poolToken?.token?.symbol}</TableCell>
                             <TableCell>{formatNumber(reserve)}</TableCell>
@@ -562,7 +563,7 @@ function TransactionView({
     )
 }
 
-function EligbleTokensTable({
+function EligibleTokensTable({
     selectedTokens,
     selectToken,
     pool,
@@ -640,7 +641,7 @@ function EligbleTokensTable({
 
                         return (
                             <TableRow
-                                key={poolToken.id}
+                                key={poolToken?.token?.id}
                                 className={`${isDisabled ? 'hover:bg-transparent' : ''}`}
                             >
                                 <TableCell
@@ -689,9 +690,7 @@ function EligbleTokensTable({
                 )}
                 {noEligible && (
                     <TableRow>
-                        <p className="dark:text-muted-foreground m-auto p-2 text-sm">
-                            No tokens to deposit
-                        </p>
+                        <TableCell>No tokens to deposit</TableCell>
                     </TableRow>
                 )}
                 <TableRow>
@@ -723,7 +722,7 @@ function AddLiquidity({
         <section id="user-actions">
             <div className="flex flex-row w-full gap-md">
                 <div className="w-2/3">
-                    <EligbleTokensTable
+                    <EligibleTokensTable
                         pool={pool}
                         selectToken={setSelectedTokens}
                         selectedTokens={selectedTokens}
