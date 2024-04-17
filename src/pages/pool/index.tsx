@@ -381,11 +381,6 @@ function TransactionView({
               payload: '',
           }
 
-    console.log(poolsSnapshot?.reserves, pool.reserves, {
-        dependentAmounts,
-        deltaLiquidity,
-    })
-
     // todo: assumes the same dependent amounts...
     const tokensToApprove = pool?.poolTokens?.items
         ?.filter((pt: PoolTokenItemFragment, index: number) => {

@@ -73,6 +73,56 @@ enum TransactionState {
     TransactionReady = 'TransactionReady',
 }
 
+type TransactionAction =
+    | { type: 'REST' }
+    | { type: 'SIMULATE_TRANSACTION' }
+    | { type: 'AWAIT_SIGNATURE' }
+    | { type: 'TRANSACTION_ERROR' }
+    | { type: 'BROADCAST_TRANSACTION' }
+    | { type: 'CONFIRM_TRANSACTION' }
+    | { type: 'SIMULATE_READY' }
+    | { type: 'SIMULATE_STALE' }
+    | { type: 'TRIGGER_SIMULATE' }
+    | { type: 'SIMULATE_FETCHING' }
+    | { type: 'SIMULATE_ERROR' }
+    | { type: 'TRANSACTION_READY' }
+
+function transactionReducer(
+    state: TransactionState,
+    action: TransactionAction
+): TransactionState {
+    switch (action.type) {
+        case 'TRANSACTION_READY':
+            return TransactionState.TransactionReady
+        case 'AWAIT_SIGNATURE':
+            return TransactionState.AwaitingSignature
+        case 'BROADCAST_TRANSACTION':
+            if (state === TransactionState.Confirmed) {
+                return state
+            }
+            return TransactionState.Broadcasted
+        case 'CONFIRM_TRANSACTION':
+            return TransactionState.Confirmed
+        case 'TRANSACTION_ERROR':
+            return TransactionState.Error
+        case 'SIMULATE_READY':
+            return TransactionState.SimulateReady
+        case 'TRIGGER_SIMULATE':
+            return TransactionState.TriggerSimulate
+        case 'SIMULATE_TRANSACTION':
+            return TransactionState.Simulating
+        case 'SIMULATE_FETCHING':
+            return TransactionState.SimulateFetching
+        case 'SIMULATE_ERROR':
+            return TransactionState.SimulateError
+        case 'SIMULATE_STALE':
+            return TransactionState.SimulateStale
+        case 'REST':
+        default:
+            return TransactionState.Resting
+    }
+}
+
 /**
  * @notice A stateful button that handles all possible transaction states.
  * @dev Some issues with this component:
@@ -84,7 +134,8 @@ enum TransactionState {
  * - just be careful using this component until we get enough tests for it.
  */
 function TransactionButton(props: TransactionButtonProps): JSX.Element {
-    const [state, setState] = useState<TransactionState>(
+    const [state, dispatch] = React.useReducer(
+        transactionReducer,
         TransactionState.Resting
     )
 
@@ -113,10 +164,18 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
         mutation: {
             onSuccess: props.setTxHash,
             onMutate: (v) => {
-                setState(TransactionState.SimulateStale)
+                dispatch({ type: 'SIMULATE_STALE' })
             },
         },
     })
+
+    const [localReceipt, setLocalReceipt] = useState<
+        TransactionReceipt | undefined
+    >(undefined)
+
+    useEffect(() => {
+        setLocalReceipt(props.txReceipt)
+    }, [props.txReceipt])
 
     // Handle state changes based on prop changes.
     useEffect(() => {
@@ -124,12 +183,12 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
             typeof props.args === 'undefined' ||
             props.args.some((arg) => typeof arg === 'undefined')
         ) {
-            setState(TransactionState.Resting)
+            dispatch({ type: 'REST' })
             return
         }
 
         if (typeof simulation?.data === 'undefined') {
-            setState(TransactionState.SimulateReady)
+            dispatch({ type: 'SIMULATE_READY' })
         }
     }, [props.from, props.args, simulation?.data])
 
@@ -140,82 +199,66 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
         if (
             state === TransactionState.AwaitingSignature ||
             state === TransactionState.Broadcasted ||
-            state === TransactionState.Confirmed
+            state === TransactionState.Confirmed ||
+            typeof localReceipt !== 'undefined'
         ) {
             return
         }
 
         if (simulation?.error) {
-            setState(TransactionState.SimulateError)
+            dispatch({ type: 'SIMULATE_ERROR' })
             console.error(simulation.failureReason)
             return
         }
 
         if (simulation?.isStale) {
-            setState(TransactionState.SimulateStale)
+            dispatch({ type: 'SIMULATE_STALE' })
             return
         }
 
         if (simulation?.isFetching) {
-            setState(TransactionState.SimulateFetching)
+            dispatch({ type: 'SIMULATE_FETCHING' })
             return
         }
 
         if (simulation?.data && !simulation?.isStale) {
-            setState(TransactionState.TransactionReady)
+            dispatch({ type: 'TRANSACTION_READY' })
             return
         }
 
         if (simulation?.isLoading) {
-            setState(TransactionState.SimulateFetching)
+            dispatch({ type: 'SIMULATE_FETCHING' })
             return
         }
-    }, [simulation, state])
+    }, [simulation, state, localReceipt])
 
     // React to changes in the requested transaction.
     useEffect(() => {
         if (transaction?.isError) {
-            setState(TransactionState.Error)
+            dispatch({ type: 'TRANSACTION_ERROR' })
         }
 
         if (transaction?.isPending) {
-            setState(TransactionState.AwaitingSignature)
-        }
-
-        if (transaction?.isSuccess) {
-            setState((prev) => {
-                if (prev == TransactionState.Confirmed) {
-                    return TransactionState.Confirmed
-                }
-
-                return TransactionState.Broadcasted
-            })
+            dispatch({ type: 'AWAIT_SIGNATURE' })
         }
     }, [transaction])
 
     // React to changes in a broadcasted transaction.
     useEffect(() => {
-        if (typeof props.txReceipt !== 'undefined') {
-            setState(TransactionState.Confirmed)
+        if (
+            typeof props.txHash !== 'undefined' &&
+            typeof localReceipt !== 'undefined'
+        ) {
+            dispatch({ type: 'CONFIRM_TRANSACTION' })
         }
 
         if (
             typeof props.txHash !== 'undefined' &&
-            typeof props.txReceipt === 'undefined'
+            typeof localReceipt === 'undefined'
         ) {
-            setState((prev) => {
-                if (prev === TransactionState.Confirmed) {
-                    return TransactionState.Confirmed
-                }
-
-                return TransactionState.Broadcasted
-            })
+            dispatch({ type: 'BROADCAST_TRANSACTION' })
         }
-    }, [props.txHash, props.txReceipt])
-
-    useEffect(() => {
-        console.log(state)
-    }, [state])
+    }, [props.txHash, localReceipt])
 
     const ButtonAction = ({
         functionName,
@@ -304,7 +347,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
                     state === TransactionState.Resting
                 }
                 onClick={() => {
-                    setState(TransactionState.TriggerSimulate)
+                    dispatch({ type: 'TRIGGER_SIMULATE' })
 
                     if (state === TransactionState.SimulateStale) {
                         simulation?.refetch()
