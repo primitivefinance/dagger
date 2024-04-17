@@ -21,7 +21,62 @@ import {
     nGParamsQueryDocument,
 } from '../../queries/parameters'
 
-import TokenAmountInput from '@/components/TokenAmountInput'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
+import { Input } from '@/components/ui/input'
+import { PoolToken, PoolTokenItemFragment, Position } from 'gql/graphql'
+import {
+    CaretDownIcon,
+    CaretUpIcon,
+    CheckCircledIcon,
+    QuestionMarkCircledIcon,
+    QuestionMarkIcon,
+} from '@radix-ui/react-icons'
+import {
+    TransactionReceipt,
+    encodeAbiParameters,
+    erc20Abi,
+    formatEther,
+    formatUnits,
+    getAddress,
+    parseAbiParameters,
+    zeroAddress,
+} from 'viem'
+import { dfmmAddress, nG3mStrategy } from '@/data/contracts'
+
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+
+import { dfmmABI } from '@/lib/abis/dfmm'
+
+import { allPositionsQueryDocument } from '../../queries/positions'
+
+import { useTransactionStatus } from '@/components/TransactionButton/useTransactionStatus'
+
+import {
+    LabelWithEtherscan,
+    TxLabelEtherscan,
+} from '@/components/EtherscanLinkLabels'
+import {
+    formatNumber,
+    formatWad,
+    formatWadPercentage,
+    toWad,
+} from '@/utils/numbers'
+import TokenLogo from '@/components/TokenLogo'
+import TransactionButton from '@/components/TransactionButton'
+import { overrideAllowanceDFMM } from '@/utils/simulate'
+import TransactionDrawer from '@/components/TransactionDrawer'
+import PoolInfo from '@/components/PoolInfo'
+import { PoolTypes, getPoolType } from '@/utils/pools'
+import { DEFAULT_TOKEN_LOGO_SRC } from '@/utils/tokens'
+import { prepareAllocate } from '@/utils/allocate'
 import TransactionTable from '@/components/TransactionTable'
 
 const LinkIcon = () => (
@@ -994,20 +1049,15 @@ function TokenBreakdown({
                                     </small>
                                 </p>
                             </div>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit. Nulla nec dui eget urna aliquet
-                                aliquam.
-                            </p>
-                        </div>
-                    </div>
+                        )
+                    })}
                 </div>
             </div>
             <div className="my-8">
                 <p>Recent Transactions</p>
                 <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
                     <TransactionTable
-                        poolId={poolId}
+                        poolId={pool?.id}
                         poolTokens={pool?.poolTokens?.items}
                     />
                 </div>
