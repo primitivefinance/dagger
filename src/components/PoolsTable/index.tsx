@@ -17,7 +17,7 @@ import { tokens } from '@/data/tokens'
 
 import { FC } from 'react'
 import { useGraphQL } from '../../useGraphQL'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { Link2Icon } from '@radix-ui/react-icons'
 import { useChainId } from 'wagmi'
@@ -52,6 +52,45 @@ const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
     )
 }
 
+type PoolCellProps = {
+    pool: FragmentType<typeof PoolFragment>
+}
+
+const PoolCell: FC<PoolCellProps> = (props: {
+    pool: FragmentType<typeof PoolFragment>
+}) => {
+    const poolData = useFragment(PoolFragment, props.pool)
+    const navigate = useNavigate()
+    return (
+        <TableRow
+            key={poolData.id}
+            onClick={() => navigate(`/pool/${poolData.id}`)}
+        >
+            <TableCell>
+                <div className="flex flex-row items-center">
+                    {poolData?.poolTokens?.items?.map((poolToken, index) => (
+                        <TokenCell
+                            key={index}
+                            token={poolToken}
+                            index={index}
+                            zIndex={
+                                (poolData?.poolTokens?.items
+                                    ?.length as number) - index
+                            }
+                        />
+                    ))}
+                </div>
+            </TableCell>
+            <TableCell className="text-right">{poolData.name}</TableCell>
+            <TableCell className="text-right">$0.0</TableCell>
+            <TableCell className="text-right">$0.0</TableCell>
+            <TableCell className="text-right">$0.0</TableCell>
+            <TableCell className="text-right">$0.0</TableCell>
+            <TableCell className="text-right">$0.0</TableCell>
+        </TableRow>
+    )
+}
+
 const PoolsTable: FC = () => {
     const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 })
     const pools = data?.pools?.items
@@ -69,55 +108,10 @@ const PoolsTable: FC = () => {
                     <TableHead className="text-right">Fees (24h)</TableHead>
                 </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="cursor-pointer">
                 {pools?.map((pool, i) => <PoolCell key={i} pool={pool} />)}
             </TableBody>
         </Table>
-    )
-}
-
-type PoolCellProps = {
-    pool: FragmentType<typeof PoolFragment>
-}
-
-const PoolCell: FC<PoolCellProps> = (props: {
-    pool: FragmentType<typeof PoolFragment>
-}) => {
-    const poolData = useFragment(PoolFragment, props.pool)
-    return (
-        <TableRow key={poolData.id}>
-            <TableCell>
-                <div className="flex flex-row items-center">
-                    {poolData?.poolTokens?.items?.map((poolToken, index) => (
-                        <TokenCell
-                            key={index}
-                            token={poolToken}
-                            index={index}
-                            zIndex={
-                                (poolData?.poolTokens?.items
-                                    ?.length as number) - index
-                            }
-                        />
-                    ))}
-                </div>
-            </TableCell>
-            <TableCell className="flex justify-end">
-                <Button variant="link" className="p-0">
-                    <Link
-                        to={`/pool/${poolData.id}`}
-                        className="flex justify-between items-center"
-                    >
-                        {poolData.name}
-                        <Link2Icon className="h-4 w-4 ml-1" />
-                    </Link>
-                </Button>
-            </TableCell>
-            <TableCell className="text-right">$0.0</TableCell>
-            <TableCell className="text-right">$0.0</TableCell>
-            <TableCell className="text-right">$0.0</TableCell>
-            <TableCell className="text-right">$0.0</TableCell>
-            <TableCell className="text-right">$0.0</TableCell>
-        </TableRow>
     )
 }
 
