@@ -3,6 +3,9 @@ import { Link, Outlet } from 'react-router-dom'
 import Links from './links.json'
 import { Button } from '../ui/button'
 
+const externalApplicationDisclaimer =
+    'Disclaimer: Primitive applications are currently in beta, use at your own discretion. External applications are not affiliated with Primitive.'
+
 function Root() {
     return (
         <div className={`flex flex-col h-screen justify-between font-primary`}>
@@ -66,35 +69,31 @@ function Root() {
                 <Outlet />
             </main>
             <footer className="py-md w-full">
-                <div className="flex flex-start pt-">
-                    <div
-                        id="#row-7"
-                        className="flex justify-between w-full gap-md px-4 py-2"
-                    >
-                        <div className="flex flex-col">
-                            <div className="flexw-full md:w-1/2 justify-between align-center mb-2">
-                                {Links.links.map((link, index) => (
-                                    <a
-                                        key={`${link}-${index}`}
-                                        className="text-gray-200 hover:text-white hover:underline pr-4"
-                                        href={link.url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        {link.title}
-                                    </a>
-                                ))}
-                            </div>
-                            <br />
-                            <small>
-                                © 2020-{new Date().getFullYear()} Primitive
-                                Bits, Inc. All rights reserved.
-                            </small>
+                <div
+                    id="#row-7"
+                    className="flex justify-between w-full gap-md px-4 py-2"
+                >
+                    <div className="flex flex-col gap-xs">
+                        <div className="flex w-full md:w-1/2 justify-between align-center gap-sm">
+                            {Links.links.map((link, index) => (
+                                <a
+                                    key={`${link}-${index}`}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    {link.title}
+                                </a>
+                            ))}
                         </div>
-                        <p className="text-gray-400 disclaimer justify-between text-left">
-                            Disclaimer: Lorem Ipsum
-                        </p>
+                        <small className="text-muted dark:text-muted-foreground">
+                            © 2020-{new Date().getFullYear()} Primitive Bits,
+                            Inc. All rights reserved.
+                        </small>
                     </div>
+                    <small className="text-gray-400 disclaimer justify-between text-left w-1/4">
+                        {externalApplicationDisclaimer}
+                    </small>
                 </div>
             </footer>
         </div>

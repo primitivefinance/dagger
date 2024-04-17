@@ -22,6 +22,36 @@ import { Button } from '../ui/button'
 import { Link2Icon } from '@radix-ui/react-icons'
 import { useChainId } from 'wagmi'
 
+type TokenCellProps = {
+    token: FragmentType<typeof TokenFragment>
+    index: number
+    zIndex: number
+}
+
+const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
+    const tokenData = useFragment(TokenFragment, token)
+    const chainId = useChainId()
+
+    return (
+        <img
+            key={tokenData.token.id}
+            src={
+                tokens[chainId].find(
+                    (tkn) =>
+                        tkn.symbol.toLowerCase() ===
+                        tokenData.token.symbol.toLowerCase()
+                )?.logo
+            }
+            alt={tokenData.token.symbol}
+            className="rounded-full size-8"
+            style={{
+                marginLeft: index > 0 ? '-8px' : 0,
+                zIndex: zIndex,
+            }}
+        />
+    )
+}
+
 const PoolsTable: FC = () => {
     const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 })
     const pools = data?.pools?.items
@@ -88,35 +118,6 @@ const PoolCell: FC<PoolCellProps> = (props: {
             <TableCell className="text-right">$0.0</TableCell>
             <TableCell className="text-right">$0.0</TableCell>
         </TableRow>
-    )
-}
-
-type TokenCellProps = {
-    token: FragmentType<typeof TokenFragment>
-    index: number
-    zIndex: number
-}
-
-const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
-    const tokenData = useFragment(TokenFragment, token)
-    const chainId = useChainId()
-    return (
-        <img
-            key={tokenData.token.id}
-            src={
-                tokens[chainId].find(
-                    (tkn) =>
-                        tkn.symbol.toLowerCase() ===
-                        tokenData.token.symbol.toLowerCase()
-                )?.logo
-            }
-            alt={tokenData.token.symbol}
-            className="rounded-full size-8"
-            style={{
-                marginLeft: index > 0 ? '-8px' : 0,
-                zIndex: zIndex,
-            }}
-        />
     )
 }
 
