@@ -5,36 +5,54 @@ export const title: string = 'Create New DFMM Pool'
 export const subtitle: string =
     'Determine parameters, define a DFMM strategy contract, and deposit assets.'
 
-type Tag = { title: string; sub: string }
+type Tags = { [key: string]: { title: string; sub: string } }
 
-export const tags: Tag[] = [
-    { title: 'Pair', sub: 'Select the tokens to include in the pool.' },
-    { title: 'Strategy', sub: 'Select a DFMM strategy.' },
-    { title: 'Fee Rate', sub: 'Cost of automated portfolio rebalancing.' },
-    {
-        title: 'Pool Weights',
-        sub: 'Portfolio composition of a particular pair.',
+export const tags: Tags = {
+    ['strategy']: {
+        title: 'Strategy',
+        sub: 'Select a DFMM Strategy',
     },
-    {
-        title: 'Strategy Controller',
-        sub: 'Smart contract address of a DFMM strategy.',
+    ['controller']: {
+        title: 'Pool Controller',
+        sub: 'Identify an address that may edit pool parameters',
     },
-    {
-        title: 'Add Liquidity',
-        sub: 'Determine the required asset quantities for pool creation.',
+    ['fee']: {
+        title: 'Pool Fees',
+        sub: 'Select the cost of rebalancing your pool.  Higher fees, less arbitrage.',
     },
-]
+    ['mean']: {
+        title: 'Mean Price',
+        sub: 'Determine the target price of a concentrated liquidity pool (CLP).',
+    },
+    ['width']: {
+        title: 'Liquidity Range',
+        sub: 'Select the width of a concentrated liquidity pool (CLP).',
+    },
+    ['price']: {
+        title: 'Asset Price',
+        sub: 'Select the price of a fixed order.'
+    },
+    ['portfolio']: {
+        title: 'Portfolio Composition',
+        sub: 'Determine the assets included in the new pool.',
+    },
+}
 
 export const strats: CardToggleOption[] = [
     {
         value: 'GeometricMean',
-        title: 'G3M',
-        description: 'Geometric mean strategy.',
+        title: 'Weighted Portfolio',
+        description: 'Geometric mean strategy with any number of tokens.',
     },
     {
-        value: 'CLP',
-        title: 'CLP',
-        description: 'Concentrated liquidity strategy',
+        value: 'LogNormal',
+        title: 'Concentrated Liquidity',
+        description: 'Dynamically concentrated liquidity strategy.',
+    },
+    {
+        value: 'ConstantSum',
+        title: 'Fixed Order',
+        description: 'Offer to buy or sell an asset at a single price.',
     },
 ]
 
@@ -55,15 +73,5 @@ export const feeLevels: CardToggleOption[] = [
         value: '0.3',
         title: '0.30%',
         description: 'Asset pairs with normal volaility.',
-    },
-]
-
-export const weights: CardToggleOption[] = [
-    { value: '80', title: '20%/80%', description: 'lorem' },
-    { value: '70', title: '30%/70%', description: 'ipsum' },
-    {
-        value: '50',
-        title: '50%/50%',
-        description: 'Even portfolio composition.',
     },
 ]

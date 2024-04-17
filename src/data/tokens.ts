@@ -1,5 +1,5 @@
-type Token = {
-    address: `0x${string}` | string
+type ListedToken = {
+    address: `0x${string}`
     logo: string
     decimals: number
     symbol: string
@@ -8,10 +8,10 @@ type Token = {
 }
 
 type TokenList = {
-    [key: number]: Token[]
+    [key: number]: ListedToken[]
 }
 
-export const eth: Token = {
+export const eth: ListedToken = {
     address: '0x0',
     name: 'Ether',
     symbol: 'ETH',

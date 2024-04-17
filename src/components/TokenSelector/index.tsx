@@ -11,6 +11,7 @@ type TokenSelectorProps = {
     tokenLogo: string
     tokenSymbol: string
     setToken: (token: `0x${string}`) => void
+    disabledTokens?: `0x${string}`[]
 }
 
 function TokenSelector(props: TokenSelectorProps) {
@@ -49,7 +50,13 @@ function TokenSelector(props: TokenSelectorProps) {
                     {tokens[chainId].map((token) => (
                         <div
                             key={token.address}
-                            className="cursor-pointer flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3 hover:opacity-50"
+                            className={
+                                props.disabledTokens?.includes(
+                                    token.address as `0x${string}`
+                                )
+                                    ? 'flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3 opacity-50'
+                                    : 'cursor-pointer flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3 hover:opacity-50'
+                            }
                             onClick={() => {
                                 props.setToken(token.address as `0x${string}`)
                                 setOpen(false)
@@ -77,10 +84,24 @@ function TokenSelector(props: TokenSelectorProps) {
                         .map((token) => (
                             <div
                                 key={token.address}
-                                className="flex flew-row gap-3 items-center cursor-pointer border border-transparent hover:border-dagger2 hover:border border-solid p-2 rounded-xl"
+                                className={
+                                    props.disabledTokens?.includes(
+                                        token.address as `0x${string}`
+                                    )
+                                        ? 'flex flew-row gap-3 items-center border border-transparent hover:border-dagger2 opacity-50 border-solid p-2 rounded-xl'
+                                        : 'flex flew-row gap-3 items-center cursor-pointer border border-transparent hover:border-dagger2 hover:border border-solid p-2 rounded-xl'
+                                }
                                 onClick={() => {
-                                    props.setToken(token.address as `0x${string}`)
-                                    close()
+                                    if (
+                                        !props.disabledTokens?.includes(
+                                            token.address as `0x${string}`
+                                        )
+                                    ) {
+                                        props.setToken(
+                                            token.address as `0x${string}`
+                                        )
+                                        setOpen(false)
+                                    }
                                 }}
                             >
                                 <img
