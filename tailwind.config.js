@@ -17,6 +17,18 @@ module.exports = {
             },
         },
         extend: {
+            spacing: {
+                xs: '0.25rem',
+                sm: '0.5rem',
+                md: '1rem',
+                lg: '1.5rem',
+                xl: '2rem',
+                '2xl': '4rem',
+                '3xl': '8rem',
+                '4xl': '16rem',
+                '5xl': '32rem',
+                '6xl': '64rem',
+            },
             fontFamily: {
                 primary: ['Regular'],
                 semibold: ['SemiBold'],
@@ -55,6 +67,11 @@ module.exports = {
                 card: {
                     DEFAULT: 'hsl(var(--card))',
                     foreground: 'hsl(var(--card-foreground))',
+                },
+                blue: {
+                    DEFAULT: 'hsl(var(--blue))',
+                    foreground: 'hsl(var(--blue-foreground))',
+                    bright: 'hsl(var(--blue-bright))',
                 },
             },
             borderRadius: {

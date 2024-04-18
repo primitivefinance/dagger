@@ -3,89 +3,234 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Regular";
-  src: local("Geist-Regular"), url('./assets/fonts/Geist-Regular.otf'), format("opentype");
+    font-family: 'Regular';
+    src: local('Geist-Regular'), url('./assets/fonts/Geist-Regular.otf'),
+        format('opentype');
 }
 
 @font-face {
-  font-family: "SemiBold";
-  src: local("Geist-SemiBold"), url('./assets/fonts/Geist-SemiBold.otf'), format("opentype");
+    font-family: 'SemiBold';
+    src: local('Geist-SemiBold'), url('./assets/fonts/Geist-SemiBold.otf'),
+        format('opentype');
 }
 
 @font-face {
-  font-family: "Bold";
-  src: local("Geist-Bold"), url('./assets/fonts/Geist-Bold.otf'), format("opentype");
+    font-family: 'Bold';
+    src: local('Geist-Bold'), url('./assets/fonts/Geist-Bold.otf'),
+        format('opentype');
 }
- 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
- 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
- 
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
- 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
- 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
- 
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
- 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
- 
-    --radius: 0.5rem;
-  }
- 
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
- 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
- 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
- 
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
- 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
- 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
- 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
- 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
- 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-  }
-}
- 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 240 10% 3.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 240 10% 3.9%;
+
+        --primary: 240 5.9% 10%;
+        --primary-foreground: 0 0% 98%;
+
+        --secondary: 240 4.8% 95.9%;
+        --secondary-foreground: 240 5.9% 10%;
+
+        --muted: 240 4.8% 95.9%;
+        --muted-foreground: 240 3.8% 46.1%;
+
+        --accent: 240 4.8% 95.9%;
+        --accent-foreground: 240 5.9% 10%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+
+        --border: 240 5.9% 90%;
+        --input: 240 5.9% 90%;
+        --ring: 240 10% 3.9%;
+
+        --radius: 0.5rem;
+
+        --blue: 224 94.0% 51.0%;
+        --blue-foreground: 0 0% 98%;
+        --blue-bright: 198 94.0% 83%;
+    }
+
+    .dark {
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
+
+        --card: 240 10% 3.9%;
+        --card-foreground: 0 0% 98%;
+
+        --popover: 240 10% 3.9%;
+        --popover-foreground: 0 0% 98%;
+
+        --primary: 0 0% 98%;
+        --primary-foreground: 240 5.9% 10%;
+
+        --secondary: 240 3.7% 15.9%;
+        --secondary-foreground: 0 0% 98%;
+
+        --muted: 240 3.7% 15.9%;
+        --muted-foreground: 240 5% 64.9%;
+
+        --accent: 240 3.7% 15.9%;
+        --accent-foreground: 0 0% 98%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 0% 98%;
+
+        --border: 240 3.7% 15.9%;
+        --input: 240 3.7% 15.9%;
+        --ring: 240 4.9% 83.9%;
+
+        --blue: 224 94.0% 51.0%;
+        --blue-foreground: 0 0% 98%;
+        --blue-bright: 198 94.0% 83%;
+    }
 }
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@font-face {
+    font-family: 'DAGGERSQUARE';
+    src: url('/assets/fonts/Daggersquare.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@layer base {
+    h1 {
+        @apply text-3xl leading-none font-semibold;
+    }
+    h2 {
+        @apply text-2xl font-medium;
+    }
+    h3 {
+        @apply text-xl font-medium;
+    }
+    h4 {
+        @apply text-lg font-medium;
+    }
+    h5 {
+        @apply text-lg;
+    }
+    a {
+        @apply text-base;
+        @apply text-black dark:text-white;
+        @apply opacity-90;
+    }
+    a:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    p {
+        @apply text-base;
+        @apply text-gray-800 dark:text-gray-200;
+    }
+    small {
+        @apply text-xs;
+        @apply text-gray-700 dark:text-gray-300;
+    }
+
+    .disclaimer {
+        @apply text-xs;
+        @apply text-gray-400 dark:text-gray-600;
+    }
+
+    @screen md {
+        h1 {
+            @apply text-3xl leading-tight;
+        }
+
+        h2 {
+            @apply text-2xl;
+        }
+
+        h3 {
+            @apply text-base;
+        }
+    }
+
+    @screen lg {
+        h1 {
+            @apply text-5xl;
+        }
+
+        h2 {
+            @apply text-4xl;
+        }
+
+        h3 {
+            @apply text-xl;
+        }
+
+        p {
+            @apply text-lg;
+        }
+    }
+
+    @screen xl {
+        h1 {
+            @apply text-6xl;
+        }
+
+        h2 {
+            @apply text-5xl;
+        }
+
+        h3 {
+            @apply text-2xl;
+        }
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .container {
+        @apply px-1;
+    }
+}
+
+
+.loading-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    @apply bg-primary;
+    border-radius: 50%;
+    animation: dotFlashing 1s infinite linear alternate;
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes dotFlashing {
+    0% {
+      opacity: 0;
+    }
+    50%,
+    100% {
+      opacity: 1;
+    }
+  }
+  

@@ -1,10 +1,14 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAccount, useChainId } from 'wagmi'
+import {
+    useAccount,
+    useChainId,
+    useReadContract,
+    useReadContracts,
+} from 'wagmi'
 
 import { tokens } from '../../data/tokens'
-import { shortAddress } from '../../utils/address'
-import { balanceOf } from '../../lib/erc20'
+import { totalSupply } from '../../lib/erc20'
 import { useGraphQL } from '../../useGraphQL'
 import {
     PoolWithTokensFragment,
@@ -17,7 +21,62 @@ import {
     nGParamsQueryDocument,
 } from '../../queries/parameters'
 
-import TokenAmountInput from '@/components/TokenAmountInput'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
+import { Input } from '@/components/ui/input'
+import { PoolToken, PoolTokenItemFragment, Position } from 'gql/graphql'
+import {
+    CaretDownIcon,
+    CaretUpIcon,
+    CheckCircledIcon,
+    QuestionMarkCircledIcon,
+    QuestionMarkIcon,
+} from '@radix-ui/react-icons'
+import {
+    TransactionReceipt,
+    encodeAbiParameters,
+    erc20Abi,
+    formatEther,
+    formatUnits,
+    getAddress,
+    parseAbiParameters,
+    zeroAddress,
+} from 'viem'
+import { dfmmAddress, nG3mStrategy } from '@/data/contracts'
+
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+
+import { dfmmABI } from '@/lib/abis/dfmm'
+
+import { allPositionsQueryDocument } from '../../queries/positions'
+
+import { useTransactionStatus } from '@/components/TransactionButton/useTransactionStatus'
+
+import {
+    LabelWithEtherscan,
+    TxLabelEtherscan,
+} from '@/components/EtherscanLinkLabels'
+import {
+    formatNumber,
+    formatWad,
+    formatWadPercentage,
+    toWad,
+} from '@/utils/numbers'
+import TokenLogo from '@/components/TokenLogo'
+import TransactionButton from '@/components/TransactionButton'
+import { overrideAllowanceDFMM } from '@/utils/simulate'
+import TransactionDrawer from '@/components/TransactionDrawer'
+import PoolInfo from '@/components/PoolInfo'
+import { PoolTypes, getPoolType } from '@/utils/pools'
+import { DEFAULT_TOKEN_LOGO_SRC } from '@/utils/tokens'
+import { prepareAllocate } from '@/utils/allocate'
 import TransactionTable from '@/components/TransactionTable'
 
 const LinkIcon = () => (
@@ -39,18 +98,978 @@ const LinkIcon = () => (
     </svg>
 )
 
-function Pool() {
+function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
+    const chainId = useChainId()
+
+    return (
+        <section id="overview">
+            <div className="flex flex-col gap-xl">
+                <TokenLogo
+                    key={pool?.symbol}
+                    chainId={chainId}
+                    custom={
+                        pool
+                            ? {
+                                  logo: pool?.logo,
+                                  symbol: pool?.name,
+                              }
+                            : undefined
+                    }
+                    size="xl"
+                />
+
+                <div className="flex flex-row items-start gap-lg w-full">
+                    <div className="flex flex-col gap-sm w-1/2">
+                        <h2>{pool?.name ?? 'na'}</h2>
+                        <p className="text-muted-foreground dark:text-muted-foreground">
+                            The overview page provides a high-level summary of
+                            the pool&#39;s details and statistics. It also
+                            provides a list of recent transactions and actions
+                            taken by users.
+                        </p>
+                    </div>
+                    <div className="flex flex-col gap-md items-end w-1/2">
+                        <h4>Asset Universe</h4>
+                        <div className="flex flex-wrap items-center">
+                            {pool?.poolTokens?.items?.map(
+                                (poolToken: PoolToken) => {
+                                    return (
+                                        <TokenLogo
+                                            key={poolToken?.token?.id}
+                                            chainId={chainId}
+                                            address={
+                                                poolToken?.token
+                                                    ?.id as `0x${string}`
+                                            }
+                                        />
+                                    )
+                                }
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    )
+}
+
+function NTokenGeometricMeanWeights({
+    pool,
+}: {
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
+    const { data } = useGraphQL(nGParamsQueryDocument, { id: pool.id })
+    const params = data?.nTokenGeometricMeanParams
+
+    return (
+        <TableBody>
+            {pool &&
+                params?.lastComputedWeights.map((weight: bigint, i: number) => {
+                    const poolToken: PoolTokenItemFragment =
+                        pool.poolTokens.items[i]
+                    const reserve = pool.reserves[i]
+
+                    return (
+                        <TableRow key={poolToken?.token?.id}>
+                            <TableCell>{formatWadPercentage(weight)}</TableCell>
+                            <TableCell>{poolToken?.token?.symbol}</TableCell>
+                            <TableCell>{formatNumber(reserve)}</TableCell>
+                            <TableCell>todo</TableCell>
+                        </TableRow>
+                    )
+                })}
+        </TableBody>
+    )
+}
+
+function PoolBreakdown({
+    pool,
+}: {
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
+    const poolType = getPoolType(pool)
+
+    return (
+        <section id="pool-breakdown">
+            <div className="flex flex-row w-full gap-0">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>
+                                <h5 className="text-primary">Pool Breakdown</h5>
+                            </TableHead>
+                        </TableRow>
+                        <TableRow>
+                            <TableHead>Weight %</TableHead>
+                            <TableHead>Token</TableHead>
+                            <TableHead>Holdings</TableHead>
+                            <TableHead>Value</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    {poolType === PoolTypes.nTokenGeometricMean ? (
+                        <NTokenGeometricMeanWeights pool={pool} />
+                    ) : (
+                        <NTokenGeometricMeanWeights pool={pool} />
+                    )}
+                </Table>
+            </div>
+        </section>
+    )
+}
+
+function RecentTransactions({
+    pool,
+}: {
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
+    return (
+        <section id="recent-transactions">
+            <div className="flex flex-row w-full gap-0">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>
+                                <h5 className="text-primary">
+                                    Recent Transactions
+                                </h5>
+                            </TableHead>
+                        </TableRow>
+                        <TableRow>
+                            <TableHead>Action</TableHead>
+                            <TableHead>Token</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Value</TableHead>
+                            <TableHead>Account</TableHead>
+                            <TableHead>Time</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>Add Liquidity</TableCell>
+                            <TableCell>ETH</TableCell>
+                            <TableCell>1.432</TableCell>
+                            <TableCell>2,414.42</TableCell>
+                            <TableCell>0xbeef...cafe</TableCell>
+                            <TableCell>3 hours ago</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+        </section>
+    )
+}
+
+function computeAllocationDeltasGivenDeltaT(
+    deltaT: number,
+    indexT: number,
+    reserves: number[],
+    liquidity: number
+): { reserveDeltas: number[]; deltaL: number } {
+    if (isNaN(deltaT)) {
+        throw new Error('computeAllocationDeltasGivenDeltaT: Invalid `deltaT`')
+    }
+
+    if (isNaN(indexT)) {
+        throw new Error('computeAllocationDeltasGivenDeltaT: Invalid `indexT`')
+    }
+
+    if (isNaN(liquidity) || typeof liquidity !== 'number') {
+        throw new Error(
+            'computeAllocationDeltasGivenDeltaT: Invalid `liquidity`'
+        )
+    }
+
+    if (reserves.length === 0) {
+        throw new Error(
+            'computeAllocationDeltasGivenDeltaT: Invalid `reserves`'
+        )
+    }
+
+    const a = deltaT / reserves[indexT]
+    const reserveDeltas = []
+    reserveDeltas[indexT] = deltaT
+    for (let i = 0; i < reserves.length; i++) {
+        if (i !== indexT) {
+            reserveDeltas[i] = a * reserves[i]
+        }
+    }
+
+    const deltaL = a * liquidity
+    return { reserveDeltas, deltaL }
+}
+
+function SuccessfulTransactions({
+    receipts,
+}: {
+    receipts: TransactionReceipt[]
+}): JSX.Element {
+    return (
+        <div className="flex flex-col gap-md">
+            <p className="pb-2 border-b">Recent Transactions</p>
+            {receipts.map((receipt: TransactionReceipt) => {
+                return (
+                    <div
+                        className="flex flex-row gap-sm justify-between w-full items-center"
+                        key={receipt.transactionHash}
+                    >
+                        <small>
+                            {receipt.status === 'success' ? (
+                                <CheckCircledIcon
+                                    color="#34d399"
+                                    fontSize={28}
+                                />
+                            ) : (
+                                <QuestionMarkCircledIcon />
+                            )}
+                        </small>
+                        Deposit
+                        <LabelWithEtherscan
+                            label={<small>From</small>}
+                            address={receipt.from}
+                        />
+                        <LabelWithEtherscan
+                            label={<small>To</small>}
+                            address={
+                                typeof receipt.to === 'string'
+                                    ? receipt.to
+                                    : zeroAddress
+                            }
+                        />
+                        <TxLabelEtherscan
+                            label={<small>Tx</small>}
+                            txHash={receipt.transactionHash}
+                        />
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+
+function TransactionView({
+    selectedTokens,
+    pool,
+}: {
+    selectedTokens: `0x${string}`[]
+    pool: PoolWithTokensFragment
+}): JSX.Element {
+    // Transaction sender and context
+    const { address } = useAccount()
+    const { setTxHash: setTx, txReceipt, txHash } = useTransactionStatus({})
+
+    // Form settings
+    const [isUSD, setIsUSD] = useState<boolean>(false)
+    const [depositAll, setDepositAll] = useState<boolean>(false) // todo: make conditional once single sided deposits are available
+
+    // Form inputs
+    const [amount, setAmount] = useState<string>('')
+
+    // Form results
+    const [successfulReceipts, setSuccessfulReceipts] = useState<
+        TransactionReceipt[]
+    >([])
+
+    // Token balances
+    const balanceCall = {
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+    }
+
+    // todo: use for delta check in future?
+    const { data: balances } = useReadContracts({
+        contracts: pool?.poolTokens?.items?.map(
+            (pt: PoolTokenItemFragment) => ({
+                address: pt.token.id as `0x${string}`,
+                args: [address],
+                ...balanceCall,
+            })
+        ),
+    })
+
+    // Token allowances
+    const allowanceCall = {
+        abi: erc20Abi,
+        functionName: 'allowance',
+    }
+
+    const { data: allowances, refetch: refetchAllowances } = useReadContracts({
+        contracts: pool?.poolTokens?.items?.map(
+            (pt: PoolTokenItemFragment) => ({
+                address: pt.token.id as `0x${string}`,
+                args: [address, dfmmAddress],
+                ...allowanceCall,
+            })
+        ),
+    })
+
+    // todo: update with the deposit single allocate logic
+    // Compute the transaction payload amounts.
+    const independentToken = selectedTokens?.[0]
+
+    const { data: poolsSnapshot } = useReadContract({
+        address: dfmmAddress,
+        abi: dfmmABI,
+        functionName: 'pools',
+        args: [pool.id],
+    })
+
+    const {
+        deltas: dependentAmounts,
+        liquidity: deltaLiquidity,
+        payload: allocatePayload,
+    }: {
+        deltas: number[]
+        liquidity: number
+        payload: string
+    } = +amount > 0 && independentToken
+        ? prepareAllocate(
+              amount,
+              pool.poolTokens.items.findIndex(
+                  (pt: PoolTokenItemFragment) =>
+                      getAddress(pt.token.id) === getAddress(independentToken)
+              ),
+              (poolsSnapshot as any)?.reserves ?? pool.reserves.map(toWad),
+              (poolsSnapshot as any)?.totalLiquidity ?? toWad(pool.liquidity)
+          )
+        : {
+              deltas: [],
+              liquidity: 0,
+              payload: '',
+          }
+
+    // todo: assumes the same dependent amounts...
+    const tokensToApprove = pool?.poolTokens?.items
+        ?.filter((pt: PoolTokenItemFragment, index: number) => {
+            const dependentAmount = dependentAmounts?.[index]
+            if (isNaN(dependentAmount)) return false
+
+            const requiredAmount = toWad(dependentAmount)
+            const allowance = allowances?.[index]?.result as bigint
+            return allowance < requiredAmount
+        })
+        .map((pt: PoolTokenItemFragment) => ({
+            to: pt.token.id as `0x${string}`,
+            spender: dfmmAddress,
+            amount: toWad(dependentAmounts[0]),
+        }))
+
+    const selectedTokenSymbols = selectedTokens
+        ?.map(
+            (t) =>
+                pool.poolTokens.items.filter(
+                    (pt: PoolTokenItemFragment) =>
+                        getAddress(pt.token.id) === getAddress(t)
+                )[0]?.token.symbol
+        )
+        .join(', ')
+
+    useEffect(() => {
+        refetchAllowances()
+    }, [txReceipt, refetchAllowances])
+
+    // Reset the form after a successful transaction.
+    useEffect(() => {
+        if (txReceipt?.status === 'success' && tokensToApprove.length === 0) {
+            const isReceiptAlreadyAdded = successfulReceipts.some(
+                (receipt) =>
+                    receipt.transactionHash === txReceipt.transactionHash
+            )
+
+            if (!isReceiptAlreadyAdded) {
+                setAmount('')
+                setSuccessfulReceipts((prev) => [...prev, txReceipt])
+            }
+        }
+    }, [txReceipt, tokensToApprove, successfulReceipts])
+
+    return (
+        <TransactionDrawer
+            transactionTokens={pool.poolTokens.items}
+            deltas={dependentAmounts}
+            openButton={<>Deposit {selectedTokenSymbols}</>}
+            txTitle={
+                <>
+                    Deposit {selectedTokenSymbols} to {pool.name}
+                </>
+            }
+            txDescription={
+                <>Deposit tokens into a pool to mint liquidity tokens.</>
+            }
+            txForm={
+                <>
+                    <p>Amount</p>
+                    <div className="flex flex-row gap-sm items-center">
+                        <Label
+                            htmlFor="currency-mode"
+                            className={`${!isUSD ? '' : 'dark:text-muted-foreground'}`}
+                        >
+                            {pool?.poolTokens?.items?.find(
+                                (pt: PoolTokenItemFragment) =>
+                                    getAddress(pt.token.id) ===
+                                    getAddress(selectedTokens[0])
+                            )?.token.symbol || 'Asset'}
+                        </Label>
+                        <Switch
+                            id="currency-mode"
+                            checked={isUSD}
+                            onCheckedChange={() => setIsUSD(!isUSD)}
+                        />
+                        <Label
+                            htmlFor="currency-mode"
+                            className={`${isUSD ? '' : 'dark:text-muted-foreground'}`}
+                        >
+                            USD
+                        </Label>
+                    </div>
+
+                    <Input
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="0.0"
+                        disabled={false} // todo
+                        className="py-8 px-4 text-4xl"
+                    />
+                </>
+            }
+            txSubmit={
+                <>
+                    <div className="flex flex-row gap-sm w-full items-center">
+                        <input
+                            type="checkbox"
+                            className="form-checkbox"
+                            id="depositAll"
+                            name="depositAll"
+                            required
+                            checked={depositAll}
+                            onChange={() => {
+                                // todo: keep selected.
+                            }}
+                            disabled={true}
+                        />{' '}
+                        <label
+                            htmlFor="depositAll"
+                            className="flex items-center"
+                        >
+                            <small>Deposit all tokens</small>
+                        </label>
+                    </div>
+
+                    {tokensToApprove.length > 0 ? (
+                        <TransactionButton
+                            key={tokensToApprove?.[0].to} // important! resets component when changed
+                            contractName="erc20"
+                            from={address}
+                            to={tokensToApprove?.[0].to}
+                            args={[
+                                tokensToApprove?.[0].spender,
+                                tokensToApprove?.[0].amount,
+                            ]}
+                            setTxHash={setTx}
+                            txHash={txHash as `0x${string}`}
+                            txReceipt={txReceipt}
+                            functionName="approve"
+                        />
+                    ) : (
+                        <TransactionButton
+                            key={dfmmAddress}
+                            contractName="dfmm"
+                            from={address}
+                            to={dfmmAddress}
+                            args={[pool.id, allocatePayload]}
+                            setTxHash={setTx}
+                            txHash={txHash as `0x${string}`}
+                            txReceipt={txReceipt}
+                            functionName="allocate"
+                            stateOverride={pool?.poolTokens?.items
+                                ?.map(
+                                    (pt: PoolTokenItemFragment) => pt.token.id
+                                )
+                                ?.map((token: `0x${string}`) => {
+                                    return {
+                                        address: token,
+                                        stateDiff: [
+                                            overrideAllowanceDFMM(
+                                                address as `0x${string}`
+                                            ),
+                                        ],
+                                    }
+                                })}
+                        />
+                    )}
+
+                    {successfulReceipts.length > 0 && (
+                        <SuccessfulTransactions receipts={successfulReceipts} />
+                    )}
+                </>
+            }
+            externalEtherscanLinks={[
+                {
+                    name: 'LPT',
+                    label: pool.name,
+                    address: pool.lpToken,
+                },
+                {
+                    name: 'Protocol',
+                    label: 'DFMM v0.2.0',
+                    address: dfmmAddress as `0x${string}`,
+                },
+            ]}
+        />
+    )
+}
+
+function EligibleTokensTable({
+    selectedTokens,
+    selectToken,
+    pool,
+}: {
+    selectedTokens: `0x${string}`[]
+    selectToken: React.Dispatch<React.SetStateAction<`0x${string}`[]>>
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
+    const chainId = useChainId()
+    const { address } = useAccount()
+
+    const balanceCall = {
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+    }
+
+    const { data: balances } = useReadContracts({
+        contracts: pool?.poolTokens?.items?.map(
+            (pt: PoolTokenItemFragment) => ({
+                address: pt.token.id as `0x${string}`,
+                args: [address],
+                ...balanceCall,
+            })
+        ),
+    })
+
+    // Expands to show all eligible tokens, even if the user has no balance.
+    const [expand, setExpand] = useState<boolean>(false)
+
+    // Don't show the tokens with 0 balances.
+    const noEligible =
+        !balances || balances.every((b) => (b?.result as bigint) <= 0n)
+
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>
+                        <h5 className="text-primary">Deposit</h5>
+                    </TableHead>
+                </TableRow>
+                <TableRow>
+                    <TableHead>Eligible Tokens</TableHead>
+                    <TableHead>Your Balance</TableHead>
+                    <TableHead>Selection</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {pool?.poolTokens?.items?.map(
+                    (poolToken: PoolToken, index: number) => {
+                        const token = poolToken.token.id as `0x${string}`
+                        const balance = balances?.[index]?.result as bigint
+                        const balanceFormatted = balance
+                            ? formatNumber(
+                                  parseFloat(
+                                      formatUnits(
+                                          balance,
+                                          poolToken.token.decimals
+                                      )
+                                  )
+                              )
+                            : formatNumber(0)
+
+                        // If the user has no balance and the table is not expanded, don't show the token.
+                        if (!expand && balance <= 0n) {
+                            return null
+                        }
+
+                        const isDisabled = !token || !balance || balance <= 0n
+                        const tokenLogo =
+                            tokens?.[chainId].find(
+                                (t) =>
+                                    getAddress(t.address) === getAddress(token)
+                            )?.logo ?? DEFAULT_TOKEN_LOGO_SRC
+
+                        return (
+                            <TableRow
+                                key={poolToken?.token?.id}
+                                className={`${isDisabled ? 'hover:bg-transparent' : ''}`}
+                            >
+                                <TableCell
+                                    className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
+                                >
+                                    <div className="flex flex-row gap-sm items-center">
+                                        <img
+                                            src={tokenLogo}
+                                            alt={poolToken.token.symbol}
+                                            className={`${isDisabled ? 'dark:opacity-70' : ''} rounded-full size-6`}
+                                            style={{
+                                                zIndex: 1,
+                                            }}
+                                        />
+
+                                        {poolToken.token.symbol}
+                                    </div>
+                                </TableCell>
+                                <TableCell
+                                    className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
+                                >
+                                    {balanceFormatted}
+                                </TableCell>
+                                <TableCell>
+                                    <input
+                                        type="checkbox"
+                                        onChange={() =>
+                                            selectToken((prev) =>
+                                                prev.includes(token)
+                                                    ? prev.filter(
+                                                          (t) => t !== token
+                                                      )
+                                                    : [...prev, token]
+                                            )
+                                        }
+                                        checked={
+                                            selectedTokens.includes(token) &&
+                                            !isDisabled
+                                        }
+                                        disabled={isDisabled}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        )
+                    }
+                )}
+                {noEligible && (
+                    <TableRow>
+                        <TableCell>No tokens to deposit</TableCell>
+                    </TableRow>
+                )}
+                <TableRow>
+                    <TableCell>
+                        <button
+                            onClick={() => setExpand(!expand)}
+                            className="p-2 flex flex-row items-center gap-xs"
+                        >
+                            {expand ? 'Show less' : 'Show more'}{' '}
+                            {expand ? <CaretUpIcon /> : <CaretDownIcon />}
+                        </button>
+                    </TableCell>
+                </TableRow>
+            </TableBody>
+        </Table>
+    )
+}
+
+function AddLiquidity({
+    pool,
+}: {
+    pool?: PoolWithTokensFragment
+}): JSX.Element {
+    const [selectedTokens, setSelectedTokens] = useState<`0x${string}`[]>([
+        pool?.poolTokens?.items?.[0]?.token.id as `0x${string}`,
+    ])
+
+    return (
+        <section id="user-actions">
+            <div className="flex flex-row w-full gap-md">
+                <div className="w-2/3">
+                    <EligibleTokensTable
+                        pool={pool}
+                        selectToken={setSelectedTokens}
+                        selectedTokens={selectedTokens}
+                    />
+                </div>
+
+                <div className="flex flex-col w-1/3 gap-md items-start bg-gray-900 shadow-lg p-4 rounded-lg mb-auto">
+                    <div className="flex flex-col gap-sm">
+                        <p>Review</p>
+                        <p className="text-muted-foreground dark:text-muted-foreground text-sm">
+                            {selectedTokens?.[0] ? (
+                                <>
+                                    Start a deposit transaction for{' '}
+                                    <strong>{selectedTokens.length}</strong>{' '}
+                                    selected tokens.
+                                </>
+                            ) : (
+                                'Select tokens to deposit.'
+                            )}
+                        </p>
+                    </div>
+                    <TransactionView
+                        selectedTokens={selectedTokens}
+                        pool={pool}
+                    />
+                </div>
+            </div>
+        </section>
+    )
+}
+
+function UserPositions({
+    pool,
+}: {
+    pool: PoolWithTokensFragment
+}): JSX.Element {
+    const [range, setRange] = useState<number>(0)
+
+    const { address } = useAccount()
+    const userPositions = pool?.positions?.items?.filter(
+        (position: Position) =>
+            getAddress(position.accountId) === getAddress(address as string)
+    )
+
+    const { data: positions } = useGraphQL(allPositionsQueryDocument, {
+        limit: 20,
+        variables: {
+            poolId: pool.id,
+            accountId: address,
+        },
+    })
+
+    const noExistingPositions = userPositions?.length === 0
+
+    return (
+        <section id="user-positions">
+            <div className="flex flex-row w-full gap-lg">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>
+                                <h5 className="text-primary">Your Position</h5>
+                            </TableHead>
+                        </TableRow>
+                        <TableRow>
+                            <TableHead>Token</TableHead>
+                            <TableHead>Holdings</TableHead>
+                            <TableHead>Value</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {noExistingPositions && (
+                            <TableRow>
+                                <p className="dark:text-muted-foreground m-auto p-2 text-sm">
+                                    No positions
+                                </p>
+                            </TableRow>
+                        )}
+                        {positions &&
+                            positions?.positions?.items
+                                ?.filter(
+                                    (position: Position) =>
+                                        getAddress(position?.accountId) ===
+                                        getAddress(address as string)
+                                )
+                                ?.map((position: Position) => {
+                                    return (
+                                        <TableRow key={position.id}>
+                                            <TableCell>{pool?.name}</TableCell>
+                                            <TableCell>
+                                                {formatWad(
+                                                    position.liquidityWad
+                                                )}
+                                            </TableCell>
+                                            <TableCell>todo</TableCell>
+                                        </TableRow>
+                                    )
+                                })}
+                    </TableBody>
+                </Table>
+                <div className="flex flex-col gap-md">
+                    <h5>Withdraw</h5>
+                    <form
+                        className="flex flex-col gap-lg"
+                        onSubmit={(e) => {
+                            e.preventDefault()
+                            // deallocate
+                        }}
+                    >
+                        <div className="flex flex-row gap-md">
+                            <label className="flex items-center gap-xs">
+                                <input
+                                    type="radio"
+                                    name="withdrawRange"
+                                    value="25"
+                                    onChange={() => setRange(25)}
+                                    checked={range === 25}
+                                    className="form-radio"
+                                />
+                                <span className="ml-2">25%</span>
+                            </label>
+                            <label className="flex items-center gap-xs">
+                                <input
+                                    type="radio"
+                                    name="withdrawRange"
+                                    value="50"
+                                    onChange={() => setRange(50)}
+                                    checked={range === 50}
+                                    className="form-radio"
+                                />
+                                <span className="ml-2">50%</span>
+                            </label>
+                            <label className="flex items-center gap-xs">
+                                <input
+                                    type="radio"
+                                    name="withdrawRange"
+                                    value="100"
+                                    onChange={() => setRange(100)}
+                                    checked={range === 100}
+                                    className="form-radio"
+                                />
+                                <span className="ml-2">All</span>
+                            </label>
+                            <label className="flex items-center gap-xs">
+                                <input
+                                    type="radio"
+                                    name="withdrawRange"
+                                    value="custom"
+                                    onChange={() => {}}
+                                    checked={
+                                        range !== 25 &&
+                                        range !== 50 &&
+                                        range !== 100
+                                    }
+                                    className="form-radio"
+                                />
+
+                                <Input
+                                    value={range.toString()}
+                                    onChange={(e) =>
+                                        setRange(parseInt(e.target.value))
+                                    }
+                                    placeholder="0.00"
+                                />
+                            </label>
+                        </div>
+                        <button
+                            type="submit"
+                            className="bg-blue-600 rounded px-4 py-2 disabled:opacity-50 hover:bg-blue-700 disabled:hover:bg-blue-600"
+                            onClick={() => {
+                                // deallocate
+                            }}
+                            disabled={noExistingPositions}
+                        >
+                            Withdraw
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    )
+}
+
+/**
+ * @notice For an asset of a pool, computes how many tokens are in each liquidity pool token.
+ * @param reserve Amount of tokens in the reserve of a pool in decimal units.
+ * @param poolLiquidity Amount of total liquidity of the pool in decimal units.
+ * @param liquidityTokenSupply Total supply of the liquidity pool token in decimal units.
+ * @returns Proportion of a given token per pool liquidity token.
+ */
+function computeTokenBreakdown(
+    reserve: number,
+    poolLiquidity: number,
+    liquidityTokenSupply: number
+): number {
+    return reserve / liquidityTokenSupply
+}
+
+/**
+ * @notice Computes the proportion of reserves to pool liquidity to lp token for each pool asset.
+ */
+function TokenBreakdown({
+    pool,
+}: {
+    pool: PoolWithTokensFragment
+}): JSX.Element {
+    const chainId = useChainId()
+    const [totalLpt, setTotalSupply] = useState<bigint>(BigInt(0))
+
+    // todo: make sure we are making use of query under the hood of wagmi
+    useEffect(() => {
+        async function fetchTotalSupply(): Promise<void> {
+            const supply = await totalSupply(pool.lpToken)
+            setTotalSupply(supply)
+        }
+
+        if (pool.lpToken) {
+            fetchTotalSupply()
+        }
+    }, [])
+
+    return (
+        <section id="token-prices">
+            <div className="flex flex-col gap-md">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>
+                                <h5 className="text-primary">
+                                    Token Breakdown
+                                </h5>
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                </Table>
+
+                <div className="flex flex-row gap-4">
+                    {pool.poolTokens.items.map((poolToken: PoolToken, i) => {
+                        return (
+                            <div
+                                key={poolToken.token.id}
+                                className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center"
+                            >
+                                <img
+                                    src={
+                                        tokens?.[chainId].find(
+                                            (tkn) =>
+                                                tkn.symbol.toLowerCase() ===
+                                                poolToken.token.symbol.toLowerCase()
+                                        )?.logo
+                                    }
+                                    alt={poolToken.token.symbol}
+                                    className="rounded-full size-6"
+                                />
+                                <p>
+                                    {formatNumber(
+                                        computeTokenBreakdown(
+                                            pool.reserves[i],
+                                            pool.liquidity,
+                                            parseFloat(
+                                                formatUnits(totalLpt, 18)
+                                            )
+                                        )
+                                    )}
+                                    {poolToken.token.symbol} /{' '}
+                                    <small className="dark:text-muted-foreground text-muted">
+                                        {' '}
+                                        {pool.name.slice(0, 5).toUpperCase()}
+                                    </small>
+                                </p>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+            <div className="my-8">
+                <p>Recent Transactions</p>
+                <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
+                    <TransactionTable
+                        poolId={pool?.id}
+                        poolTokens={pool?.poolTokens?.items}
+                    />
+                </div>
+            </div>
+        </section>
+    )
+}
+
+function Pool(): JSX.Element {
     const { id } = useParams()
     const { address } = useAccount()
-    const chainId = useChainId()
-    // const { connectors, connect } = useConnect()
-    // const { state } = usePrices();
-    // const { prices } = state;
     const poolId = id ? id : '0' // return to pool #0 if null
-
-    const [balances, setBalances] = useState<number[]>([])
-    const [amount, setAmount] = useState<string>('') // numeraire input amount
-    const [allocAmounts, setAllocAmounts] = useState<number[]>([]) // set by the return of allocateGivenNumeraire()
 
     const { data } = useGraphQL(poolInfoQueryDocument, { id: poolId })
     const pool = useFragment(PoolWithTokensFragment, data?.pool)
@@ -65,643 +1084,20 @@ function Pool() {
               ? lNParams?.data?.LogNormalParams
               : ng3mParams?.data?.nTokenGeometricMeanParams
 
-    useEffect(() => {
-        setAllocAmounts([0, 0, 0, 0])
-        async function fetchBalances() {
-            if (!pool?.poolTokens?.items) return
-
-            const newBalances: number[] = []
-
-            for (const poolToken of pool.poolTokens.items) {
-                const balance = await balanceOf(
-                    poolToken.token.id as `0x${string}`,
-                    address!
-                )
-                newBalances.push(balance)
-            }
-            setBalances(newBalances)
-            console.log('balances', newBalances)
-        }
-
-        if (address && pool?.poolTokens?.items) {
-            console.log('fetching balances')
-            fetchBalances()
-        }
-    }, [address, pool?.poolTokens?.items])
-    console.log(balances)
-
-    let userPosition: Position
-
-    if (pool?.positions?.items && address) {
-        userPosition = pool?.positions?.items?.find(
-            (position) =>
-                position.accountId.toLowerCase() ===
-                address?.toLocaleLowerCase()
-        )!
-    }
-
-    const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(true)
-    const ref = useRef(null)
-    const [range, setRange] = useState<number>(0)
+    const isUserConnected = typeof address !== 'undefined'
 
     if (!pool?.poolTokens?.items || !parameters) return <></>
     return (
-        <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-                <div className="flex flex-row items-center gap-2">
-                    <div className="flex flex-row items-center">
-                        <div className="flex flex-initial flex-row gap-2 mr-10">
-                            <div className="self-center bg-purple-600 px-2 rounded-full text-[18px]">
-                                {pool?.name}
-                            </div>
-                        </div>
-                        {pool?.poolTokens?.items?.map((poolToken) => {
-                            return (
-                                <>
-                                    <img
-                                        src={
-                                            tokens[chainId].find(
-                                                (tkn) =>
-                                                    tkn.symbol.toLowerCase() ===
-                                                    poolToken.token.symbol.toLowerCase()
-                                            )?.logo
-                                        }
-                                        alt={poolToken?.token?.symbol}
-                                        className="rounded-full size-8"
-                                        style={{
-                                            zIndex: 1,
-                                            opacity: '70%',
-                                        }}
-                                    />
-                                    <div
-                                        className="bg-gray-600 px-2 rounded-full text-xs"
-                                        style={{
-                                            zIndex: 2,
-                                            marginLeft: '-1rem',
-                                            marginTop: '1rem',
-                                        }}
-                                    >
-                                        {poolToken?.token.symbol}
-                                    </div>
-                                </>
-                            )
-                        })}
-                    </div>
-                </div>
-                <hr />
-                <div className="flex flex-row items-center gap-5">
-                    {pool.poolTokens.items.map((poolToken, i) => {
-                        return (
-                            <div key={i} className="flex gap-1 items-center">
-                                <p className="font-bold">
-                                    {poolToken.token.symbol}
-                                </p>
-                                <a
-                                    href={`https://sepolia-optimistic.etherscan.io/address/${poolToken?.token?.id}`}
-                                    className="flex flex-row gap-1 text-sm"
-                                >
-                                    {shortAddress(
-                                        poolToken?.token?.id as `0x${string}`
-                                    )}
-                                    <LinkIcon />
-                                </a>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
+        <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-2xl">
+            <Overview pool={pool} />
 
-            <div className="flex flex-row gap-4">
-                {pool.poolTokens.items.map((poolToken, i) => {
-                    return (
-                        <div
-                            key={i}
-                            className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center"
-                        >
-                            <img
-                                src={
-                                    tokens[chainId].find(
-                                        (tkn) =>
-                                            tkn.symbol.toLowerCase() ===
-                                            poolToken.token.symbol.toLowerCase()
-                                    )?.logo
-                                }
-                                alt={poolToken.token.symbol}
-                                className="rounded-full size-6"
-                            />
-                            <p className="text-sm">
-                                {/**
-                                 * {computePrice(
-                                    pool.reserveX,
-                                    pool.reserveY,
-                                    pool.parameters.weightX,
-                                    pool.parameters.weightY
-                                ).toLocaleString(undefined)}
-                                 */}{' '}
-                                {poolToken.token.symbol}{' '}
-                                <span className="text-xs">
-                                    per{' '}
-                                    {pool?.poolTokens?.items[0].token.symbol}
-                                </span>
-                            </p>
-                        </div>
-                    )
-                })}
-            </div>
+            {isUserConnected && <AddLiquidity pool={pool} />}
+            {isUserConnected && <UserPositions pool={pool} />}
 
-            <div className="grid grid-cols-2 gap-8">
-                <div className="flex flex-col gap-8">
-                    <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
-                        <div className="flex flex-col gap-4">
-                            <div className="flex flex-row items-center justify-between">
-                                <p className="text-lg font-bold">My Position</p>
-                                <p className="text-dagger3 text-sm">
-                                    {userPosition!
-                                        ? (userPosition.liquidity /
-                                              pool.liquidity) *
-                                          pool.reserves[0]
-                                        : '0.0'}{' '}
-                                    {' LPT'}
-                                </p>
-                            </div>
-                            <hr />
-                            {pool.poolTokens.items.map((poolToken, i) => {
-                                return (
-                                    <div key={i} className="flex flex-col">
-                                        <div className="flex flex-row w-full gap-1 items-center">
-                                            <img
-                                                src={
-                                                    tokens[chainId].find(
-                                                        (tkn) =>
-                                                            tkn.symbol.toLowerCase() ===
-                                                            poolToken.token.symbol.toLowerCase()
-                                                    )?.logo
-                                                }
-                                                alt={poolToken.token.symbol}
-                                                className="rounded-full size-4"
-                                            />
-                                            <p className="text-xs text-dagger3">
-                                                {poolToken.token.symbol}
-                                            </p>
-                                        </div>
-                                        <div className="font-bold w-full flex-row justify-between">
-                                            <>
-                                                {userPosition!
-                                                    ? (userPosition.liquidity /
-                                                          pool?.liquidity) *
-                                                      pool.reserves[i]
-                                                    : '0.0'}{' '}
-                                                {
-                                                    pool?.poolTokens?.items[i]
-                                                        .token.symbol
-                                                }{' '}
-                                            </>
-                                        </div>
-                                        <div className="text-xs w-full flex-row justify-between">
-                                            <>
-                                                {'Token Balance: '}
-                                                {balances[i]}{' '}
-                                                {
-                                                    pool?.poolTokens?.items[i]
-                                                        .token.symbol
-                                                }{' '}
-                                            </>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-
-                    <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
-                        <div className="flex flex-col gap-4">
-                            <div className="grid grid-cols-2 border-solid border border-dagger2 w-full rounded-xl">
-                                <button
-                                    className={`border-0 ${
-                                        isAddLiquidity
-                                            ? 'bg-dagger2'
-                                            : 'border-0'
-                                    }`}
-                                    onClick={() => setIsAddLiquidity(true)}
-                                >
-                                    <div className="flex flex-row items-center gap-1 justify-center">
-                                        <svg
-                                            className="w-4 h-4"
-                                            aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke="currentColor"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="1.5"
-                                                d="M12 7.8v8.4M7.8 12h8.4m4.8 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                            />
-                                        </svg>
-                                        Add liquidity
-                                    </div>
-                                </button>
-                                <button
-                                    className={`border-0 ${
-                                        isAddLiquidity
-                                            ? 'border-0'
-                                            : 'bg-dagger2'
-                                    }`}
-                                    onClick={() => setIsAddLiquidity(false)}
-                                >
-                                    <div className="flex flex-row items-center gap-1 justify-center">
-                                        <svg
-                                            className="w-4 h-4"
-                                            aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke="currentColor"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="1.5"
-                                                d="M5 12h14"
-                                            />
-                                        </svg>
-                                        Remove liquidity
-                                    </div>
-                                </button>
-                            </div>
-                            {isAddLiquidity ? (
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex flex-col">
-                                        <p className="text-lg font-bold">
-                                            Add Liquidity
-                                        </p>
-                                        <p className="text-dagger3 text-xs">
-                                            Increase your position by adding
-                                            liquidity into the pool.
-                                        </p>
-                                    </div>
-                                    <TokenAmountInput
-                                        tokenAddress={
-                                            pool?.poolTokens?.items[0]?.token
-                                                ?.id as `0x${string}`
-                                        }
-                                        tokenSymbol={
-                                            pool.poolTokens.items[0].token
-                                                .symbol
-                                        }
-                                        tokenBalance={balances[0]}
-                                        tokenLogo={
-                                            tokens[chainId].find(
-                                                (tkn) =>
-                                                    tkn?.symbol.toLowerCase() ===
-                                                    pool?.poolTokens?.items[0].token.symbol.toLowerCase()
-                                            )?.logo || ''
-                                        }
-                                        tokenPrice={3000} // no price provider
-                                        amount={amount}
-                                        setAmount={setAmount}
-                                    />
-                                    <div className="flex flex-row gap-1 items-center justify-end">
-                                        {pool.poolTokens.items.map(
-                                            (poolToken, i) => {
-                                                return (
-                                                    <>
-                                                        <p className="text-dagger4 text-xs">
-                                                            {userPosition!
-                                                                ? (
-                                                                      ((userPosition.liquidity /
-                                                                          pool.liquidity) *
-                                                                          pool
-                                                                              .reserves[
-                                                                              i
-                                                                          ] *
-                                                                          range) /
-                                                                      100
-                                                                  ).toLocaleString(
-                                                                      undefined
-                                                                  )
-                                                                : '0.0'}
-                                                        </p>
-                                                        <img
-                                                            src={
-                                                                tokens[
-                                                                    chainId
-                                                                ].find(
-                                                                    (tkn) =>
-                                                                        tkn.symbol.toLowerCase() ===
-                                                                        poolToken.token.symbol.toLowerCase()
-                                                                )?.logo
-                                                            }
-                                                            alt={
-                                                                poolToken.token
-                                                                    .symbol
-                                                            }
-                                                            className="rounded-full size-3"
-                                                        />
-                                                        <p className="text-dagger4 text-sm">
-                                                            {
-                                                                poolToken.token
-                                                                    .symbol
-                                                            }
-                                                        </p>
-                                                        {i + 1 ===
-                                                        pool?.poolTokens?.items
-                                                            ?.length ? (
-                                                            <></>
-                                                        ) : (
-                                                            <p className="text-dagger3">
-                                                                +
-                                                            </p>
-                                                        )}
-                                                    </>
-                                                )
-                                            }
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex flex-col">
-                                        <p className="text-lg font-bold">
-                                            Remove Liquidity
-                                        </p>
-                                        <p className="text-dagger3 text-xs">
-                                            Decrease your position by removing
-                                            liquidity from the pool.
-                                        </p>
-                                    </div>
-                                    <div className="flex flex-row justify-between items-center">
-                                        <p className="text-xl">{range}%</p>
-                                        <div className="flex flex-row gap-2">
-                                            <button
-                                                onClick={() => setRange(25)}
-                                            >
-                                                25%
-                                            </button>
-                                            <button
-                                                onClick={() => setRange(50)}
-                                            >
-                                                50%
-                                            </button>
-                                            <button
-                                                onClick={() => setRange(75)}
-                                            >
-                                                75%
-                                            </button>
-                                            <button
-                                                onClick={() => setRange(100)}
-                                            >
-                                                MAX
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input
-                                        ref={ref}
-                                        type="range"
-                                        className="col-span-2 appearance-none bg-dagger2 rounded-full cursor-pointer h-1 w-full"
-                                        step={1}
-                                        min={0}
-                                        max={100}
-                                        onChange={(e) =>
-                                            setRange(
-                                                parseInt(e.target.value, 10)
-                                            )
-                                        }
-                                        value={range}
-                                    />
-                                    <div className="flex flex-row gap-1 items-center justify-end">
-                                        {pool.poolTokens.items.map(
-                                            (poolToken, i) => {
-                                                return (
-                                                    <>
-                                                        <p className="text-dagger4 text-xs">
-                                                            {allocAmounts[
-                                                                i
-                                                            ].toLocaleString(
-                                                                undefined
-                                                            )}
-                                                        </p>
-                                                        <img
-                                                            src={
-                                                                tokens[
-                                                                    chainId
-                                                                ].find(
-                                                                    (tkn) =>
-                                                                        tkn.symbol.toLowerCase() ===
-                                                                        poolToken.token.symbol.toLowerCase()
-                                                                )?.logo
-                                                            }
-                                                            alt={
-                                                                poolToken.token
-                                                                    .symbol
-                                                            }
-                                                            className="rounded-full size-3"
-                                                        />
-                                                        <p className="text-dagger4 text-sm">
-                                                            {
-                                                                poolToken.token
-                                                                    .symbol
-                                                            }
-                                                        </p>
-                                                        {i + 1 ===
-                                                        pool?.poolTokens?.items
-                                                            ?.length ? (
-                                                            <></>
-                                                        ) : (
-                                                            <p className="text-dagger3">
-                                                                +
-                                                            </p>
-                                                        )}
-                                                    </>
-                                                )
-                                            }
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                            {/**
-                             * <button
-                                onClick={async () => {
-                                    if (address === undefined) {
-                                        connect({ connector: connectors[0] })
-                                    } else {
-                                        if (isAddLiquidity) {
-                                            const dt = await allocateGivenX(
-                                                pool.id,
-                                                parseEther(amounts[0]) // amounts[0] is numeraire 
-                                            ) 
-                                            // approval flow starts here
-                                            // before allocate, must show user required balances using dt array
-                                            setAllocAmounts(dt) // not implemented until we have lib logic
-                                            await allocate(
-                                                pool.id,
-                                                dt[0],
-                                                dt[1],
-                                                dt[2]
-                                            )
-                                        } else {
-                                            const x =
-                                                (userPosition.liquidity /
-                                                    pool.liquidity) *
-                                                pool.reserves[0]
-                                            const dt = await deallocateGivenX( // dealloc can be simplified
-                                                pool.id,
-                                                parseEther(
-                                                    (
-                                                        (x * range) /
-                                                        100
-                                                    ).toString()
-                                                )
-                                            )
-                                            await deallocate(
-                                                pool?.id,
-                                                dt[0],
-                                                dt[1],
-                                                dt[2]
-                                            )
-                                        }
-                                    }
-                                }}
-                            >
-                                {address === undefined
-                                    ? 'Connect Wallet'
-                                    : 'Confirm'}
-                            </button>
-                             * 
-                             */}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col gap-8">
-                    <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
-                        <div className="grid gap-4 grid-cols-2">
-                            <div className="flex flex-col col-span-2">
-                                <p className="text-lg font-bold">
-                                    Pool Details
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">Strategy</p>
-                                <p className="font-bold">{pool.name}</p>
-                            </div>
-                            <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">Fee Rate</p>
-                                <p className="font-bold">
-                                    {parameters.swapFee}%
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <p className="text-xs text-dagger3">
-                                    Controller
-                                </p>
-                                <a
-                                    href="#"
-                                    className="flex flex-row gap-1 font-bold"
-                                >
-                                    {shortAddress(
-                                        parameters.controller as `0x${string}`
-                                    )}{' '}
-                                    <LinkIcon />
-                                </a>
-                            </div>
-                            <div className="flex flex-col">
-                                {pool?.strategy?.name !== 'ConstantSum' ? (
-                                    parameters.lastComputedWeights.map(
-                                        (weight: number, i: number) => {
-                                            return (
-                                                <div
-                                                    key={i}
-                                                    className="flex flex-col"
-                                                >
-                                                    <p className="text-xs text-dagger3">
-                                                        Weight #{i}
-                                                    </p>
-                                                    <p className="font-bold">
-                                                        {(weight / 1e18) * 100}%
-                                                    </p>
-                                                </div>
-                                            )
-                                        }
-                                    )
-                                ) : (
-                                    <>
-                                        {parameters.lastComputedPrice}{' '}
-                                        {pool.poolTokens.items[0].token.symbol}
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                        <br />
-                        <div className="flex flex-col gap-4">
-                            <div className="flex flex-col col-span-2">
-                                <p className="text-lg font-bold">
-                                    Pool Reserves
-                                </p>
-                            </div>
-                            <hr />
-                            {pool.poolTokens.items.map((poolToken, i) => {
-                                return (
-                                    <div
-                                        key={i}
-                                        className="flex flex-col justify-between"
-                                    >
-                                        <div className="flex flex-row w-full gap-1 items-center">
-                                            <img
-                                                src={
-                                                    tokens[chainId].find(
-                                                        (tkn) =>
-                                                            tkn.symbol.toLowerCase() ===
-                                                            poolToken.token.symbol.toLowerCase()
-                                                    )?.logo
-                                                }
-                                                alt={poolToken.token.symbol}
-                                                className="rounded-full size-4"
-                                            />
-                                            <p className="text-xs text-dagger3">
-                                                {poolToken.token.symbol}
-                                            </p>
-                                        </div>
-                                        <div className="font-bold w-full flex-row justify-between">
-                                            <>
-                                                {pool.reserves[i]}
-                                                {
-                                                    pool?.poolTokens?.items[i]
-                                                        .token.symbol
-                                                }{' '}
-                                            </>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-
-                    <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-4 self-start w-full">
-                        <div className="flex flex-col gap-4">
-                            <div className="flex flex-col">
-                                <p className="text-lg font-bold">Strategy</p>
-                                <p className="text-dagger3 text-xs">
-                                    {pool.name}
-                                </p>
-                            </div>
-                            <p className="text-sm text-dagger3">
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit. Nulla nec dui eget urna aliquet
-                                aliquam.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="my-8">
-                <p className="text-lg font-bold mb-2">Recent Transactions</p>
-                <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
-                    <TransactionTable poolId={poolId} poolTokens={pool?.poolTokens?.items} />
-                </div>
-            </div>
+            <PoolInfo pool={pool} />
+            <TokenBreakdown pool={pool} />
+            <PoolBreakdown pool={pool} />
+            <RecentTransactions pool={pool} />
         </div>
     )
 }
