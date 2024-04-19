@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import Root from './components/Root'
 import Home from './pages/home'
+import Trade from './pages/trade'
 import CreatePool from './pages/create-pool'
 import Pool from './pages/pool'
 import Faucet from './pages/faucet'
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
             {
                 path: '/',
                 element: <Home />,
+            },
+            {
+                path: '/trade/:underlying/:timestamp/:id',
+                element: <Trade />,
             },
             {
                 path: '/create-pool',

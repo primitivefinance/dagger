@@ -18,6 +18,16 @@ function Root() {
                     </li>
                     <li>
                         <Button variant="link" asChild>
+                            <Link
+                                to="/trade/ezETH/2024-05-01/10"
+                                className="text-sm text-dagger4"
+                            >
+                                Trade
+                            </Link>
+                        </Button>
+                    </li>
+                    <li>
+                        <Button variant="link" asChild>
                             <Link to="/" className="text-sm text-dagger4">
                                 Pools
                             </Link>
