@@ -937,9 +937,7 @@ function UserPositions({
                         <p className="text-muted-foreground dark:text-muted-foreground text-sm">
                             {selectedTokens?.[0] ? (
                                 <>
-                                    Start a withdraw transaction for{' '}
-                                    <strong>{selectedTokens.length}</strong>{' '}
-                                    selected positions.
+                                    Start a withdraw transaction for a position.
                                 </>
                             ) : (
                                 'Select positions to close.'
