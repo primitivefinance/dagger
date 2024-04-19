@@ -78,6 +78,7 @@ import { PoolTypes, getPoolType } from '@/utils/pools'
 import { DEFAULT_TOKEN_LOGO_SRC } from '@/utils/tokens'
 import { prepareAllocate } from '@/utils/allocate'
 import TransactionTable from '@/components/TransactionTable'
+import { prepareDeallocate } from '@/utils/deallocate'
 
 const LinkIcon = () => (
     <svg
@@ -830,131 +831,288 @@ function UserPositions({
         },
     })
 
+    const { data: totalSupply } = useReadContract({
+        address: pool.lpToken,
+        abi: erc20Abi,
+        functionName: 'totalSupply',
+    })
+
     const noExistingPositions = userPositions?.length === 0
+
+    const dependentAmounts = pool.poolTokens.items.map(
+        (_: PoolTokenItemFragment) => {
+            return 0
+        }
+    )
+    const { txReceipt, txHash, setTxHash: setTx } = useTransactionStatus({})
+    const [amount, setAmount] = useState<string>('')
+
+    const [successfulReceipts, setSuccessfulReceipts] = useState<
+        TransactionReceipt[]
+    >([])
+    const [isUSD, setIsUSD] = useState<boolean>(false)
+    const [selectedTokens, setSelectedTokens] = useState<`0x${string}`[]>(
+        pool?.poolTokens?.items?.map(
+            (pt: PoolTokenItemFragment) => pt.token.id as `0x${string}`
+        ) ?? []
+    )
+    const selectedTokenSymbols = selectedTokens
+        ?.map(
+            (t) =>
+                pool.poolTokens.items.filter(
+                    (pt: PoolTokenItemFragment) =>
+                        getAddress(pt.token.id) === getAddress(t)
+                )[0]?.token.symbol
+        )
+        .join(', ')
+
+    const {
+        deltas: dependentAmountsWithdraw,
+        liquidity: deltaLiquidityWithdraw,
+        payload: deallocatePayload,
+    } = +amount > 0
+        ? prepareDeallocate(amount, pool.reserves.map(toWad), totalSupply ?? 0n)
+        : {
+              deltas: [],
+              liquidity: 0,
+              payload: '',
+          }
 
     return (
         <section id="user-positions">
             <div className="flex flex-row w-full gap-lg">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>
-                                <h5 className="text-primary">Your Position</h5>
-                            </TableHead>
-                        </TableRow>
-                        <TableRow>
-                            <TableHead>Token</TableHead>
-                            <TableHead>Holdings</TableHead>
-                            <TableHead>Value</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {noExistingPositions && (
+                <div className="w-2/3">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <p className="dark:text-muted-foreground m-auto p-2 text-sm">
-                                    No positions
-                                </p>
+                                <TableHead>
+                                    <h5 className="text-primary">
+                                        Your Position
+                                    </h5>
+                                </TableHead>
                             </TableRow>
-                        )}
-                        {positions &&
-                            positions?.positions?.items
-                                ?.filter(
-                                    (position: Position) =>
-                                        getAddress(position?.accountId) ===
-                                        getAddress(address as string)
-                                )
-                                ?.map((position: Position) => {
-                                    return (
-                                        <TableRow key={position.id}>
-                                            <TableCell>{pool?.name}</TableCell>
-                                            <TableCell>
-                                                {formatWad(
-                                                    position.liquidityWad
-                                                )}
-                                            </TableCell>
-                                            <TableCell>todo</TableCell>
-                                        </TableRow>
+                            <TableRow>
+                                <TableHead>Token</TableHead>
+                                <TableHead>Holdings</TableHead>
+                                <TableHead>Value</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {noExistingPositions && (
+                                <TableRow>
+                                    <p className="dark:text-muted-foreground m-auto p-2 text-sm">
+                                        No positions
+                                    </p>
+                                </TableRow>
+                            )}
+                            {positions &&
+                                positions?.positions?.items
+                                    ?.filter(
+                                        (position: Position) =>
+                                            getAddress(position?.accountId) ===
+                                            getAddress(address as string)
                                     )
-                                })}
-                    </TableBody>
-                </Table>
-                <div className="flex flex-col gap-md">
-                    <h5>Withdraw</h5>
-                    <form
-                        className="flex flex-col gap-lg"
-                        onSubmit={(e) => {
-                            e.preventDefault()
-                            // deallocate
-                        }}
-                    >
-                        <div className="flex flex-row gap-md">
-                            <label className="flex items-center gap-xs">
-                                <input
-                                    type="radio"
-                                    name="withdrawRange"
-                                    value="25"
-                                    onChange={() => setRange(25)}
-                                    checked={range === 25}
-                                    className="form-radio"
-                                />
-                                <span className="ml-2">25%</span>
-                            </label>
-                            <label className="flex items-center gap-xs">
-                                <input
-                                    type="radio"
-                                    name="withdrawRange"
-                                    value="50"
-                                    onChange={() => setRange(50)}
-                                    checked={range === 50}
-                                    className="form-radio"
-                                />
-                                <span className="ml-2">50%</span>
-                            </label>
-                            <label className="flex items-center gap-xs">
-                                <input
-                                    type="radio"
-                                    name="withdrawRange"
-                                    value="100"
-                                    onChange={() => setRange(100)}
-                                    checked={range === 100}
-                                    className="form-radio"
-                                />
-                                <span className="ml-2">All</span>
-                            </label>
-                            <label className="flex items-center gap-xs">
-                                <input
-                                    type="radio"
-                                    name="withdrawRange"
-                                    value="custom"
-                                    onChange={() => {}}
-                                    checked={
-                                        range !== 25 &&
-                                        range !== 50 &&
-                                        range !== 100
-                                    }
-                                    className="form-radio"
-                                />
+                                    ?.map((position: Position) => {
+                                        return (
+                                            <TableRow key={position.id}>
+                                                <TableCell>
+                                                    {pool?.name}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {formatWad(
+                                                        position.liquidityWad
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>todo</TableCell>
+                                            </TableRow>
+                                        )
+                                    })}
+                        </TableBody>
+                    </Table>
+                </div>
+
+                <div className="flex flex-col w-1/3 gap-md items-start bg-gray-900 shadow-lg p-4 rounded-lg mb-auto">
+                    <div className="flex flex-col gap-sm">
+                        <p>Review</p>
+                        <p className="text-muted-foreground dark:text-muted-foreground text-sm">
+                            {selectedTokens?.[0] ? (
+                                <>
+                                    Start a withdraw transaction for a position.
+                                </>
+                            ) : (
+                                'Select positions to close.'
+                            )}
+                        </p>
+                    </div>
+                    <TransactionDrawer
+                        transactionTokens={pool.poolTokens.items}
+                        deltas={dependentAmountsWithdraw}
+                        openButton={<>Withdraw {selectedTokenSymbols}</>}
+                        txTitle={
+                            <>
+                                Withdraw {selectedTokenSymbols} from {pool.name}
+                            </>
+                        }
+                        txDescription={
+                            <>
+                                Withdraw tokens from a pool by redeeming
+                                liquidity tokens.
+                            </>
+                        }
+                        txForm={
+                            <>
+                                <p>Amount LPT to Redeem</p>
+                                <div className="flex flex-row gap-sm items-center">
+                                    <Label
+                                        htmlFor="currency-mode"
+                                        className={`${!isUSD ? '' : 'dark:text-muted-foreground'}`}
+                                    >
+                                        {pool?.name || 'Asset'}
+                                    </Label>
+                                    <Switch
+                                        id="currency-mode"
+                                        checked={isUSD}
+                                        onCheckedChange={() => setIsUSD(!isUSD)}
+                                    />
+                                    <Label
+                                        htmlFor="currency-mode"
+                                        className={`${isUSD ? '' : 'dark:text-muted-foreground'}`}
+                                    >
+                                        USD
+                                    </Label>
+                                </div>
 
                                 <Input
-                                    value={range.toString()}
-                                    onChange={(e) =>
-                                        setRange(parseInt(e.target.value))
-                                    }
-                                    placeholder="0.00"
+                                    value={amount}
+                                    onChange={(e) => setAmount(e.target.value)}
+                                    placeholder="0.0"
+                                    disabled={false} // todo
+                                    className="py-8 px-4 text-4xl"
                                 />
-                            </label>
-                        </div>
-                        <button
-                            type="submit"
-                            className="bg-blue-600 rounded px-4 py-2 disabled:opacity-50 hover:bg-blue-700 disabled:hover:bg-blue-600"
-                            onClick={() => {
-                                // deallocate
-                            }}
-                            disabled={noExistingPositions}
-                        >
-                            Withdraw
-                        </button>
-                    </form>
+
+                                <form
+                                    className="flex flex-col gap-lg"
+                                    onSubmit={(e) => {
+                                        e.preventDefault()
+                                        // deallocate
+                                    }}
+                                >
+                                    <div className="flex flex-row gap-md">
+                                        <label className="flex items-center gap-xs">
+                                            <input
+                                                type="radio"
+                                                name="withdrawRange"
+                                                value="25"
+                                                onChange={() => setRange(25)}
+                                                checked={range === 25}
+                                                className="form-radio"
+                                                disabled
+                                            />
+                                            <span className="ml-2">25%</span>
+                                        </label>
+                                        <label className="flex items-center gap-xs">
+                                            <input
+                                                type="radio"
+                                                name="withdrawRange"
+                                                value="50"
+                                                onChange={() => setRange(50)}
+                                                checked={range === 50}
+                                                className="form-radio"
+                                                disabled
+                                            />
+                                            <span className="ml-2">50%</span>
+                                        </label>
+                                        <label className="flex items-center gap-xs">
+                                            <input
+                                                type="radio"
+                                                name="withdrawRange"
+                                                value="100"
+                                                onChange={() => setRange(100)}
+                                                checked={range === 100}
+                                                className="form-radio"
+                                                disabled
+                                            />
+                                            <span className="ml-2">All</span>
+                                        </label>
+                                        <label className="flex items-center gap-xs">
+                                            <input
+                                                type="radio"
+                                                name="withdrawRange"
+                                                value="custom"
+                                                onChange={() => {}}
+                                                checked={
+                                                    range !== 25 &&
+                                                    range !== 50 &&
+                                                    range !== 100
+                                                }
+                                                className="form-radio"
+                                                disabled
+                                            />
+
+                                            <Input
+                                                value={range.toString()}
+                                                onChange={(e) =>
+                                                    setRange(
+                                                        parseInt(e.target.value)
+                                                    )
+                                                }
+                                                placeholder="0.00"
+                                                disabled
+                                            />
+                                        </label>
+                                    </div>
+                                </form>
+                            </>
+                        }
+                        txSubmit={
+                            <>
+                                <TransactionButton
+                                    key={dfmmAddress}
+                                    contractName="dfmm"
+                                    from={address}
+                                    to={dfmmAddress}
+                                    args={[pool.id, deallocatePayload]}
+                                    setTxHash={setTx}
+                                    txHash={txHash as `0x${string}`}
+                                    txReceipt={txReceipt}
+                                    functionName="deallocate"
+                                    stateOverride={pool?.poolTokens?.items
+                                        ?.map(
+                                            (pt: PoolTokenItemFragment) =>
+                                                pt.token.id
+                                        )
+                                        ?.map((token: `0x${string}`) => {
+                                            return {
+                                                address: token,
+                                                stateDiff: [
+                                                    overrideAllowanceDFMM(
+                                                        address as `0x${string}`
+                                                    ),
+                                                ],
+                                            }
+                                        })}
+                                />
+
+                                {successfulReceipts.length > 0 && (
+                                    <SuccessfulTransactions
+                                        receipts={successfulReceipts}
+                                    />
+                                )}
+                            </>
+                        }
+                        externalEtherscanLinks={[
+                            {
+                                name: 'LPT',
+                                label: pool.name,
+                                address: pool.lpToken,
+                            },
+                            {
+                                name: 'Protocol',
+                                label: 'DFMM v0.2.0',
+                                address: dfmmAddress as `0x${string}`,
+                            },
+                        ]}
+                    />
                 </div>
             </div>
         </section>
