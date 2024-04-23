@@ -13,6 +13,7 @@ import Faucet from './pages/faucet'
 import Dashboard from './pages/dashboard'
 import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from './components/ui/toaster'
+import Curator from './pages/curator'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
             {
                 path: '/dashboard',
                 element: <Dashboard />,
+            },
+            {
+                path: '/curator/:id',
+                element: <Curator />,
             },
         ],
     },
