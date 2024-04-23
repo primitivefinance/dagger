@@ -21,7 +21,7 @@ function Dashboard() {
     const chainId = useChainId()
     if (!data?.positions?.items[0]?.pool?.poolTokens || !chainId) return <></>
     return (
-        <div className="container mx-auto max-w-4xl gap-2 flex flex-col my-12">
+        <div className=" gap-2 flex flex-col">
             <div className="flex flex-row items-center w-full justify-between">
                 <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
                     All Positions ({data.positions.items.length})

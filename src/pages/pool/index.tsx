@@ -1246,7 +1246,7 @@ function Pool(): JSX.Element {
 
     if (!pool?.poolTokens?.items || !parameters) return <></>
     return (
-        <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-2xl">
+        <div className="flex flex-col gap-2xl">
             <Overview pool={pool} />
 
             {isUserConnected && <AddLiquidity pool={pool} />}

@@ -133,67 +133,59 @@ function Home(): JSX.Element {
     const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 })
 
     return (
-        <>
-            <div className="w-full pt-16 pb-6">
-                <div className="container mx-auto max-w-4xl">
-                    <div className="gap-sm flex flex-col">
-                        <h2 className="scroll-m-20 ">{title}</h2>
-                        <h4 className="scroll-m-20 text-muted-foreground">
-                            {subtitle}
-                        </h4>
-                    </div>
-                    <Separator className="my-4" />
+        <div className="flex flex-col gap-2xl">
+            <div className="gap-sm flex flex-col">
+                <h2 className="scroll-m-20 ">{title}</h2>
+                <h4 className="scroll-m-20 text-muted-foreground">
+                    {subtitle}
+                </h4>
+            </div>
+            <div className="flex flex-col gap-md">
+                <div className="flex flex-row items-center w-full justify-between">
+                    <h4 className="scroll-m-20">
+                        Highlighted Pools ({data?.pools?.items?.length ?? 0})
+                    </h4>
+                    <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <Button variant="tx" disabled>
+                                    <div className="flex flex-row items-center gap-1">
+                                        <svg
+                                            className="w-4 h-3"
+                                            aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke="currentColor"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="1.5"
+                                                d="M5 12h14m-7 7V5"
+                                            />
+                                        </svg>
+                                        Create pool
+                                    </div>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Coming soon</TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
+                <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
+                    <PoolsTable />
                 </div>
             </div>
-            <div className="container mx-auto max-w-4xl gap-2xl flex flex-col">
-                <div className="flex flex-col gap-md">
-                    <div className="flex flex-row items-center w-full justify-between">
-                        <h4 className="scroll-m-20">
-                            Highlighted Pools ({data?.pools?.items?.length ?? 0}
-                            )
-                        </h4>
-                        <TooltipProvider delayDuration={200}>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Button variant="tx" disabled>
-                                        <div className="flex flex-row items-center gap-1">
-                                            <svg
-                                                className="w-4 h-3"
-                                                aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke="currentColor"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="1.5"
-                                                    d="M5 12h14m-7 7V5"
-                                                />
-                                            </svg>
-                                            Create pool
-                                        </div>
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Coming soon</TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
-                    <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
-                        <PoolsTable />
-                    </div>
-                </div>
-                <div className="flex flex-col gap-md">
-                    <h4 className="scroll-m-20 ">Highlighted Curators</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                        {Object.keys(curators).map((key) => (
-                            <CuratorCard key={key} curator={curators?.[key]} />
-                        ))}
-                    </div>
+            <div className="flex flex-col gap-md">
+                <h4 className="scroll-m-20 ">Highlighted Curators</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
+                    {Object.keys(curators).map((key) => (
+                        <CuratorCard key={key} curator={curators?.[key]} />
+                    ))}
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

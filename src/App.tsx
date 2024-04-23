@@ -51,6 +51,10 @@ const router = createBrowserRouter([
                 element: <Dashboard />,
             },
             {
+                path: '/curator/',
+                element: <Curator />,
+            },
+            {
                 path: '/curator/:id',
                 element: <Curator />,
             },
@@ -60,7 +64,7 @@ const router = createBrowserRouter([
 
 const queryClient = new QueryClient()
 
-function App() {
+function App(): JSX.Element {
     useEffect(() => {
         document.onkeyup = (e) => {
             if (e.code === 'Space') {
