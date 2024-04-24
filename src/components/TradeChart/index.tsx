@@ -8,10 +8,16 @@ export type priceData = {
     value: number
 }[]
 
-const mockData: priceData = [
+const longMockData: priceData = [
     { time: `2024-04-19`, value: 0.03 },
     { time: '2024-04-20', value: 0.05 },
     { time: '2024-04-21', value: 0.02 },
+]
+
+const shortMockData: priceData = [
+    { time: `2024-04-19`, value: 0.97 },
+    { time: '2024-04-20', value: 0.95 },
+    { time: '2024-04-21', value: 0.98 },
 ]
 
 export type TradeChartProps = {
@@ -33,10 +39,19 @@ const TradeChart: FC<TradeChartProps> = ({
 }) => {
     const chartContainerRef = useRef()
 
-    const pricePath: priceData = [
-        { time: mockData[0].time, value: initialRate -1 },
+    const longPricePath: priceData = [
+        { time: longMockData[0].time, value: initialRate - 1 },
         { time: expiry, value: 0 },
     ]
+
+    const shortPricePath: priceData = [
+        { time: shortMockData[0].time, value: 1 / initialRate },
+        { time: expiry, value: 1 },
+    ]
+
+    useEffect(() => {
+        console.log(isLong ? 'Long - Buy YT' : 'Short - Buy PT')
+    }, [isLong])
 
     useEffect(() => {
         const chart = createChart(chartContainerRef.current, {
@@ -52,12 +67,12 @@ const TradeChart: FC<TradeChartProps> = ({
         }
 
         chart.timeScale().fitContent()
-        const guidelineSeries = chart.addLineSeries({color: 'red'})
+        const guidelineSeries = chart.addLineSeries({ color: 'red' })
         const dataSeries = chart.addLineSeries({
             color: '#2962FF',
         })
-        guidelineSeries.setData(pricePath)
-        dataSeries.setData(mockData)
+        guidelineSeries.setData(isLong ? longPricePath : shortPricePath)
+        dataSeries.setData(isLong ? longMockData : shortMockData)
 
         window.addEventListener('resize', handleResize)
 
@@ -65,7 +80,7 @@ const TradeChart: FC<TradeChartProps> = ({
             window.removeEventListener('resize', handleResize)
             chart.remove()
         }
-    }, [mockData])
+    }, [isLong])
 
     return <div ref={chartContainerRef} />
 }

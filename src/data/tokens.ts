@@ -19,6 +19,36 @@ export const eth: ListedToken = {
     logo: 'https://assets.coingecko.com/coins/images/279/standard/ethereum.png?1696501628',
 }
 
+// MOCKED
+export const yieldTokens: TokenList = {
+    [11155420]: [
+        {
+            address: '0x91eC29AB1efedb051253A3283E7e3b3B517A079f',
+            name: 'SY wstETH',
+            symbol: 'SY-wstETH',
+            decimals: 18,
+            logo: 'https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295',
+            faucet: 10,
+        },
+        {
+            address: '0x91eC29AB1efedb051253A3283E7e3b3B517A079f',
+            name: 'Y-2025-05-01 wstETH',
+            symbol: 'Y250501-wstETH',
+            decimals: 18,
+            logo: 'https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295',
+            faucet: 10,
+        },
+        {
+            address: '0x91eC29AB1efedb051253A3283E7e3b3B517A079f',
+            name: 'P-2025-05-01 wstETH',
+            symbol: 'P250501-wstETH',
+            decimals: 18,
+            logo: 'https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295',
+            faucet: 10,
+        },
+    ],
+}
+
 export const tokens: TokenList = {
     [11155420]: [
         {
