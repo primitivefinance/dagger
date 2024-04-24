@@ -67,8 +67,12 @@ const TradeChart: FC<TradeChartProps> = ({
         }
 
         chart.timeScale().fitContent()
-        const guidelineSeries = chart.addLineSeries({ color: 'red' })
+        const guidelineSeries = chart.addAreaSeries({
+            lineColor: 'black',
+            topColor: '#2962FF',
+        })
         const dataSeries = chart.addLineSeries({
+            crosshairMarkerVisible: true,
             color: '#2962FF',
         })
         guidelineSeries.setData(isLong ? longPricePath : shortPricePath)
