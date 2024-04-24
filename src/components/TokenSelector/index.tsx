@@ -47,7 +47,7 @@ function TokenSelector(props: TokenSelectorProps) {
                     />
                 </div>
                 <div className="flex flex-row gap-4 items-center flex-wrap">
-                    {tokens[chainId].map((token) => (
+                    {tokens[chainId]?.map((token) => (
                         <div
                             key={token.address}
                             className={

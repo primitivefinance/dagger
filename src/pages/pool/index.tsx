@@ -115,7 +115,7 @@ export function TokenBadge({
     const chainId = useChainId()
     const token =
         typeof address !== 'undefined'
-            ? tokens?.[chainId].find(
+            ? tokens?.[chainId]?.find(
                   (t) => getAddress(t.address) === getAddress(address)
               )
             : undefined
@@ -456,7 +456,7 @@ function TransactionView({
 
     const chainId = useChainId()
 
-    const wethToken = tokens?.[chainId].find((t) => t.symbol === 'WETH')
+    const wethToken = tokens?.[chainId]?.find((t) => t.symbol === 'WETH')
 
     const wethIndex = pool?.poolTokens?.items?.findIndex(
         (pt: PoolTokenItemFragment) =>
@@ -694,7 +694,7 @@ function EligibleTokensTable({
 
                         const isDisabled = !token || !balance || balance <= 0n
                         const tokenLogo =
-                            tokens?.[chainId].find(
+                            tokens?.[chainId]?.find(
                                 (t) =>
                                     getAddress(t.address) === getAddress(token)
                             )?.logo ?? DEFAULT_TOKEN_LOGO_SRC

@@ -1,9 +1,13 @@
 import { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { http, createConfig, WagmiProvider } from 'wagmi'
-import { optimismSepolia } from 'wagmi/chains'
-import { injected, walletConnect } from 'wagmi/connectors'
+import { http, WagmiProvider } from 'wagmi'
+import { optimismSepolia, mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+    RainbowKitProvider,
+    darkTheme,
+    getDefaultConfig,
+} from '@rainbow-me/rainbowkit'
 
 import Root from './components/Root'
 import Home from './pages/home'
@@ -17,11 +21,13 @@ import Curator from './pages/curator'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
-export const config = createConfig({
-    chains: [optimismSepolia],
-    connectors: [injected(), walletConnect({ projectId })],
+export const config = getDefaultConfig({
+    appName: 'Primitive',
+    chains: [mainnet, optimismSepolia],
+    projectId,
     transports: {
         [optimismSepolia.id]: http(),
+        [mainnet.id]: http(),
     },
 })
 
@@ -78,10 +84,21 @@ function App(): JSX.Element {
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
-                <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                    <RouterProvider router={router} />
-                    <Toaster />
-                </ThemeProvider>
+                <RainbowKitProvider
+                    theme={darkTheme({
+                        accentColor: '#0E4CF7',
+                        borderRadius: 'small',
+                    })}
+                    initialChain={optimismSepolia}
+                >
+                    <ThemeProvider
+                        defaultTheme="dark"
+                        storageKey="vite-ui-theme"
+                    >
+                        <RouterProvider router={router} />
+                        <Toaster />
+                    </ThemeProvider>
+                </RainbowKitProvider>
             </QueryClientProvider>
         </WagmiProvider>
     )

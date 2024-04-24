@@ -188,7 +188,7 @@ const TransactionTable: FC<TransactionTableProps> = ({
                         })}
                 </TableBody>
             </Table>
-            <div className="flex w-full items-center justify-end gap-xl p-2">
+            <div className="flex w-full items-center justify-end gap-xl">
                 <div className="flex flex-row gap-md items-center">
                     <Button
                         disabled={page === 5 ? true : false}

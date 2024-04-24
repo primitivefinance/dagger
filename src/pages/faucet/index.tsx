@@ -29,7 +29,7 @@ function Faucet(): JSX.Element {
                 </Button>
             </div>
             <div className="flex flex-row flex-wrap gap-lg justify-center max-w-sm m-auto py-8">
-                {tokens[chainId].map((token) => (
+                {tokens[chainId]?.map((token) => (
                     <Button
                         variant="secondary"
                         key={token.address}

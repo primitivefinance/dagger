@@ -59,7 +59,7 @@ const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
         <img
             key={tokenData.token.id}
             src={
-                tokens[chainId].find(
+                tokens?.[chainId]?.find(
                     (tkn) =>
                         tkn.symbol.toLowerCase() ===
                         tokenData.token.symbol.toLowerCase()

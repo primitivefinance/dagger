@@ -25,7 +25,7 @@ function TokenLogo({
     custom,
     ...props
 }: TokenLogoProps): JSX.Element {
-    const token = tokens[chainId].find(
+    const token = tokens[chainId]?.find(
         (tkn) => address && getAddress(tkn.address) === getAddress(address)
     )
 

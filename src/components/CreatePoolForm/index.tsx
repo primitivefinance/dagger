@@ -395,11 +395,11 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                                 }}
                             />
                             <p>
-                                {tokens[chainId].find(
+                                {tokens[chainId]?.find(
                                     (tkn) => tkn.address === poolTokens[0]
                                 )?.symbol || ''}{' '}
                                 /{' '}
-                                {tokens[chainId].find(
+                                {tokens[chainId]?.find(
                                     (tkn) => tkn.address === poolTokens[1]
                                 )?.symbol || ''}
                             </p>
@@ -434,14 +434,14 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                                         <TableCell>
                                             <TokenSelector
                                                 tokenLogo={
-                                                    tokens[chainId].find(
+                                                    tokens[chainId]?.find(
                                                         (tkn) =>
                                                             tkn.address ===
                                                             token
                                                     )?.logo || ''
                                                 }
                                                 tokenSymbol={
-                                                    tokens[chainId].find(
+                                                    tokens[chainId]?.find(
                                                         (tkn) =>
                                                             tkn.address ===
                                                             token
@@ -461,13 +461,13 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                                     <TableCell>
                                         <TokenSelector
                                             tokenLogo={
-                                                tokens[chainId].find(
+                                                tokens[chainId]?.find(
                                                     (tkn) =>
                                                         tkn.address === token
                                                 )?.logo || ''
                                             }
                                             tokenSymbol={
-                                                tokens[chainId].find(
+                                                tokens[chainId]?.find(
                                                     (tkn) =>
                                                         tkn.address === token
                                                 )?.symbol || ''
@@ -497,7 +497,7 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                                         <span>
                                             {'Balance: ' + balances[i]}{' '}
                                             {
-                                                tokens[chainId].find(
+                                                tokens[chainId]?.find(
                                                     (tkn) =>
                                                         tkn.address === token
                                                 )?.symbol
@@ -562,7 +562,7 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
                                 <TableCell>
-                                    {tokens[chainId].find(
+                                    {tokens[chainId]?.find(
                                         (tkn) =>
                                             !poolTokens.includes(tkn.address)
                                     )?.address === undefined ? (
@@ -571,7 +571,7 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({
                                         <Button
                                             onClick={() =>
                                                 addToken(
-                                                    tokens[chainId].find(
+                                                    tokens[chainId]?.find(
                                                         (tkn) =>
                                                             !poolTokens.includes(
                                                                 tkn.address

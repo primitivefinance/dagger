@@ -113,7 +113,7 @@ function TransactionDrawer({
                                             )
                                         )
                                         const logo =
-                                            tokens[chainId].find(
+                                            tokens[chainId]?.find(
                                                 (tkn) =>
                                                     tkn.symbol.toLowerCase() ===
                                                     pt.token.symbol.toLowerCase()

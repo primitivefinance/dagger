@@ -9,7 +9,7 @@ function Curator(): JSX.Element {
         <div className="flex flex-col gap-2xl items-center justify-center min-h-screen mt-[-64px]">
             <div className="flex flex-col gap-md items-center justify-center">
                 Curator page coming soon.
-                <Button variant="default" onClick={() => navigate(-1)}>
+                <Button variant="outline" onClick={() => navigate(-1)}>
                     Go back
                 </Button>
             </div>

@@ -4,6 +4,7 @@ import Links from './links.json'
 import { Button } from '../ui/button'
 import React from 'react'
 import Container from '../Container'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 const externalApplicationDisclaimer =
     'Disclaimer: Primitive applications are currently in beta, use at your own discretion. External applications are not affiliated with Primitive.'
@@ -80,7 +81,7 @@ function Root(): JSX.Element {
                                 </Link>
                             </li>
                             <li
-                                className={`${loc.pathname === '/' ? 'underline' : 'no-underline'}`}
+                                className={`${loc.pathname === '/' || loc.pathname.startsWith('/pool/') ? 'underline' : 'no-underline'}`}
                             >
                                 <Button variant="link" asChild>
                                     <Link to="/">Pools</Link>
@@ -102,17 +103,7 @@ function Root(): JSX.Element {
                             </li>
                         </ul>
                         <div className="w-full flex-row flex gap-4 items-center justify-end">
-                            <Button variant="secondary">
-                                <div className="flex flex-row gap-1 items-center">
-                                    <img
-                                        src="https://info.uniswap.org/static/media/optimism.34412af263c903b58c43a243c4a21d56.svg"
-                                        alt="OP"
-                                        className="rounded-full size-4"
-                                    />
-                                    <span className="text-sm">Optimism</span>
-                                </div>
-                            </Button>
-                            <WalletConnector />
+                            <ConnectButton />
                         </div>
                     </div>
                 </Container>
