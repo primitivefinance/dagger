@@ -721,20 +721,22 @@ function EligibleTokensTable({
                                 <TableCell>
                                     <input
                                         type="checkbox"
-                                        onChange={() =>
-                                            selectToken((prev) =>
+                                        onChange={() => {
+                                            // todo: uncomment with single sided deposit
+                                            /* selectToken((prev) =>
                                                 prev.includes(token)
                                                     ? prev.filter(
                                                           (t) => t !== token
                                                       )
                                                     : [...prev, token]
-                                            )
+                                            ) */}
                                         }
                                         checked={
                                             selectedTokens.includes(token) &&
                                             !isDisabled
                                         }
-                                        disabled={isDisabled}
+                                        // todo: fix when single sided deposits are available
+                                        disabled={isDisabled || true}
                                     />
                                 </TableCell>
                             </TableRow>

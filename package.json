@@ -77,5 +77,8 @@
     "tabWidth": 4,
     "semi": false,
     "singleQuote": true
-  }
+  },
+  "resolutions": {
+    "string-width": "4.2.3"
+ }
 }

@@ -152,6 +152,7 @@ function Root(): JSX.Element {
                 </Container>
             </footer>
             <div
+                className="select-none cursor-default"
                 style={{
                     position: 'fixed',
                     bottom: '25px',

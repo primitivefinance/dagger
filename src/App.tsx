@@ -18,6 +18,7 @@ import Dashboard from './pages/dashboard'
 import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from './components/ui/toaster'
 import Curator from './pages/curator'
+import Admin from './pages/admin'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
             {
                 path: '/curator/:id',
                 element: <Curator />,
+            },
+            {
+                path: '/admin',
+                element: <Admin />,
             },
         ],
     },
