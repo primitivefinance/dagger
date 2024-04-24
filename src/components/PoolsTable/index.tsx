@@ -34,6 +34,8 @@ import {
     TooltipTrigger,
 } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
+import { FALLBACK_LOGO } from '@/utils/pools'
+import { TokenBadge } from '@/pages/pool'
 
 const tooltipContent = {
     lptOutstanding:
@@ -61,7 +63,7 @@ const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
                     (tkn) =>
                         tkn.symbol.toLowerCase() ===
                         tokenData.token.symbol.toLowerCase()
-                )?.logo
+                )?.logo ?? FALLBACK_LOGO
             }
             alt={tokenData.token.symbol}
             className="rounded-full size-8"
@@ -74,7 +76,6 @@ const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
 }
 
 const HoldingsCell = ({ poolTokens, reserves }) => {
-    const chainId = useChainId()
     return (
         <div className="flex flex-row items-center gap-xs">
             {poolTokens.map((token, index) => {
@@ -85,16 +86,8 @@ const HoldingsCell = ({ poolTokens, reserves }) => {
                         key={index}
                         className="flex flex-row items-center gap-xs"
                     >
-                        <img
-                            src={
-                                tokens?.[chainId].find(
-                                    (tkn) =>
-                                        getAddress(tkn.address) ===
-                                        getAddress(token.token.id)
-                                )?.logo
-                            }
-                            alt={token.symbol}
-                            className="rounded-full size-lg"
+                        <TokenBadge
+                            address={token?.token?.id as `0x${string}`}
                         />
                         <span>{formatNumber(reserve)}</span>
                         {index === poolTokens.length - 1 ? null : (

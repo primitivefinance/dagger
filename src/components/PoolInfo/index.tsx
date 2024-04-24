@@ -14,6 +14,7 @@ import { formatWad } from '@/utils/numbers'
 import { dfmmAddress, nG3mStrategy } from '@/data/contracts'
 import { Skeleton } from '../ui/skeleton'
 import { PoolTypes, getPoolType } from '@/utils/pools'
+import { Badge } from '../ui/badge'
 
 type PoolInfoItem = {
     key: React.ReactNode
@@ -67,10 +68,12 @@ function PoolInfo({
             value: (
                 <LabelWithEtherscan
                     label={
-                        pool?.strategy?.controller == zeroAddress ||
-                        !pool?.strategy?.controller
-                            ? 'None'
-                            : 'Curated'
+                        <Badge variant="secondary">
+                            {pool?.strategy?.controller == zeroAddress ||
+                            !pool?.strategy?.controller
+                                ? 'Autonomous'
+                                : 'Curated'}
+                        </Badge>
                     }
                     address={pool?.strategy?.controller ?? zeroAddress}
                 />
@@ -80,7 +83,7 @@ function PoolInfo({
             key: 'Protocol',
             value: (
                 <LabelWithEtherscan
-                    label={'DFMM v0.2.0'}
+                    label={<Badge variant="blue">DFMM v0.2.0</Badge>}
                     address={dfmmAddress as `0x${string}`}
                 />
             ),
@@ -130,7 +133,7 @@ function PoolInfo({
             <div className="flex flex-row w-full gap-0">
                 <Table>
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="hover:bg-transparent">
                             <TableHead>
                                 <h5 className="text-primary">{title}</h5>
                             </TableHead>

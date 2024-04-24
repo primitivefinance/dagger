@@ -6,7 +6,7 @@ function Curator(): JSX.Element {
     const navigate = useNavigate()
 
     return (
-        <div className="flex flex-col gap-2xl items-center justify-center">
+        <div className="flex flex-col gap-2xl items-center justify-center min-h-screen mt-[-64px]">
             <div className="flex flex-col gap-md items-center justify-center">
                 Curator page coming soon.
                 <Button variant="default" onClick={() => navigate(-1)}>

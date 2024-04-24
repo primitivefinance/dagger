@@ -64,94 +64,89 @@ function TransactionDrawer({
                     <SheetTitle>{txTitle}</SheetTitle>
                     <SheetDescription>{txDescription}</SheetDescription>
                 </SheetHeader>
-                <div className="max-w-4xl my-8 mx-auto justify-center flex flex-row gap-md">
+                <div className="max-w-4xl my-8 mx-auto justify-center flex flex-row gap-2xl">
                     <div
                         id="deposit-form"
-                        className="flex flex-col gap-sm w-1/2"
+                        className="flex flex-col gap-xl w-1/2"
                     >
-                        <div className="flex flex-col gap-md my-4">
+                        <div className="flex flex-col gap-sm">
+                            <h4>Amount</h4>
                             {txForm}
+                        </div>
+
+                        <div className="flex flex-col gap-sm">
+                            <h4>Breakdown</h4>
 
                             <Table>
                                 <TableHeader>
-                                    <TableRow>
-                                        <TableHead>
-                                            <p>Breakdown</p>
-                                        </TableHead>
-                                    </TableRow>
-                                    <TableRow>
+                                    <TableRow className="hover:bg-transparent">
                                         <TableHead className="w-1/4 justify-left">
-                                            <small>Token</small>
+                                            Token
                                         </TableHead>
                                         <TableHead className="w-1/4 justify-left">
-                                            <small>Balance</small>
+                                            Balance
                                         </TableHead>
                                         <TableHead className="w-1/4 justify-left">
-                                            <small>Delta</small>
+                                            Delta
                                         </TableHead>
                                         <TableHead className="w-1/4 justify-left">
-                                            <small>Value</small>
+                                            Value
                                         </TableHead>
                                     </TableRow>
                                 </TableHeader>
                             </Table>
-                            <div className="flex flex-col gap-md w-full">
-                                <div className="flex flex-col gap-sm w-full">
-                                    {transactionTokens?.map(
-                                        (pt: PoolTokenItemFragment, i) => {
-                                            const tokenAddress = pt.token
-                                                .id as `0x${string}`
-                                            const balance = parseFloat(
-                                                formatWad(
-                                                    balanceCalls?.data?.[i]
-                                                        ?.result ?? 0n
-                                                )
+                        </div>
+                        <div className="flex flex-col gap-md w-full">
+                            <div className="flex flex-col gap-sm w-full">
+                                {transactionTokens?.map(
+                                    (pt: PoolTokenItemFragment, i) => {
+                                        const tokenAddress = pt.token
+                                            .id as `0x${string}`
+                                        const balance = parseFloat(
+                                            formatWad(
+                                                balanceCalls?.data?.[i]
+                                                    ?.result ?? 0n
                                             )
-                                            const logo =
-                                                tokens[chainId].find(
-                                                    (tkn) =>
-                                                        tkn.symbol.toLowerCase() ===
-                                                        pt.token.symbol.toLowerCase()
-                                                )?.logo ||
-                                                tokens[chainId]?.filter(
-                                                    (tkn) =>
-                                                        getAddress(
-                                                            tkn.address
-                                                        ) ===
-                                                        getAddress(
-                                                            transactionTokens?.[0]
-                                                                ?.token?.id
-                                                        )
-                                                )[0]?.logo
+                                        )
+                                        const logo =
+                                            tokens[chainId].find(
+                                                (tkn) =>
+                                                    tkn.symbol.toLowerCase() ===
+                                                    pt.token.symbol.toLowerCase()
+                                            )?.logo ||
+                                            tokens[chainId]?.filter(
+                                                (tkn) =>
+                                                    getAddress(tkn.address) ===
+                                                    getAddress(
+                                                        transactionTokens?.[0]
+                                                            ?.token?.id
+                                                    )
+                                            )[0]?.logo
 
-                                            return (
-                                                <TokenAmountInactive
-                                                    key={pt?.token?.id}
-                                                    disabled
-                                                    tokenAddress={tokenAddress}
-                                                    tokenSymbol={
-                                                        pt.token.symbol
-                                                    }
-                                                    tokenBalance={balance}
-                                                    tokenLogo={logo}
-                                                    tokenPrice={3000} // no price provider
-                                                    amount={
-                                                        deltas?.[
-                                                            i
-                                                        ]?.toString() ?? '0'
-                                                    }
-                                                    setAmount={() => {}}
-                                                />
-                                            )
-                                        }
-                                    )}
-                                </div>
+                                        return (
+                                            <TokenAmountInactive
+                                                key={pt?.token?.id}
+                                                disabled
+                                                tokenAddress={tokenAddress}
+                                                tokenSymbol={pt.token.symbol}
+                                                tokenBalance={balance}
+                                                tokenLogo={logo}
+                                                tokenPrice={3000} // no price provider
+                                                amount={
+                                                    deltas?.[i]?.toString() ??
+                                                    '0'
+                                                }
+                                                setAmount={() => {}}
+                                            />
+                                        )
+                                    }
+                                )}
                             </div>
-                            <div className="flex flex-col gap-md w-full text-sm">
-                                <div className="flex flex-row gap-sm justify-between w-full py-2 border-t">
-                                    <p>Total</p>
-                                    <p>$100,100.00</p>
-                                </div>
+                        </div>
+                        <div className="flex flex-col gap-md w-full text-sm">
+                            <div className="flex flex-row gap-sm justify-between w-full py-2 border-t">
+                                <p>Total</p>
+                                <p>$100,100.00</p>
                             </div>
                         </div>
                     </div>
@@ -159,19 +154,18 @@ function TransactionDrawer({
                         id="deposit-review"
                         className="flex flex-col w-1/2 gap-lg"
                     >
-                        <p className="pb-2 border-b">Review Details</p>
                         <div className="flex flex-col gap-sm">
-                            <small>Payment information</small>
+                            <h4>Payment information</h4>
                             <div className="flex flex-row gap-xs justify-between w-full">
-                                <small className="text-muted dark:text-muted-foreground">
+                                <p className="text-muted dark:text-muted-foreground">
                                     From
-                                </small>
-                                <small>
+                                </p>
+                                <p>
                                     <LabelWithEtherscan
                                         label={shortAddress(address!)}
                                         address={address!}
                                     />
-                                </small>
+                                </p>
                             </div>
 
                             {externalEtherscanLinks.map((item) => (
@@ -179,17 +173,17 @@ function TransactionDrawer({
                                     key={item.address}
                                     className="flex flex-row gap-xs justify-between w-full"
                                 >
-                                    <small className="text-muted dark:text-muted-foreground">
+                                    <p className="text-muted dark:text-muted-foreground">
                                         {item.name}
-                                    </small>
-                                    <small>
+                                    </p>
+                                    <p>
                                         <LabelWithEtherscan
                                             label={item.label}
                                             address={
                                                 item.address as `0x${string}`
                                             }
                                         />
-                                    </small>
+                                    </p>
                                 </div>
                             ))}
                         </div>

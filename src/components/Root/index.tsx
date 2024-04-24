@@ -147,10 +147,7 @@ function Root(): JSX.Element {
                                 </div>
                             </div>
                         </div>
-                        <div
-                            id="#row-7"
-                            className="flex flex-row w-full gap-md"
-                        >
+                        <div id="#row-7" className="flex flex-row w-1/2 gap-md">
                             <p className="disclaimer justify-start text-left">
                                 {externalApplicationDisclaimer}
                             </p>

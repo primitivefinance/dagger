@@ -17,6 +17,7 @@ export interface TransactionButtonProps extends ButtonProps {
     txReceipt?: TransactionReceipt
     setTxHash: (txHash: `0x${string}`) => void
     stateOverride?: StateOverride
+    value?: bigint
 }
 
 const LoadingDots = () => {
@@ -149,6 +150,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
         address: props.to,
         functionName: props.functionName,
         args: props.args,
+        value: props.value,
         stateOverride: props.stateOverride,
         query: {
             enabled:
@@ -393,6 +395,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
                     address: props.to,
                     functionName: props.functionName,
                     args: props.args,
+                    value: props.value,
                 })
             }
         >

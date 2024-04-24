@@ -3,6 +3,7 @@ import { Skeleton } from '../ui/skeleton'
 import { getAddress } from 'viem'
 import React from 'react'
 import { QuestionMarkIcon } from '@radix-ui/react-icons'
+import { FALLBACK_LOGO } from '@/utils/pools'
 
 interface TokenLogoProps {
     key: string
@@ -44,7 +45,7 @@ function TokenLogo({
               symbol: custom.symbol,
           }
         : {
-              src: token?.logo,
+              src: token?.logo ?? FALLBACK_LOGO,
               alt: token?.symbol,
               symbol: token?.symbol,
           }
