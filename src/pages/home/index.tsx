@@ -8,7 +8,7 @@ import { allPoolsQueryDocument } from '../../queries/pools'
 import { zeroAddress } from 'viem'
 import { LabelWithEtherscan } from '@/components/EtherscanLinkLabels'
 import { Card } from '@/components/ui/card'
-import { formatPercentage } from '@/utils/numbers'
+import { formatNumber, formatPercentage } from '@/utils/numbers'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
     Tooltip,
@@ -16,6 +16,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { PoolWithTokensFragment } from 'gql/graphql'
+import { TokenBadge } from '../pool'
 
 type CuratorInfo = {
     name: string
@@ -72,15 +74,8 @@ export const CuratorCard = ({
                             <AvatarFallback>C</AvatarFallback>
                         </Avatar>
                     </div>
-                    <div className="flex flex-col gap-xs">
-                        <DataLabelBetween
-                            label={
-                                <p className="text-muted dark:text-muted-foreground">
-                                    Curator
-                                </p>
-                            }
-                            data={<p>{curator.name}</p>}
-                        />
+                    <div className="flex flex-col gap-xs justify-center items-center">
+                        <h3>{curator.name}</h3>
                         <LabelWithEtherscan
                             label={
                                 <p className="text-muted dark:text-muted-foreground">
@@ -122,6 +117,100 @@ export const CuratorCard = ({
                                 data={<p className="">{curator.pools}</p>}
                             />
                         </div>
+                    </div>
+                </div>
+            </Link>
+        </Card>
+    )
+}
+
+const HoldingsCell = ({ poolTokens, reserves }) => {
+    return (
+        <div className="flex flex-wrap items-center gap-xs">
+            {poolTokens.map((token, index) => {
+                const reserve = reserves[index]
+
+                return (
+                    <div
+                        key={index}
+                        className="flex flex-row items-center gap-xs"
+                    >
+                        <TokenBadge
+                            address={token?.token?.id as `0x${string}`}
+                        />
+                        <span>{formatNumber(reserve)}</span>
+                        {index === poolTokens.length - 1 ? null : (
+                            <span className="text-dagger4">/</span>
+                        )}
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+
+export const PoolCard = ({
+    pool,
+}: {
+    pool: PoolWithTokensFragment
+}): JSX.Element => {
+    const poolTokens = pool?.poolTokens?.items?.map((poolToken) => poolToken)
+    const reserves = pool?.reserves?.map((reserve) => reserve)
+
+    return (
+        <Card className="p-lg hover:bg-muted/50 rounded-none">
+            <Link
+                to={`/pool/${pool?.id}`}
+                className="block hover:no-underline h-full"
+            >
+                <div className="flex flex-col gap-lg h-full justify-between">
+                    <div className="flex w-full items-center justify-center">
+                        <Avatar className="h-24 w-24">
+                            <AvatarImage
+                                src="https://github.com/shadcn.png"
+                                alt="@shadcn"
+                            />
+                            <AvatarFallback>C</AvatarFallback>
+                        </Avatar>
+                    </div>
+                    <div className="flex flex-col gap-xs justify-center items-center">
+                        <h3>{pool.name}</h3>
+
+                        <LabelWithEtherscan
+                            label={
+                                <small className="text-muted dark:text-muted-foreground">
+                                    Address
+                                </small>
+                            }
+                            address={pool.lpToken}
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-sm">
+                        <h5 className="text-muted dark:text-muted-foreground">
+                            Holdings
+                        </h5>
+                        <HoldingsCell
+                            poolTokens={poolTokens}
+                            reserves={reserves}
+                        />
+                    </div>
+
+                    <div className="flex flex-col h-full gap-sm justify-end">
+                        <div className="flex flex-row gap-sm items-center justify-between">
+                            <small className="text-muted dark:text-muted-foreground">
+                                Total Supply
+                            </small>
+                            <small>{formatNumber(1000)}</small>
+                        </div>
+                        <LabelWithEtherscan
+                            label={
+                                <small className="text-muted dark:text-muted-foreground">
+                                    Curator
+                                </small>
+                            }
+                            address={zeroAddress}
+                        />
                     </div>
                 </div>
             </Link>
@@ -173,8 +262,11 @@ function Home(): JSX.Element {
                         </Tooltip>
                     </TooltipProvider>
                 </div>
-                <div className="bg-dagger1 border border-dagger2 border-solid">
-                    <PoolsTable />
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
+                    {data?.pools?.items?.map((pool, i) => (
+                        <PoolCard key={pool?.id ?? i} pool={pool} />
+                    ))}
                 </div>
             </div>
             <div className="flex flex-col gap-md">

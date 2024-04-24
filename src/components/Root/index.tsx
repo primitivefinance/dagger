@@ -5,11 +5,14 @@ import { Button } from '../ui/button'
 import React from 'react'
 import Container from '../Container'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { cn } from '@/lib/utils'
+
+const VERSION = 'v0.3.0'
 
 const externalApplicationDisclaimer =
     'Disclaimer: Primitive applications are currently in beta, use at your own discretion. External applications are not affiliated with Primitive.'
 
-const Wordmark = () => {
+const Wordmark = ({ className }) => {
     return (
         <Link to="/" aria-label="header">
             <img
@@ -17,7 +20,7 @@ const Wordmark = () => {
                 width={144}
                 height={144}
                 alt={`Cover Image for ${'header'}`}
-                className="dark:invert"
+                className={cn('dark:invert', className)}
             />
         </Link>
     )
@@ -58,7 +61,9 @@ function Root(): JSX.Element {
     }, [scrolling])
 
     return (
-        <div className={`flex flex-col justify-between font-primary`}>
+        <div
+            className={`flex flex-col justify-between font-primary min-h-screen`}
+        >
             <header
                 className={`
                 w-full min-h-16 
@@ -74,12 +79,12 @@ function Root(): JSX.Element {
             >
                 <Container>
                     <div className="flex flex-row items-center justify-between py-2">
-                        <ul className="flex-grow w-full flex-row flex gap-4 items-center">
-                            <li>
-                                <Link to="/" className="hover:no-underline">
-                                    🗡️
-                                </Link>
-                            </li>
+                        <div className="w-1/4 flex-row flex gap-4 items-center justify-start">
+                            <Link to="/" className="hover:no-underline">
+                                <Wordmark className={'w-20'} />
+                            </Link>
+                        </div>
+                        <ul className="flex-grow w-full flex-row flex gap-xs items-center">
                             <li
                                 className={`${loc.pathname === '/' || loc.pathname.startsWith('/pool/') ? 'underline' : 'no-underline'}`}
                             >
@@ -146,6 +151,23 @@ function Root(): JSX.Element {
                     </div>
                 </Container>
             </footer>
+            <div
+                style={{
+                    position: 'fixed',
+                    bottom: '25px',
+                    left: '25px',
+                    zIndex: 1000, // Ensure it's above most elements
+                }}
+            >
+                <div className="flex flex-col gap-0">
+                    <small className="text-primary/20 dark:text-muted/75">
+                        Primitive App
+                    </small>
+                    <small className=" text-primary/20 dark:text-muted/75">
+                        Version {VERSION}
+                    </small>
+                </div>
+            </div>
         </div>
     )
 }
