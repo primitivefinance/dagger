@@ -35,7 +35,7 @@ const LoadingDots = () => {
  * This button uses special styling to show that we are making real transactions.
  * It's a stateful button that is responsive to the potential states of the transaction.
  */
-const TransactionButtonStyled = React.forwardRef<
+export const TransactionButtonStyled = React.forwardRef<
     HTMLButtonElement,
     ButtonProps
 >(({ children, ...props }, ref) => {

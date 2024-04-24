@@ -57,7 +57,7 @@ export const CuratorCard = ({
     curator: CuratorInfo
 }): JSX.Element => {
     return (
-        <Card className="p-lg hover:bg-muted/50">
+        <Card className="p-lg hover:bg-muted/50 rounded-none">
             <Link
                 to={`/curator/${curator.address}`}
                 className="block hover:no-underline h-full"
@@ -173,7 +173,7 @@ function Home(): JSX.Element {
                         </Tooltip>
                     </TooltipProvider>
                 </div>
-                <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
+                <div className="bg-dagger1 border border-dagger2 border-solid">
                     <PoolsTable />
                 </div>
             </div>

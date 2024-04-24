@@ -57,7 +57,7 @@ function Root(): JSX.Element {
     }, [scrolling])
 
     return (
-        <div className={`flex flex-col h-screen justify-between font-primary`}>
+        <div className={`flex flex-col justify-between font-primary`}>
             <header
                 className={`
                 w-full min-h-16 

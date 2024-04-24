@@ -86,18 +86,11 @@ const TransactionTable: FC<TransactionTableProps> = ({
 
     if (!swaps.data) return <>Loading Transactions...</>
     return (
-        <>
-            {' '}
-            <Table>
+        <div className="flex flex-col gap-md">
+            <h5 className="text-primary">Recent Transactions</h5>
+            <Table className="border">
                 <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                        <TableHead>
-                            <h5 className="text-primary">
-                                Recent Transactions
-                            </h5>
-                        </TableHead>
-                    </TableRow>
-                    <TableRow className="hover:bg-transparent">
+                    <TableRow>
                         <TableHead>Action</TableHead>
                         <TableHead>Deltas</TableHead>
                         <TableHead>Sender</TableHead>
@@ -225,7 +218,7 @@ const TransactionTable: FC<TransactionTableProps> = ({
                     </Button>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

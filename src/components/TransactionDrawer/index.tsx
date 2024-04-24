@@ -17,6 +17,8 @@ import {
 } from '../ui/sheet'
 import { Table, TableHead, TableHeader, TableRow } from '../ui/table'
 import { PoolTokenItemFragment } from 'gql/graphql'
+import { Button } from '../ui/button'
+import { TransactionButtonStyled } from '../TransactionButton'
 
 export type TransactionDrawerProps = {
     transactionTokens: PoolTokenItemFragment[]
@@ -56,8 +58,10 @@ function TransactionDrawer({
 
     return (
         <Sheet>
-            <SheetTrigger className="bg-blue-600 rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 w-full">
-                {openButton}
+            <SheetTrigger asChild>
+                <TransactionButtonStyled className="w-full">
+                    {openButton}
+                </TransactionButtonStyled>
             </SheetTrigger>
             <SheetContent side="bottom">
                 <SheetHeader className="max-w-4xl mx-auto justify-center flex flex-col gap-sm">
