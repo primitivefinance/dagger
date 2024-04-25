@@ -1,0 +1,85 @@
+export const HandlerAbi = [
+    { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+    { type: 'receive', stateMutability: 'payable' },
+    {
+        type: 'function',
+        name: 'TIMELOCK_DELAY',
+        inputs: [],
+        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
+        name: 'acceptAuth',
+        inputs: [],
+        outputs: [],
+        stateMutability: 'nonpayable',
+    },
+    {
+        type: 'function',
+        name: 'auth',
+        inputs: [],
+        outputs: [{ name: '', type: 'address', internalType: 'address' }],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
+        name: 'onboard',
+        inputs: [
+            { name: 'recipient', type: 'address', internalType: 'address' },
+            { name: 'tokens', type: 'address[]', internalType: 'address[]' },
+            { name: 'amounts', type: 'uint256[]', internalType: 'uint256[]' },
+            { name: 'amountETH', type: 'uint256', internalType: 'uint256' },
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable',
+    },
+    {
+        type: 'function',
+        name: 'pendingAuth',
+        inputs: [],
+        outputs: [{ name: '', type: 'address', internalType: 'address' }],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
+        name: 'setPendingAuth',
+        inputs: [
+            { name: '_pendingAuth', type: 'address', internalType: 'address' },
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable',
+    },
+    {
+        type: 'function',
+        name: 'timerStart',
+        inputs: [],
+        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
+        name: 'withdraw',
+        inputs: [
+            { name: 'token', type: 'address', internalType: 'address' },
+            { name: 'recipient', type: 'address', internalType: 'address' },
+            { name: 'amount', type: 'uint256', internalType: 'uint256' },
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable',
+    },
+    {
+        type: 'function',
+        name: 'withdrawETH',
+        inputs: [
+            {
+                name: 'recipient',
+                type: 'address',
+                internalType: 'address payable',
+            },
+            { name: 'amount', type: 'uint256', internalType: 'uint256' },
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable',
+    },
+]

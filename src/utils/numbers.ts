@@ -8,12 +8,17 @@ export function formatNumber(
     currency?: string,
     style: 'percent' | 'decimal' | 'currency' | 'unit' = 'decimal'
 ): string {
+    const threshold = 1e-9
     const defaultOptions = {
         maximumSignificantDigits: 3,
         minimumFractionDigits: 2,
         maximumFractionDigits: 4,
         roundingPriority: 'morePrecision',
         roundingMode: 'trunc',
+        notation:
+            Math.abs(amount) < threshold && Math.abs(amount) > 0
+                ? 'scientific'
+                : 'standard',
     }
 
     let options = defaultOptions
@@ -40,6 +45,10 @@ export function formatWad(wad: bigint, decimals: number = 18): string {
 
 export function formatWadPercentage(wad: bigint): string {
     return formatNumber(Number(formatUnits(wad, 18)), undefined, 'percent')
+}
+
+export function formatPercentage(amount: number): string {
+    return formatNumber(amount, undefined, 'percent')
 }
 
 export function toWad(amount: number): bigint {

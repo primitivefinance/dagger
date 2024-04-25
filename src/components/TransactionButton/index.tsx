@@ -17,6 +17,7 @@ export interface TransactionButtonProps extends ButtonProps {
     txReceipt?: TransactionReceipt
     setTxHash: (txHash: `0x${string}`) => void
     stateOverride?: StateOverride
+    value?: bigint
 }
 
 const LoadingDots = () => {
@@ -34,7 +35,7 @@ const LoadingDots = () => {
  * This button uses special styling to show that we are making real transactions.
  * It's a stateful button that is responsive to the potential states of the transaction.
  */
-const TransactionButtonStyled = React.forwardRef<
+export const TransactionButtonStyled = React.forwardRef<
     HTMLButtonElement,
     ButtonProps
 >(({ children, ...props }, ref) => {
@@ -149,6 +150,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
         address: props.to,
         functionName: props.functionName,
         args: props.args,
+        value: props.value,
         stateOverride: props.stateOverride,
         query: {
             enabled:
@@ -393,6 +395,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
                     address: props.to,
                     functionName: props.functionName,
                     args: props.args,
+                    value: props.value,
                 })
             }
         >
