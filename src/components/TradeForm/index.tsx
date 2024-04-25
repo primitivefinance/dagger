@@ -6,7 +6,7 @@ import { balanceOf } from '@/lib/erc20'
 import type { ListedToken, ytData, lptData } from '@/data/tokens'
 import { tokens as listedTokens } from '@/data/tokens'
 
-import { Table, TableRow, TableCell } from '@/components/ui/table'
+import { Table, TableBody, TableRow, TableCell } from '@/components/ui/table'
 
 import TokenSelector from '../TokenSelector'
 import { Input } from '@/components/ui/input'
@@ -76,7 +76,7 @@ const TradeForm: FC<TradeFormProps> = ({
     const calculateAmountOut = (inputAmount: string): void => {
         const _amountOut: string = inputAmount
         //insert pricing
-        setAmounts([amounts[0], _amountOut])
+        setAmounts([inputAmount, _amountOut])
     }
     useEffect(() => {
         ;(async () => {
@@ -97,68 +97,74 @@ const TradeForm: FC<TradeFormProps> = ({
             <div className="grid w-1/3 items-center gap-1">
                 <h2>Trade</h2>
                 <Table>
-                    <TableRow>
-                        <TableCell>
-                            <TokenSelector
-                                tokenLogo={tokens[0].logo}
-                                tokenSymbol={tokens[0].symbol}
-                                setToken={setTokenIn}
-                                disabledTokens={[tokens[1].symbol]}
-                            />
-                        </TableCell>
-                        <TableCell>
-                            <Input
-                                className={
-                                    !parseFloat(amounts[0]) && amounts[0] !== ''
-                                        ? 'border-red-500'
-                                        : ''
-                                }
-                                type="text"
-                                placeholder="0.0"
-                                value={amounts[0]}
-                                onChange={(e) => {
-                                    calculateAmountOut(e.target.value)
-                                }}
-                            />
-                            <span>
-                                {'Balance: ' + balances[0]} {tokens[0].symbol}
-                            </span>
-                        </TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>
-                            <TokenSelector
-                                tokenLogo={tokens[1].logo}
-                                tokenSymbol={tokens[1].symbol}
-                                setToken={setTokenIn}
-                                disabledTokens={[tokens[0].symbol]}
-                            />
-                        </TableCell>
-                        <TableCell>
-                            <Input
-                                className={
-                                    !parseFloat(amounts[1]) && amounts[1] !== ''
-                                        ? 'border-red-500'
-                                        : ''
-                                }
-                                type="text"
-                                placeholder="0.0"
-                                value={amounts[1]}
-                                onChange={(e) => {
-                                    calculateAmountOut(e.target.value)
-                                }}
-                            />
-                            <span>
-                                {'Balance: ' + balances[1]} {tokens[1].symbol}
-                            </span>
-                        </TableCell>
-                    </TableRow>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>
+                                <TokenSelector
+                                    tokenLogo={tokens[0].logo}
+                                    tokenSymbol={tokens[0].symbol}
+                                    setToken={setTokenIn}
+                                    disabledTokens={[tokens[1].symbol]}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    className={
+                                        !parseFloat(amounts[0]) &&
+                                        amounts[0] !== ''
+                                            ? 'border-red-500'
+                                            : ''
+                                    }
+                                    type="text"
+                                    placeholder="0.0"
+                                    value={amounts[0]}
+                                    onChange={(e) => {
+                                        calculateAmountOut(e.target.value)
+                                    }}
+                                />
+                                <span>
+                                    {'Balance: ' + balances[0]}{' '}
+                                    {tokens[0].symbol}
+                                </span>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>
+                                <TokenSelector
+                                    tokenLogo={tokens[1].logo}
+                                    tokenSymbol={tokens[1].symbol}
+                                    setToken={setTokenIn}
+                                    disabledTokens={[tokens[0].symbol]}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    className={
+                                        !parseFloat(amounts[1]) &&
+                                        amounts[1] !== ''
+                                            ? 'border-red-500'
+                                            : ''
+                                    }
+                                    type="text"
+                                    placeholder="0.0"
+                                    value={amounts[1]}
+                                    onChange={(e) => {
+                                        calculateAmountOut(e.target.value)
+                                    }}
+                                />
+                                <span>
+                                    {'Balance: ' + balances[1]}{' '}
+                                    {tokens[1].symbol}
+                                </span>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
                 </Table>
             </div>
             <TradeYieldContext.Provider
                 value={{
-                    tokenIn: tokens[0],
-                    tokenOut: tokens[1],
+                    tokenIn: tokens[0].address,
+                    tokenOut: tokens[1].address,
                     txType: txType.buyLPT,
                     amountIn: amounts[0],
                     amountOut: amounts[1],

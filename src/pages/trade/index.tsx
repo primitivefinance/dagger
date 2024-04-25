@@ -47,9 +47,10 @@ const Trade: React.FC = () => {
 
     if (tokens === null) return <></>
     return (
-        <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-2xl">
-            <div>
+        <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-xl">
+            <div className="flex flex-row">
                 <TradeInfo metadata={metadata} />
+                <TradeChart tokens={tokens} metadata={metadata} />
             </div>
             <div className="flex flex-row gap-2xl">
                 <TradeForm

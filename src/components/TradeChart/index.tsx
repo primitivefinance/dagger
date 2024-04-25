@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import { useEffect, useRef } from 'react'
 
 import { createChart, ColorType } from 'lightweight-charts'
+import type { ListedToken, ytData, lptData } from '@/data/tokens'
 
 export type priceData = {
     time: string
@@ -21,23 +22,17 @@ const shortMockData: priceData = [
 ]
 
 export type TradeChartProps = {
-    isLoading: boolean
-    data?: priceData
-    initialRate: number
-    currentRate?: number
-    expiry: string
-    isLong: boolean
+    tokens: ListedToken[]
+    metadata?: ytData | lptData | null
 }
 
-const TradeChart: FC<TradeChartProps> = ({
-    isLoading,
-    data,
-    initialRate,
-    currentRate,
-    expiry,
-    isLong,
-}) => {
+const TradeChart: FC<TradeChartProps> = ({ tokens, metadata }) => {
     const chartContainerRef = useRef()
+
+    //hardcoded metadata
+    const initialRate = 1.03
+    const expiry = '2024-05-01' 
+    const isLong = true
 
     const longPricePath: priceData = [
         { time: longMockData[0].time, value: initialRate - 1 },
@@ -86,7 +81,7 @@ const TradeChart: FC<TradeChartProps> = ({
         }
     }, [isLong])
 
-    return <div ref={chartContainerRef} />
+    return <div className="w-2/3" ref={chartContainerRef} />
 }
 
 export default TradeChart
