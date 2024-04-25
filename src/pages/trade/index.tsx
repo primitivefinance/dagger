@@ -22,7 +22,7 @@ const Trade: React.FC = () => {
 
     const [tokens, setTokens] = useState<ListedToken[] | null>(null)
 
-    const [amounts, setAmounts] = useState<string[] | null>(null)
+    const [amounts, setAmounts] = useState<string[]>(['',''])
 
     const [metadata, setMetadata] = useState<ytData | lptData | null>(null)
 
@@ -40,10 +40,9 @@ const Trade: React.FC = () => {
 
     useEffect(() => {
         console.log(tokens)
-        if (tokens !== null)
-            navigate({
+        /*    navigate({
                 pathname: `/trade/${tokens[0].symbol}/${tokens[1].symbol}`,
-            })
+            })*/
     }, [tokens])
 
     if (tokens === null) return <></>

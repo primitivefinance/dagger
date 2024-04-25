@@ -60,24 +60,20 @@ const TradeForm: FC<TradeFormProps> = ({
 
     const [balances, setBalances] = useState<number[]>([0, 0])
 
-    // Helpful Metrics
-    const [leverage, setLeverage] = useState<number>(0)
-    const [fee, setFee] = useState<string>('')
-
-    const setTokenIn = (tokenAddress: `0x${string}`) => {
+    const setTokenIn = (tokenAddress: `0x${string}`): void => {
         const _token = listedTokens[chainId].find(
             (tkn) => tkn.address === tokenAddress
         )
         setTokens([_token, tokens[1]])
     }
-    const setTokenOut = (tokenAddress: `0x${string}`) => {
+    const setTokenOut = (tokenAddress: `0x${string}`): void => {
         const _token = listedTokens[chainId].find(
             (tkn) => tkn.address === tokenAddress
         )
         setTokens([tokens[0], _token])
     }
 
-    const calculateAmountOut = (inputAmount: string) => {
+    const calculateAmountOut = (inputAmount: string): void => {
         const _amountOut: string = inputAmount
         //insert pricing
         setAmounts([amounts[0], _amountOut])
@@ -95,7 +91,7 @@ const TradeForm: FC<TradeFormProps> = ({
         })()
     }, [address, tokens])
 
-    if (!tokens) return <></>
+    if (tokens === null) return <></>
     return (
         <>
             <div className="grid w-1/3 items-center gap-1">
