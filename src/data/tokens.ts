@@ -12,15 +12,19 @@ export type TokenList = {
 }
 
 export type ytData = {
-    ibToken: `0x${string}`
-    underlyingToken: `0x${string}`
+    ibToken: ListedToken
+    underlyingToken: ListedToken
     expiry: string
-    initalRate: string
-    currentRate: string
+    initialRate: number // temporary, will convert to string w/ real data
+    currentRate: number
     isYT: boolean
     strategy: `0x${string}`
     description: string
     poolLink: string
+}
+
+export type ytDataList = {
+    [key: number]: ytData[]
 }
 
 export type lptData = {
@@ -28,6 +32,10 @@ export type lptData = {
     strategy: `0x${string}`
     description: string
     poolLink: string
+}
+
+export type lptDataList = {
+    [key: number]: lptData[]
 }
 
 export const eth: ListedToken = {
@@ -67,8 +75,6 @@ export const yieldTokens: TokenList = {
         },
     ],
 }
-/// MOCKED
-export const yieldTokenMetadata
 
 export const lpTokens: TokenList = {
     [11155420]: [
@@ -124,6 +130,36 @@ export const tokens: TokenList = {
             decimals: 18,
             logo: 'https://assets.coingecko.com/coins/images/2518/standard/weth.png?1696503332',
             faucet: 10,
+        },
+    ],
+}
+
+/// MOCKED
+export const yieldTokenMetadata: ytDataList = {
+    [11155420]: [
+        {
+            ibToken: tokens[11155420][0],
+            underlyingToken: tokens[11155420][0],
+            expiry: '1714536000', // May 1st, 2024,
+            initialRate: 1.04,
+            currentRate: 1.03,
+            isYT: false,
+            strategy: '0x8Cc5377b8384F210170901c5EAb6C8a257f02316', // temp, replace with real contract,
+            description:
+                'Yield Token on wstETH.  Represents the the yield accured by wstETH until expiry.',
+            poolLink: '/pool/0',
+        },
+    ],
+}
+
+export const lpTokenMetadata: lptDataList = {
+    [11155420]: [
+        {
+            curator: `0x00000000000000`,
+            strategy: `0x8Cc5377b8384F210170901c5EAb6C8a257f02316`,
+            description:
+                'Superliquid is an even-weight, 4 asset portfolio of wstETH, cbETH, mETH, and rETH.',
+            poolLink: '/pool/0',
         },
     ],
 }
