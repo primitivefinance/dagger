@@ -12,6 +12,9 @@ export type TokenList = {
 }
 
 export type ytData = {
+    syToken: ListedToken
+    ptToken: ListedToken
+    ytToken: ListedToken
     ibToken: ListedToken
     underlyingToken: ListedToken
     expiry: string
@@ -28,6 +31,7 @@ export type ytDataList = {
 }
 
 export type lptData = {
+    lpToken: ListedToken
     curator: `0x${string}`
     strategy: `0x${string}`
     description: string
@@ -46,9 +50,15 @@ export const eth: ListedToken = {
     logo: 'https://assets.coingecko.com/coins/images/279/standard/ethereum.png?1696501628',
 }
 
-// MOCKED
-export const yieldTokens: TokenList = {
+export const tokens: TokenList = {
     [11155420]: [
+        {
+            address: '0xd26CC5E66b5BaE0412D89Eb8ddDF54b9A7afe600',
+            name: 'Superliquid',
+            symbol: 'Superliquid',
+            decimals: 18,
+            logo: '',
+        },
         {
             address: '0x91eC29AB1efedb051253A3283E7e3b3B517A079f',
             name: 'SY wstETH',
@@ -73,23 +83,6 @@ export const yieldTokens: TokenList = {
             logo: 'https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295',
             faucet: 10,
         },
-    ],
-}
-
-export const lpTokens: TokenList = {
-    [11155420]: [
-        {
-            address: '0xd26CC5E66b5BaE0412D89Eb8ddDF54b9A7afe600',
-            name: 'Superliquid',
-            symbol: 'Superliquid',
-            decimals: 18,
-            logo: '',
-        },
-    ],
-}
-
-export const tokens: TokenList = {
-    [11155420]: [
         {
             address: '0x91eC29AB1efedb051253A3283E7e3b3B517A079f',
             name: 'Wrapped stETH',
@@ -138,6 +131,9 @@ export const tokens: TokenList = {
 export const yieldTokenMetadata: ytDataList = {
     [11155420]: [
         {
+            syToken: tokens[11155420][1],
+            ptToken: tokens[11155420][2],
+            ytToken: tokens[11155420][3],
             ibToken: tokens[11155420][0],
             underlyingToken: tokens[11155420][0],
             expiry: '1714536000', // May 1st, 2024,
@@ -155,6 +151,7 @@ export const yieldTokenMetadata: ytDataList = {
 export const lpTokenMetadata: lptDataList = {
     [11155420]: [
         {
+            lpToken: tokens[11155420][0],
             curator: `0x00000000000000`,
             strategy: `0x8Cc5377b8384F210170901c5EAb6C8a257f02316`,
             description:
