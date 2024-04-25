@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import TradeHeader from '@/components/TradeHeader'
+import TradeInfo from '@/components/TradeInfo'
 import TradeChart from '@/components/TradeChart'
 import TradePositions from '@/components/TradePositions'
 import TradeForm from '@/components/TradeForm'
 
-import { useGraphQL } from 'useGraphQL'
-
 import type { ListedToken, ytData, lptData } from '@/data/tokens'
 import { useAccount, useChainId } from 'wagmi'
-import { tokens as listedTokens, yieldTokens, lpTokens } from '@/data/tokens'
-
-
+import {
+    tokens as listedTokens,
+    yieldTokens,
+    lpTokens,
+    yieldTokenMetadata,
+    lpTokenMetadata,
+} from '@/data/tokens'
 
 const Trade: React.FC = () => {
     const address = useAccount()
@@ -46,10 +48,12 @@ const Trade: React.FC = () => {
             _tokenOut = yieldTokens[chainId].find(
                 (tkn) => tkn.symbol.toLowerCase() === tokenOut?.toLowerCase()
             )
+            setMetadata(yieldTokenMetadata[chainId][0])
         } else if (!_tokenOut) {
             _tokenOut = lpTokens[chainId].find(
                 (tkn) => tkn.symbol.toLowerCase() === tokenOut?.toLowerCase()
             )
+            setMetadata(lpTokenMetadata[chainId][0])
         }
         if (_tokenIn && _tokenOut) {
             setTokens([_tokenIn, _tokenOut])
@@ -58,7 +62,7 @@ const Trade: React.FC = () => {
 
     useEffect(() => {
         console.log(tokens === null)
-        if (tokens !== undefined)
+        if (tokens !== null)
             navigate({
                 pathname: `/trade/${tokens[0].symbol}/${tokens[1].symbol}`,
             })
@@ -68,8 +72,8 @@ const Trade: React.FC = () => {
     return (
         <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-2xl">
             <div>
-                <TradeChart marketToken={token[1]} />
-                <TradeInfo marketToken={token[1]} metadata={metadata} />
+                <TradeChart />
+                <TradeInfo metadata={metadata} />
             </div>
 
             <div className="flex flex-row gap-2xl">

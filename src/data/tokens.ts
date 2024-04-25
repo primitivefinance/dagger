@@ -143,7 +143,7 @@ export const yieldTokenMetadata: ytDataList = {
             expiry: '1714536000', // May 1st, 2024,
             initialRate: 1.04,
             currentRate: 1.03,
-            isYT: false,
+            isYT: true,
             strategy: '0x8Cc5377b8384F210170901c5EAb6C8a257f02316', // temp, replace with real contract,
             description:
                 'Yield Token on wstETH.  Represents the the yield accured by wstETH until expiry.',
