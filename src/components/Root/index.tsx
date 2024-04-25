@@ -86,6 +86,13 @@ function Root(): JSX.Element {
                         </div>
                         <ul className="flex-grow w-full flex-row flex gap-xs items-center">
                             <li
+                                className={`${loc.pathname === '/' || loc.pathname.startsWith('/trade/') ? 'underline' : 'no-underline'}`}
+                            >
+                                <Button variant="link" asChild>
+                                    <Link to="/trade/wsteth/superliquid">Trade</Link>
+                                </Button>
+                            </li>
+                            <li
                                 className={`${loc.pathname === '/' || loc.pathname.startsWith('/pool/') ? 'underline' : 'no-underline'}`}
                             >
                                 <Button variant="link" asChild>

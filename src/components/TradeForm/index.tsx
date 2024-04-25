@@ -3,25 +3,35 @@ import type { FC } from 'react'
 import { useAccount, useChainId } from 'wagmi'
 
 import { balanceOf } from '@/lib/erc20'
-import TokenSelector from '@/components/TokenSelector'
-import { tokens } from '@/data/tokens'
+import type { ListedToken, ytData, lptData } from '@/data/tokens'
+import { tokens as listedTokens } from '@/data/tokens'
 
-export type YieldParams = {}
+import { Table, TableRow, TableCell } from '@/components/ui/table'
 
-export type PrincipalParams = {}
+import TokenSelector from '../TokenSelector'
+import { Input } from '@/components/ui/input'
+
+export enum txType {
+    'buyYT',
+    'sellYT',
+    'buyPT',
+    'sellPT',
+    'buyLPT',
+    'sellLPT',
+}
 
 export type TradeYieldParams = {
     tokenIn: `0x${string}`
-    isLong: boolean
-    poolId: string
+    tokenOut: `0x${string}`
+    txType: txType
     amountIn: string
     amountOut: string
 }
 
 const initialParams: TradeYieldParams = {
     tokenIn: '0x0',
-    isLong: true,
-    poolId: '',
+    tokenOut: '0x0',
+    txType: txType['buyLPT'],
     amountIn: '',
     amountOut: '',
 }
@@ -30,28 +40,133 @@ export const TradeYieldContext = createContext<TradeYieldParams>(initialParams)
 
 export type TradeFormProps = {
     children?: React.ReactNode
-    poolId: string
-    isLong: boolean
+    tokens: ListedToken[] | null
+    setTokens: (tkns: ListedToken[]) => void
+    amounts: string[] | null
+    setAmounts: (amts: string[]) => void
+    tokenType: ytData | lptData | null
 }
 
-const TradeForm: FC<TradeFormProps> = ({ children, poolId = '', isLong = true }) => {
+const TradeForm: FC<TradeFormProps> = ({
+    children,
+    tokens,
+    setTokens,
+    amounts,
+    setAmounts,
+    tokenType,
+}) => {
     const { address } = useAccount()
     const chainId = useChainId()
 
-    const [tokenIn, setTokenIn] = useState<`0x${string}`>('0x0')
+    const [balances, setBalances] = useState<number[]>([0, 0])
 
-    const [amountIn, setAmountIn] = useState<string>('')
-    const [amountOut, setAmountOut] = useState<string>('')
     // Helpful Metrics
     const [leverage, setLeverage] = useState<number>(0)
     const [fee, setFee] = useState<string>('')
+
+    const setTokenIn = (tokenAddress: `0x${string}`) => {
+        const _token = listedTokens[chainId].find(
+            (tkn) => tkn.address === tokenAddress
+        )
+        setTokens([_token, tokens[1]])
+    }
+    const setTokenOut = (tokenAddress: `0x${string}`) => {
+        const _token = listedTokens[chainId].find(
+            (tkn) => tkn.address === tokenAddress
+        )
+        setTokens([tokens[0], _token])
+    }
+
+    const calculateAmountOut = (inputAmount: string) => {
+        const _amountOut: string = inputAmount
+        //insert pricing
+        setAmounts([amounts[0], _amountOut])
+    }
+    useEffect(() => {
+        ;(async () => {
+            if (address && tokens) {
+                const _balances: number[] = []
+                for (const _token of tokens) {
+                    const balance = await balanceOf(_token.address, address)
+                    _balances.push(balance)
+                }
+                setBalances(_balances)
+            }
+        })()
+    }, [address, tokens])
+
+    if (!tokens) return <></>
     return (
         <>
             <div className="grid w-1/3 items-center gap-1">
-              <h2>Trade</h2>
+                <h2>Trade</h2>
+                <Table>
+                    <TableRow>
+                        <TableCell>
+                            <TokenSelector
+                                tokenLogo={tokens[0].logo}
+                                tokenSymbol={tokens[0].symbol}
+                                setToken={setTokenIn}
+                                disabledTokens={[tokens[1].symbol]}
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <Input
+                                className={
+                                    !parseFloat(amounts[0]) && amounts[0] !== ''
+                                        ? 'border-red-500'
+                                        : ''
+                                }
+                                type="text"
+                                placeholder="0.0"
+                                value={amounts[0]}
+                                onChange={(e) => {
+                                    calculateAmountOut(e.target.value)
+                                }}
+                            />
+                            <span>
+                                {'Balance: ' + balances[0]} {tokens[0].symbol}
+                            </span>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            <TokenSelector
+                                tokenLogo={tokens[1].logo}
+                                tokenSymbol={tokens[1].symbol}
+                                setToken={setTokenIn}
+                                disabledTokens={[tokens[0].symbol]}
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <Input
+                                className={
+                                    !parseFloat(amounts[1]) && amounts[1] !== ''
+                                        ? 'border-red-500'
+                                        : ''
+                                }
+                                type="text"
+                                placeholder="0.0"
+                                value={amounts[1]}
+                                onChange={(e) => {
+                                    calculateAmountOut(e.target.value)
+                                }}
+                            />
+                            <span>
+                                {'Balance: ' + balances[1]} {tokens[1].symbol}
+                            </span>
+                        </TableCell>
+                    </TableRow>
+                </Table>
             </div>
             <TradeYieldContext.Provider
-                value={{ tokenIn, isLong, amountIn, amountOut, poolId }}
+                value={{
+                    tokenIn: tokens[0],
+                    tokenOut: tokens[1],
+                    txType: txType.buyLPT,
+                    amountIn: amounts[0],
+                    amountOut: amounts[1],
+                }}
             >
                 {children}
             </TradeYieldContext.Provider>

@@ -61,8 +61,7 @@ const Trade: React.FC = () => {
     }, [tokenIn, tokenOut])
 
     useEffect(() => {
-        console.log(tokens === null)
-        if (tokens !== null)
+        if (tokens !== undefined)
             navigate({
                 pathname: `/trade/${tokens[0].symbol}/${tokens[1].symbol}`,
             })
@@ -75,13 +74,13 @@ const Trade: React.FC = () => {
                 <TradeChart />
                 <TradeInfo metadata={metadata} />
             </div>
-
             <div className="flex flex-row gap-2xl">
                 <TradeForm
                     tokens={tokens}
-                    setTokens={tokens}
+                    setTokens={setTokens}
                     amounts={amounts}
                     setAmounts={setAmounts}
+                    tokenType={metadata}
                 >
                     <p>digest trade form context here</p>
                 </TradeForm>
