@@ -36,15 +36,8 @@ const Trade: React.FC = () => {
         if (_tokenIn && _tokenOut) {
             setTokens([_tokenIn, _tokenOut])
         }
-        setMetadata(lpTokenMetadata[chainId][0])
+        setMetadata(yieldTokenMetadata[chainId][0])
     }, [tokenIn, tokenOut])
-
-    useEffect(() => {
-        console.log(tokens)
-        /*    navigate({
-                pathname: `/trade/${tokens[0].symbol}/${tokens[1].symbol}`,
-            })*/
-    }, [tokens])
 
     if (tokens === null) return <></>
     return (
