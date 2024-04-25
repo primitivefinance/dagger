@@ -35,7 +35,7 @@ const router = createBrowserRouter([
                 element: <Home />,
             },
             {
-                path: '/trade/:underlying/:timestamp/:id',
+                path: '/trade/:tokenIn/:tokenOut',
                 element: <Trade />,
             },
             {

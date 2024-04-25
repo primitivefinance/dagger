@@ -19,7 +19,7 @@ function Root() {
                     <li>
                         <Button variant="link" asChild>
                             <Link
-                                to="/trade/ezETH/2024-05-01/10"
+                                to="/trade/ETH/Superliquid"
                                 className="text-sm text-dagger4"
                             >
                                 Trade

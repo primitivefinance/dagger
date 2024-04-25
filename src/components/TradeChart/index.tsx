@@ -66,7 +66,6 @@ const TradeChart: FC<TradeChartProps> = ({
             chart.applyOptions({ width: chartContainerRef.current.clientWidth })
         }
 
-        chart.timeScale().fitContent()
         const guidelineSeries = chart.addAreaSeries({
             lineColor: 'black',
             topColor: '#2962FF',
@@ -77,6 +76,7 @@ const TradeChart: FC<TradeChartProps> = ({
         })
         guidelineSeries.setData(isLong ? longPricePath : shortPricePath)
         dataSeries.setData(isLong ? longMockData : shortMockData)
+        chart.timeScale().fitContent()
 
         window.addEventListener('resize', handleResize)
 

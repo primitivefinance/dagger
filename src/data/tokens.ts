@@ -1,4 +1,4 @@
-type ListedToken = {
+export type ListedToken = {
     address: `0x${string}`
     logo: string
     decimals: number
@@ -7,8 +7,27 @@ type ListedToken = {
     faucet?: number
 }
 
-type TokenList = {
+export type TokenList = {
     [key: number]: ListedToken[]
+}
+
+export type ytData = {
+    ibToken: `0x${string}`
+    underlyingToken: `0x${string}`
+    expiry: string
+    initalRate: string
+    currentRate: string
+    isYT: boolean
+    strategy: `0x${string}`
+    description: string
+    poolLink: string
+}
+
+export type lptData = {
+    curator: `0x${string}`
+    strategy: `0x${string}`
+    description: string
+    poolLink: string
 }
 
 export const eth: ListedToken = {
@@ -45,6 +64,20 @@ export const yieldTokens: TokenList = {
             decimals: 18,
             logo: 'https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295',
             faucet: 10,
+        },
+    ],
+}
+/// MOCKED
+export const yieldTokenMetadata
+
+export const lpTokens: TokenList = {
+    [11155420]: [
+        {
+            address: '0xd26CC5E66b5BaE0412D89Eb8ddDF54b9A7afe600',
+            name: 'Superliquid',
+            symbol: 'Superliquid',
+            decimals: 18,
+            logo: '',
         },
     ],
 }
