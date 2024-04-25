@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import TradeInfo from '@/components/TradeInfo'
 import TradeChart from '@/components/TradeChart'
@@ -17,7 +17,6 @@ import {
 const Trade: React.FC = () => {
     const address = useAccount()
     const chainId = useChainId()
-    const navigate = useNavigate()
 
     const { tokenIn, tokenOut } = useParams()
 

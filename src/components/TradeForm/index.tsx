@@ -1,7 +1,7 @@
 import { useEffect, useState, createContext } from 'react'
 import type { FC } from 'react'
 import { useAccount, useChainId } from 'wagmi'
-
+import { useNavigate } from 'react-router-dom'
 import { balanceOf } from '@/lib/erc20'
 import type { ListedToken, ytData, lptData } from '@/data/tokens'
 import { tokens as listedTokens } from '@/data/tokens'
@@ -55,6 +55,7 @@ const TradeForm: FC<TradeFormProps> = ({
     setAmounts,
     tokenType,
 }) => {
+    const navigate = useNavigate()
     const { address } = useAccount()
     const chainId = useChainId()
 
@@ -65,12 +66,14 @@ const TradeForm: FC<TradeFormProps> = ({
             (tkn) => tkn.address === tokenAddress
         )
         setTokens([_token, tokens[1]])
+        navigate(`/trade/${_token.symbol}/${tokens[1].symbol}`)
     }
     const setTokenOut = (tokenAddress: `0x${string}`): void => {
         const _token = listedTokens[chainId].find(
             (tkn) => tkn.address === tokenAddress
         )
         setTokens([tokens[0], _token])
+        navigate(`/trade/${tokens[0].symbol}/${_token.symbol}`)
     }
 
     const calculateAmountOut = (inputAmount: string): void => {
@@ -104,7 +107,7 @@ const TradeForm: FC<TradeFormProps> = ({
                                     tokenLogo={tokens[0].logo}
                                     tokenSymbol={tokens[0].symbol}
                                     setToken={setTokenIn}
-                                    disabledTokens={[tokens[1].symbol]}
+                                    disabledTokens={tokens}
                                 />
                             </TableCell>
                             <TableCell>
@@ -133,8 +136,8 @@ const TradeForm: FC<TradeFormProps> = ({
                                 <TokenSelector
                                     tokenLogo={tokens[1].logo}
                                     tokenSymbol={tokens[1].symbol}
-                                    setToken={setTokenIn}
-                                    disabledTokens={[tokens[0].symbol]}
+                                    setToken={setTokenOut}
+                                    disabledTokens={tokens}
                                 />
                             </TableCell>
                             <TableCell>
