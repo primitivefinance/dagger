@@ -94,7 +94,7 @@ const TradeForm: FC<TradeFormProps> = ({
     if (tokens === null) return <></>
     return (
         <>
-            <div className="grid w-1/3 items-center gap-1">
+            <div className="grid items-center gap-1">
                 <h2>Trade</h2>
                 <Table>
                     <TableBody>

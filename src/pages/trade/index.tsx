@@ -18,6 +18,7 @@ const Trade: React.FC = () => {
     const address = useAccount()
     const chainId = useChainId()
     const navigate = useNavigate()
+
     const { tokenIn, tokenOut } = useParams()
 
     const [tokens, setTokens] = useState<ListedToken[] | null>(null)
@@ -36,6 +37,7 @@ const Trade: React.FC = () => {
         if (_tokenIn && _tokenOut) {
             setTokens([_tokenIn, _tokenOut])
         }
+        setMetadata(lpTokenMetadata[chainId][0])
     }, [tokenIn, tokenOut])
 
     useEffect(() => {
@@ -48,11 +50,10 @@ const Trade: React.FC = () => {
     if (tokens === null) return <></>
     return (
         <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-xl">
-            <div className="flex flex-row">
-                <TradeInfo metadata={metadata} />
+            <div className="w-full">
                 <TradeChart tokens={tokens} metadata={metadata} />
             </div>
-            <div className="flex flex-row gap-2xl">
+            <div className="grid grid-col">
                 <TradeForm
                     tokens={tokens}
                     setTokens={setTokens}
@@ -60,8 +61,10 @@ const Trade: React.FC = () => {
                     setAmounts={setAmounts}
                     tokenType={metadata}
                 >
-                    <p>digest trade form context here</p>
+                    {/**digest context here */}
                 </TradeForm>
+
+                <TradeInfo metadata={metadata} />
             </div>
             <TradePositions account={address} />
         </div>

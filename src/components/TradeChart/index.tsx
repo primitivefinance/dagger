@@ -81,7 +81,7 @@ const TradeChart: FC<TradeChartProps> = ({ tokens, metadata }) => {
         }
     }, [isLong])
 
-    return <div className="w-2/3" ref={chartContainerRef} />
+    return <div ref={chartContainerRef} />
 }
 
 export default TradeChart
