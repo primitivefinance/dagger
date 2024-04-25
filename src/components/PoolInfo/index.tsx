@@ -14,6 +14,7 @@ import { formatWad } from '@/utils/numbers'
 import { dfmmAddress, nG3mStrategy } from '@/data/contracts'
 import { Skeleton } from '../ui/skeleton'
 import { PoolTypes, getPoolType } from '@/utils/pools'
+import { Badge } from '../ui/badge'
 
 type PoolInfoItem = {
     key: React.ReactNode
@@ -67,10 +68,12 @@ function PoolInfo({
             value: (
                 <LabelWithEtherscan
                     label={
-                        pool?.strategy?.controller == zeroAddress ||
-                        !pool?.strategy?.controller
-                            ? 'None'
-                            : 'Curated'
+                        <Badge variant="secondary">
+                            {pool?.strategy?.controller == zeroAddress ||
+                            !pool?.strategy?.controller
+                                ? 'Autonomous'
+                                : 'Curated'}
+                        </Badge>
                     }
                     address={pool?.strategy?.controller ?? zeroAddress}
                 />
@@ -80,7 +83,7 @@ function PoolInfo({
             key: 'Protocol',
             value: (
                 <LabelWithEtherscan
-                    label={'DFMM v0.2.0'}
+                    label={<Badge variant="secondary">DFMM v0.2.0</Badge>}
                     address={dfmmAddress as `0x${string}`}
                 />
             ),
@@ -127,49 +130,39 @@ function PoolInfo({
     const firstColumnLength = Math.max(items.length / 2)
     return (
         <section id="pool-info">
-            <div className="flex flex-row w-full gap-0">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>
-                                <h5 className="text-primary">{title}</h5>
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {items?.map((item, i) => {
-                            if (i < firstColumnLength) {
-                                return (
-                                    <TableRow key={i}>
-                                        <TableHead>{item.key}</TableHead>
-                                        <TableCell>{item.value}</TableCell>
-                                    </TableRow>
-                                )
-                            }
-                        })}
-                        <TableRow></TableRow>
-                    </TableBody>
-                </Table>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {items?.map((item, i) => {
-                            if (i >= firstColumnLength) {
-                                return (
-                                    <TableRow key={i}>
-                                        <TableHead>{item.key}</TableHead>
-                                        <TableCell>{item.value}</TableCell>
-                                    </TableRow>
-                                )
-                            }
-                        })}
-                        <TableRow></TableRow>
-                    </TableBody>
-                </Table>
+            <div className="flex flex-col gap-md">
+                <h5 className="text-primary">{title}</h5>
+                <div className="flex flex-row gap-0 w-full items-start border">
+                    <Table>
+                        <TableBody>
+                            {items?.map((item, i) => {
+                                if (i < firstColumnLength) {
+                                    return (
+                                        <TableRow key={i}>
+                                            <TableHead>{item.key}</TableHead>
+                                            <TableCell>{item.value}</TableCell>
+                                        </TableRow>
+                                    )
+                                }
+                            })}
+                        </TableBody>
+                    </Table>
+                    <Table>
+                        <TableBody>
+                            {items?.map((item, i) => {
+                                if (i >= firstColumnLength) {
+                                    return (
+                                        <TableRow key={i}>
+                                            <TableHead>{item.key}</TableHead>
+                                            <TableCell>{item.value}</TableCell>
+                                        </TableRow>
+                                    )
+                                }
+                            })}
+                            <TableRow></TableRow>
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
         </section>
     )

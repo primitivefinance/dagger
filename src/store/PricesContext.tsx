@@ -71,7 +71,7 @@ export function PricesProvider(props: PricesProviderProps) {
 
     useEffect(() => {
         async function fetchPrices() {
-            for (let i = 0; i < tokens[chainId].length; i++) {
+            for (let i = 0; i < tokens[chainId]?.length; i++) {
                 const res = await fetch(
                     `https://api.dexscreener.com/latest/dex/search?q=${check}`
                 )

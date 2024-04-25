@@ -122,7 +122,7 @@
         @apply text-lg font-medium;
     }
     h5 {
-        @apply text-lg;
+        @apply text-base;
     }
     a {
         @apply text-base;
@@ -134,7 +134,7 @@
         cursor: pointer;
     }
     p {
-        @apply text-base;
+        @apply text-sm;
         @apply text-gray-800 dark:text-gray-200;
     }
     small {
@@ -172,10 +172,6 @@
 
         h3 {
             @apply text-xl;
-        }
-
-        p {
-            @apply text-lg;
         }
     }
 

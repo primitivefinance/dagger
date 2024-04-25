@@ -20,6 +20,11 @@ import {
     allDeallocatesQueryDocument,
 } from '../../queries/liquidity'
 import { Button } from '../ui/button'
+import { EtherscanLink, EtherscanTxLink } from '../EtherscanLinkLabels'
+import { getAddress } from 'viem'
+import { FALLBACK_LOGO } from '@/utils/pools'
+import { ArrowLeftIcon, ArrowRightIcon } from '@radix-ui/react-icons'
+import { TokenBadge } from '@/pages/pool'
 
 type Event = {
     action: string
@@ -81,34 +86,9 @@ const TransactionTable: FC<TransactionTableProps> = ({
 
     if (!swaps.data) return <>Loading Transactions...</>
     return (
-        <>
-            {' '}
-            <div className="flex w-full items-center justify-between">
-                <Button
-                    disabled={page === 5 ? true : false}
-                    onClick={() => {
-                        setPage(page - 5)
-                    }}
-                >
-                    Previous Page
-                </Button>
-                <span>
-                    Page {page / 5} of {(events.length / 5).toFixed()}
-                </span>
-                <Button
-                    disabled={
-                        page === Number((events.length / 5).toFixed())
-                            ? true
-                            : false
-                    }
-                    onClick={() => {
-                        setPage(page + 5)
-                    }}
-                >
-                    Next Page
-                </Button>
-            </div>
-            <Table>
+        <div className="flex flex-col gap-md">
+            <h5 className="text-primary">Recent Transactions</h5>
+            <Table className="border">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Action</TableHead>
@@ -127,58 +107,118 @@ const TransactionTable: FC<TransactionTableProps> = ({
                                 <TableRow key={i}>
                                     <TableCell>{event.action}</TableCell>
                                     <TableCell>
-                                        {event.action === 'Deallocate' ? (
-                                            <div className="flex flex-row justify-between">
-                                                <div>{'LPT'}</div>
-                                                {'-' + event.deltas}
-                                            </div>
-                                        ) : (
-                                            event?.deltas?.map((d, z) => {
-                                                return (
-                                                    <div
-                                                        key={z}
-                                                        className="flex flex-row justify-between"
-                                                    >
-                                                        <div>
-                                                            {
-                                                                poolTokens[z]
-                                                                    .token
-                                                                    .symbol
-                                                            }
+                                        <div className="flex flex-row gap-xs overflow-x-auto">
+                                            {event.action === 'Deallocate' ? (
+                                                <div
+                                                    key={'lpt'}
+                                                    className="flex flex-row items-center gap-xs"
+                                                >
+                                                    <TokenBadge
+                                                        address={undefined}
+                                                    />
+                                                    <>{'-' + event.deltas}</>
+                                                </div>
+                                            ) : (
+                                                event?.deltas?.map((d, z) => {
+                                                    const token = poolTokens[z]
+                                                    return (
+                                                        <div
+                                                            key={z}
+                                                            className="flex flex-row justify-between"
+                                                        >
+                                                            <div
+                                                                key={z}
+                                                                className="flex flex-row items-center gap-xs"
+                                                            >
+                                                                <TokenBadge
+                                                                    address={
+                                                                        token
+                                                                            ?.token
+                                                                            ?.id as `0x${string}`
+                                                                    }
+                                                                />
+                                                                <>
+                                                                    {event.action ===
+                                                                        'Swap' &&
+                                                                    z === 0 ? (
+                                                                        <>
+                                                                            {
+                                                                                '-'
+                                                                            }
+                                                                            {d}
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            {
+                                                                                '+'
+                                                                            }
+                                                                            {d}
+                                                                        </>
+                                                                    )}
+                                                                </>
+                                                                {z ===
+                                                                poolTokens.length -
+                                                                    1 ? null : (
+                                                                    <span className="text-dagger4">
+                                                                        /
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                        <>
-                                                            {event.action ===
-                                                                'Swap' &&
-                                                            z === 0 ? (
-                                                                <>
-                                                                    {'-'}
-                                                                    {d}
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    {'+'}
-                                                                    {d}
-                                                                </>
-                                                            )}
-                                                        </>
-                                                    </div>
-                                                )
-                                            })
-                                        )}
+                                                    )
+                                                })
+                                            )}
+                                        </div>
                                     </TableCell>
                                     <TableCell>
-                                        {shortAddress(event.sender)}
+                                        <EtherscanLink address={event.sender} />
                                     </TableCell>
                                     <TableCell>
-                                        {shortAddress(event.transaction)}
+                                        <EtherscanTxLink
+                                            txHash={event.transaction}
+                                        />
                                     </TableCell>
-                                    <TableCell>{event.timestamp}</TableCell>
+                                    <TableCell>
+                                        {new Date(
+                                            event.timestamp * 1000
+                                        ).toISOString()}
+                                    </TableCell>
                                 </TableRow>
                             )
                         })}
                 </TableBody>
             </Table>
-        </>
+            <div className="flex w-full items-center justify-end gap-xl">
+                <div className="flex flex-row gap-md items-center">
+                    <Button
+                        disabled={page === 5 ? true : false}
+                        onClick={() => {
+                            setPage(page - 5)
+                        }}
+                        variant="outline"
+                    >
+                        <ArrowLeftIcon />
+                    </Button>
+                    <Button disabled variant="outline">
+                        Page {page / 5} of {(events.length / 5).toFixed()}
+                    </Button>
+
+                    <Button
+                        variant="outline"
+                        disabled={
+                            page === Number((events.length / 5).toFixed())
+                                ? true
+                                : false
+                        }
+                        onClick={() => {
+                            setPage(page + 5)
+                        }}
+                    >
+                        <ArrowRightIcon />
+                    </Button>
+                </div>
+            </div>
+        </div>
     )
 }
 

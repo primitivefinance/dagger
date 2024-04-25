@@ -35,6 +35,7 @@ import {
     CaretDownIcon,
     CaretUpIcon,
     CheckCircledIcon,
+    InfoCircledIcon,
     QuestionMarkCircledIcon,
     QuestionMarkIcon,
 } from '@radix-ui/react-icons'
@@ -74,11 +75,18 @@ import TransactionButton from '@/components/TransactionButton'
 import { overrideAllowanceDFMM } from '@/utils/simulate'
 import TransactionDrawer from '@/components/TransactionDrawer'
 import PoolInfo from '@/components/PoolInfo'
-import { PoolTypes, getPoolType } from '@/utils/pools'
+import { FALLBACK_LOGO, PoolTypes, getPoolType } from '@/utils/pools'
 import { DEFAULT_TOKEN_LOGO_SRC } from '@/utils/tokens'
 import { prepareAllocate } from '@/utils/allocate'
 import TransactionTable from '@/components/TransactionTable'
 import { prepareDeallocate } from '@/utils/deallocate'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { Badge } from '@/components/ui/badge'
 
 const LinkIcon = () => (
     <svg
@@ -98,6 +106,38 @@ const LinkIcon = () => (
         />
     </svg>
 )
+
+export function TokenBadge({
+    address,
+}: {
+    address?: `0x${string}`
+}): JSX.Element {
+    const chainId = useChainId()
+    const token =
+        typeof address !== 'undefined'
+            ? tokens?.[chainId]?.find(
+                  (t) => getAddress(t.address) === getAddress(address)
+              )
+            : undefined
+    const FALLBACK_SYMBOL = 'N/A'
+
+    return (
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger>
+                    <img
+                        src={token?.logo ?? FALLBACK_LOGO}
+                        alt={token?.symbol ?? FALLBACK_SYMBOL}
+                        className="rounded-full size-lg"
+                    />
+                </TooltipTrigger>
+                <TooltipContent>
+                    {token?.symbol ?? FALLBACK_SYMBOL}
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    )
+}
 
 function Overview({ pool }: { pool?: PoolWithTokensFragment }): JSX.Element {
     const chainId = useChainId()
@@ -173,7 +213,14 @@ function NTokenGeometricMeanWeights({
                     return (
                         <TableRow key={poolToken?.token?.id}>
                             <TableCell>{formatWadPercentage(weight)}</TableCell>
-                            <TableCell>{poolToken?.token?.symbol}</TableCell>
+                            <TableCell className="flex flex-row items-center gap-sm">
+                                <TokenBadge
+                                    address={
+                                        poolToken.token.id as `0x${string}`
+                                    }
+                                />
+                                <span>{poolToken.token.symbol}</span>
+                            </TableCell>
                             <TableCell>{formatNumber(reserve)}</TableCell>
                             <TableCell>todo</TableCell>
                         </TableRow>
@@ -192,14 +239,10 @@ function PoolBreakdown({
 
     return (
         <section id="pool-breakdown">
-            <div className="flex flex-row w-full gap-0">
-                <Table>
+            <div className="flex flex-col w-full gap-md">
+                <h5 className="text-primary">Pool Composition</h5>
+                <Table className="border">
                     <TableHeader>
-                        <TableRow>
-                            <TableHead>
-                                <h5 className="text-primary">Pool Breakdown</h5>
-                            </TableHead>
-                        </TableRow>
                         <TableRow>
                             <TableHead>Weight %</TableHead>
                             <TableHead>Token</TableHead>
@@ -225,37 +268,10 @@ function RecentTransactions({
 }): JSX.Element {
     return (
         <section id="recent-transactions">
-            <div className="flex flex-row w-full gap-0">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>
-                                <h5 className="text-primary">
-                                    Recent Transactions
-                                </h5>
-                            </TableHead>
-                        </TableRow>
-                        <TableRow>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Token</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Value</TableHead>
-                            <TableHead>Account</TableHead>
-                            <TableHead>Time</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>Add Liquidity</TableCell>
-                            <TableCell>ETH</TableCell>
-                            <TableCell>1.432</TableCell>
-                            <TableCell>2,414.42</TableCell>
-                            <TableCell>0xbeef...cafe</TableCell>
-                            <TableCell>3 hours ago</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </div>
+            <TransactionTable
+                poolId={pool?.id}
+                poolTokens={pool?.poolTokens?.items}
+            />
         </section>
     )
 }
@@ -360,7 +376,7 @@ function TransactionView({
 
     // Form settings
     const [isUSD, setIsUSD] = useState<boolean>(false)
-    const [depositAll, setDepositAll] = useState<boolean>(false) // todo: make conditional once single sided deposits are available
+    const [depositAll, setDepositAll] = useState<boolean>(true) // todo: make conditional once single sided deposits are available
 
     // Form inputs
     const [amount, setAmount] = useState<string>('')
@@ -438,11 +454,25 @@ function TransactionView({
               payload: '',
           }
 
+    const chainId = useChainId()
+
+    const wethToken = tokens?.[chainId]?.find((t) => t.symbol === 'WETH')
+
+    const wethIndex = pool?.poolTokens?.items?.findIndex(
+        (pt: PoolTokenItemFragment) =>
+            getAddress(pt.token.id) ===
+            getAddress(wethToken?.address as `0x${string}`)
+    )
+
     // todo: assumes the same dependent amounts...
     const tokensToApprove = pool?.poolTokens?.items
         ?.filter((pt: PoolTokenItemFragment, index: number) => {
             const dependentAmount = dependentAmounts?.[index]
             if (isNaN(dependentAmount)) return false
+
+            // If the token is WETH, ignore the approval.
+            if (typeof wethIndex !== undefined && index === wethIndex)
+                return false
 
             const requiredAmount = toWad(dependentAmount)
             const allowance = allowances?.[index]?.result as bigint
@@ -487,7 +517,7 @@ function TransactionView({
         <TransactionDrawer
             transactionTokens={pool.poolTokens.items}
             deltas={dependentAmounts}
-            openButton={<>Deposit {selectedTokenSymbols}</>}
+            openButton={<>Deposit to {pool.name}</>}
             txTitle={
                 <>
                     Deposit {selectedTokenSymbols} to {pool.name}
@@ -497,40 +527,13 @@ function TransactionView({
                 <>Deposit tokens into a pool to mint liquidity tokens.</>
             }
             txForm={
-                <>
-                    <p>Amount</p>
-                    <div className="flex flex-row gap-sm items-center">
-                        <Label
-                            htmlFor="currency-mode"
-                            className={`${!isUSD ? '' : 'dark:text-muted-foreground'}`}
-                        >
-                            {pool?.poolTokens?.items?.find(
-                                (pt: PoolTokenItemFragment) =>
-                                    getAddress(pt.token.id) ===
-                                    getAddress(selectedTokens[0])
-                            )?.token.symbol || 'Asset'}
-                        </Label>
-                        <Switch
-                            id="currency-mode"
-                            checked={isUSD}
-                            onCheckedChange={() => setIsUSD(!isUSD)}
-                        />
-                        <Label
-                            htmlFor="currency-mode"
-                            className={`${isUSD ? '' : 'dark:text-muted-foreground'}`}
-                        >
-                            USD
-                        </Label>
-                    </div>
-
-                    <Input
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="0.0"
-                        disabled={false} // todo
-                        className="py-8 px-4 text-4xl"
-                    />
-                </>
+                <Input
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="0.0"
+                    disabled={false} // todo
+                    className="py-8 px-4 text-4xl"
+                />
             }
             txSubmit={
                 <>
@@ -581,6 +584,12 @@ function TransactionView({
                             txHash={txHash as `0x${string}`}
                             txReceipt={txReceipt}
                             functionName="allocate"
+                            value={
+                                typeof wethIndex !== undefined &&
+                                !isNaN(dependentAmounts?.[wethIndex])
+                                    ? toWad(dependentAmounts?.[wethIndex])
+                                    : undefined
+                            }
                             stateOverride={pool?.poolTokens?.items
                                 ?.map(
                                     (pt: PoolTokenItemFragment) => pt.token.id
@@ -654,13 +663,8 @@ function EligibleTokensTable({
         !balances || balances.every((b) => (b?.result as bigint) <= 0n)
 
     return (
-        <Table>
+        <Table className="border">
             <TableHeader>
-                <TableRow>
-                    <TableHead>
-                        <h5 className="text-primary">Deposit</h5>
-                    </TableHead>
-                </TableRow>
                 <TableRow>
                     <TableHead>Eligible Tokens</TableHead>
                     <TableHead>Your Balance</TableHead>
@@ -690,7 +694,7 @@ function EligibleTokensTable({
 
                         const isDisabled = !token || !balance || balance <= 0n
                         const tokenLogo =
-                            tokens?.[chainId].find(
+                            tokens?.[chainId]?.find(
                                 (t) =>
                                     getAddress(t.address) === getAddress(token)
                             )?.logo ?? DEFAULT_TOKEN_LOGO_SRC
@@ -701,20 +705,13 @@ function EligibleTokensTable({
                                 className={`${isDisabled ? 'hover:bg-transparent' : ''}`}
                             >
                                 <TableCell
-                                    className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
+                                    className={`flex flex-row items-center gap-sm ${isDisabled ? 'dark:text-muted-foreground' : ''}`}
                                 >
-                                    <div className="flex flex-row gap-sm items-center">
-                                        <img
-                                            src={tokenLogo}
-                                            alt={poolToken.token.symbol}
-                                            className={`${isDisabled ? 'dark:opacity-70' : ''} rounded-full size-6`}
-                                            style={{
-                                                zIndex: 1,
-                                            }}
-                                        />
-
-                                        {poolToken.token.symbol}
-                                    </div>
+                                    <TokenBadge
+                                        address={token}
+                                        className={`${isDisabled ? 'dark:opacity-70' : ''} rounded-full size-6`}
+                                    />
+                                    <span>{poolToken.token.symbol}</span>
                                 </TableCell>
                                 <TableCell
                                     className={`${isDisabled ? 'dark:text-muted-foreground' : ''}`}
@@ -724,20 +721,22 @@ function EligibleTokensTable({
                                 <TableCell>
                                     <input
                                         type="checkbox"
-                                        onChange={() =>
-                                            selectToken((prev) =>
+                                        onChange={() => {
+                                            // todo: uncomment with single sided deposit
+                                            /* selectToken((prev) =>
                                                 prev.includes(token)
                                                     ? prev.filter(
                                                           (t) => t !== token
                                                       )
                                                     : [...prev, token]
-                                            )
+                                            ) */}
                                         }
                                         checked={
                                             selectedTokens.includes(token) &&
                                             !isDisabled
                                         }
-                                        disabled={isDisabled}
+                                        // todo: fix when single sided deposits are available
+                                        disabled={isDisabled || true}
                                     />
                                 </TableCell>
                             </TableRow>
@@ -745,7 +744,7 @@ function EligibleTokensTable({
                     }
                 )}
                 {noEligible && (
-                    <TableRow>
+                    <TableRow className="hover:bg-transparent">
                         <TableCell>No tokens to deposit</TableCell>
                     </TableRow>
                 )}
@@ -770,13 +769,16 @@ function AddLiquidity({
 }: {
     pool?: PoolWithTokensFragment
 }): JSX.Element {
-    const [selectedTokens, setSelectedTokens] = useState<`0x${string}`[]>([
-        pool?.poolTokens?.items?.[0]?.token.id as `0x${string}`,
-    ])
+    const [selectedTokens, setSelectedTokens] = useState<`0x${string}`[]>(
+        pool?.poolTokens?.items?.map(
+            (pt: PoolTokenItemFragment) => pt.token.id as `0x${string}`
+        ) ?? []
+    )
 
     return (
-        <section id="user-actions">
-            <div className="flex flex-row w-full gap-md">
+        <section id="user-actions" className="flex flex-col gap-md">
+            <h5 className="text-primary">Deposit</h5>
+            <div className="flex flex-row w-full gap-lg">
                 <div className="w-2/3">
                     <EligibleTokensTable
                         pool={pool}
@@ -785,7 +787,7 @@ function AddLiquidity({
                     />
                 </div>
 
-                <div className="flex flex-col w-1/3 gap-md items-start bg-gray-900 shadow-lg p-4 rounded-lg mb-auto">
+                <div className="flex flex-col w-1/3 gap-md items-start bg-gray-900 shadow-lg p-4 border mb-auto">
                     <div className="flex flex-col gap-sm">
                         <p>Review</p>
                         <p className="text-muted-foreground dark:text-muted-foreground text-sm">
@@ -879,18 +881,12 @@ function UserPositions({
           }
 
     return (
-        <section id="user-positions">
+        <section id="user-positions" className="flex flex-col gap-md">
+            <h5 className="text-primary">Your Position</h5>
             <div className="flex flex-row w-full gap-lg">
                 <div className="w-2/3">
-                    <Table>
+                    <Table className="border">
                         <TableHeader>
-                            <TableRow>
-                                <TableHead>
-                                    <h5 className="text-primary">
-                                        Your Position
-                                    </h5>
-                                </TableHead>
-                            </TableRow>
                             <TableRow>
                                 <TableHead>Token</TableHead>
                                 <TableHead>Holdings</TableHead>
@@ -931,7 +927,7 @@ function UserPositions({
                     </Table>
                 </div>
 
-                <div className="flex flex-col w-1/3 gap-md items-start bg-gray-900 shadow-lg p-4 rounded-lg mb-auto">
+                <div className="flex flex-col w-1/3 gap-md items-start bg-gray-900 shadow-lg p-4 border mb-auto">
                     <div className="flex flex-col gap-sm">
                         <p>Review</p>
                         <p className="text-muted-foreground dark:text-muted-foreground text-sm">
@@ -947,7 +943,7 @@ function UserPositions({
                     <TransactionDrawer
                         transactionTokens={pool.poolTokens.items}
                         deltas={dependentAmountsWithdraw}
-                        openButton={<>Withdraw {selectedTokenSymbols}</>}
+                        openButton={<>Withdraw from {pool.name}</>}
                         txTitle={
                             <>
                                 Withdraw {selectedTokenSymbols} from {pool.name}
@@ -961,27 +957,6 @@ function UserPositions({
                         }
                         txForm={
                             <>
-                                <p>Amount LPT to Redeem</p>
-                                <div className="flex flex-row gap-sm items-center">
-                                    <Label
-                                        htmlFor="currency-mode"
-                                        className={`${!isUSD ? '' : 'dark:text-muted-foreground'}`}
-                                    >
-                                        {pool?.name || 'Asset'}
-                                    </Label>
-                                    <Switch
-                                        id="currency-mode"
-                                        checked={isUSD}
-                                        onCheckedChange={() => setIsUSD(!isUSD)}
-                                    />
-                                    <Label
-                                        htmlFor="currency-mode"
-                                        className={`${isUSD ? '' : 'dark:text-muted-foreground'}`}
-                                    >
-                                        USD
-                                    </Label>
-                                </div>
-
                                 <Input
                                     value={amount}
                                     onChange={(e) => setAmount(e.target.value)}
@@ -1137,12 +1112,7 @@ function computeTokenBreakdown(
 /**
  * @notice Computes the proportion of reserves to pool liquidity to lp token for each pool asset.
  */
-function TokenBreakdown({
-    pool,
-}: {
-    pool: PoolWithTokensFragment
-}): JSX.Element {
-    const chainId = useChainId()
+function LPTBreakdown({ pool }: { pool: PoolWithTokensFragment }): JSX.Element {
     const [totalLpt, setTotalSupply] = useState<bigint>(BigInt(0))
 
     // todo: make sure we are making use of query under the hood of wagmi
@@ -1160,35 +1130,35 @@ function TokenBreakdown({
     return (
         <section id="token-prices">
             <div className="flex flex-col gap-md">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>
-                                <h5 className="text-primary">
-                                    Token Breakdown
-                                </h5>
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                </Table>
+                <div>
+                    <TooltipProvider>
+                        <Tooltip delayDuration={200}>
+                            <TooltipTrigger>
+                                <div className="flex flex-row gap-xs items-center">
+                                    <h5 className="text-primary">
+                                        LPT Breakdown
+                                    </h5>
+                                    <InfoCircledIcon />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Amount of pool assets redeemed per LPT.
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
 
                 <div className="flex flex-row gap-4">
                     {pool.poolTokens.items.map((poolToken: PoolToken, i) => {
                         return (
                             <div
                                 key={poolToken.token.id}
-                                className="bg-dagger1 rounded-lg border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center"
+                                className="bg-dagger1 border border-dagger2 border-solid p-2 flex flex-row gap-2 items-center"
                             >
-                                <img
-                                    src={
-                                        tokens?.[chainId].find(
-                                            (tkn) =>
-                                                tkn.symbol.toLowerCase() ===
-                                                poolToken.token.symbol.toLowerCase()
-                                        )?.logo
+                                <TokenBadge
+                                    address={
+                                        poolToken.token.id as `0x${string}`
                                     }
-                                    alt={poolToken.token.symbol}
-                                    className="rounded-full size-6"
                                 />
                                 <p>
                                     {formatNumber(
@@ -1209,15 +1179,6 @@ function TokenBreakdown({
                             </div>
                         )
                     })}
-                </div>
-            </div>
-            <div className="my-8">
-                <p>Recent Transactions</p>
-                <div className="bg-dagger1 rounded-lg border border-dagger2 border-solid">
-                    <TransactionTable
-                        poolId={pool?.id}
-                        poolTokens={pool?.poolTokens?.items}
-                    />
                 </div>
             </div>
         </section>
@@ -1246,14 +1207,14 @@ function Pool(): JSX.Element {
 
     if (!pool?.poolTokens?.items || !parameters) return <></>
     return (
-        <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-2xl">
+        <div className="flex flex-col gap-2xl">
             <Overview pool={pool} />
 
             {isUserConnected && <AddLiquidity pool={pool} />}
             {isUserConnected && <UserPositions pool={pool} />}
 
             <PoolInfo pool={pool} />
-            <TokenBreakdown pool={pool} />
+            <LPTBreakdown pool={pool} />
             <PoolBreakdown pool={pool} />
             <RecentTransactions pool={pool} />
         </div>
