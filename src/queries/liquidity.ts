@@ -3,10 +3,25 @@ import { graphql } from '../gql'
 export const AllocateFragment = graphql(/* GraphQL */ `
     fragment AllocateItem on Allocate {
         id
-        poolId
         sender
-        block
-        deltas
+        pool {
+            id
+            tokenX
+            tokenY
+            reserveX
+            reserveY
+            totalLiquidity
+            strike
+            sigma
+            fee
+            maturity
+            curator {
+                id
+                name
+            }
+        }
+        debitX
+        debitY
         deltaLiquidity
         timestamp
         block
@@ -14,7 +29,7 @@ export const AllocateFragment = graphql(/* GraphQL */ `
 `)
 
 export const allAllocatesQueryDocument = graphql(/* GraphQL */ `
-    query allAllocates($poolId: BigInt!) {
+    query allAllocates($poolId: String!) {
         allocates(where: { poolId: $poolId }) {
             items {
                 ...AllocateItem
@@ -26,10 +41,25 @@ export const allAllocatesQueryDocument = graphql(/* GraphQL */ `
 export const DeallocateFragment = graphql(/* GraphQL */ `
     fragment DeallocateItem on Deallocate {
         id
-        poolId
         sender
-        block
-        deltas
+        pool {
+            id
+            tokenX
+            tokenY
+            reserveX
+            reserveY
+            totalLiquidity
+            strike
+            sigma
+            fee
+            maturity
+            curator {
+                id
+                name
+            }
+        }
+        creditX
+        creditY
         deltaLiquidity
         timestamp
         block
@@ -37,7 +67,7 @@ export const DeallocateFragment = graphql(/* GraphQL */ `
 `)
 
 export const allDeallocatesQueryDocument = graphql(/* GraphQL */ `
-    query allDeallocates($poolId: BigInt!) {
+    query allDeallocates($poolId: String!) {
         deallocates(where: { poolId: $poolId }) {
             items {
                 ...DeallocateItem
