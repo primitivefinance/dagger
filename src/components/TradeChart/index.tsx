@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 
 import { createChart, ColorType } from 'lightweight-charts'
 import { useGraphQL } from '../../useGraphQL'
-import { MarketPriceQueryDocument } from 'queries/markets'
+import { MarketPriceQueryDocument } from '../../queries/markets'
 
 export type TradeChartProps = {
     market: number
