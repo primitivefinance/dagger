@@ -8,11 +8,6 @@ import {
 } from '../ui/table'
 
 import { FragmentType, useFragment } from '../../gql'
-import {
-    PoolFragment,
-    TokenFragment,
-    allPoolsQueryDocument,
-} from '../../queries/pools'
 import { tokens } from '@/data/tokens'
 
 import { FC } from 'react'

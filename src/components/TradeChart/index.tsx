@@ -2,7 +2,7 @@ import type { FC } from 'react'
 import { useEffect, useRef } from 'react'
 
 import { createChart, ColorType } from 'lightweight-charts'
-import { useGraphQL } from 'useGraphQL'
+import { useGraphQL } from '../../useGraphQL'
 import { MarketPriceQueryDocument } from 'queries/markets'
 
 export type TradeChartProps = {

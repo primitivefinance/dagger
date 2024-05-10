@@ -15,6 +15,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { TokenBadge } from '@/components/PoolsTable'
 import { MarketItemFragment } from 'gql/graphql'
 
 type CuratorInfo = {
@@ -152,13 +153,10 @@ export const PoolCard = ({
 }: {
     market: MarketItemFragment
 }): JSX.Element => {
-    const poolTokens = pool?.poolTokens?.items?.map((poolToken) => poolToken)
-    const reserves = market?.reserves?.map((reserve) => reserve)
-
     return (
         <Card className="p-lg hover:bg-muted/50 rounded-none">
             <Link
-                to={`/pool/${pool?.id}`}
+                to={`/market/${market?.id}`}
                 className="block hover:no-underline h-full"
             >
                 <div className="flex flex-col gap-lg h-full justify-between">
@@ -172,7 +170,7 @@ export const PoolCard = ({
                         </Avatar>
                     </div>
                     <div className="flex flex-col gap-xs justify-center items-center">
-                        <h3>{pool.name}</h3>
+                        <h3>{market.name}</h3>
 
                         <LabelWithEtherscan
                             label={
@@ -180,7 +178,7 @@ export const PoolCard = ({
                                     Address
                                 </small>
                             }
-                            address={pool.lpToken}
+                            address={market.id}
                         />
                     </div>
 
@@ -189,8 +187,14 @@ export const PoolCard = ({
                             Holdings
                         </h5>
                         <HoldingsCell
-                            poolTokens={poolTokens}
-                            reserves={reserves}
+                            poolTokens={[
+                                market.pool.tokenX,
+                                market.pool.tokenY,
+                            ]}
+                            reserves={[
+                                market.pool.reserveX,
+                                market.pool.reserveY,
+                            ]}
                         />
                     </div>
 
