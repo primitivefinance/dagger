@@ -65,3 +65,49 @@ export const MarketInfoQueryDocument = graphql(`
         }
     }
 `)
+
+export const ExchangeRateFragment = graphql(`
+    fragment ExchangeRateItem on ExchangeRateHouly {
+        id
+        marketId
+        open
+        close
+        high
+        low
+        average
+        count
+    }
+`)
+
+export const ExchangeRateQueryDocument = graphql(`
+    query exchangeRate($limit: Int!) {
+        ExchangeRateHourly(limit: $limit, sort: "count:desc") {
+            items {
+                ...ExchangeRateItem
+            }
+        }
+    }
+`)
+
+export const MarketPriceFragment = graphql(`
+    fragment MarketPriceItem on MarketPricesHourly {
+        id
+        marketId
+        open
+        close
+        high
+        low
+        average
+        count
+    }
+`)
+
+export const MarketPriceQueryDocument = graphql(`
+    query marketPrice($limit: Int!) {
+        MarketPriceHourly(limit: $limit, sort: "count:desc") {
+            items {
+                ...MarketPriceItem
+            }
+        }
+    }
+`)
