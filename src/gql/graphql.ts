@@ -1,3912 +1,1335 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
-export type Maybe<T> = T | null
-export type InputMaybe<T> = Maybe<T>
-export type Exact<T extends { [key: string]: unknown }> = {
-    [K in keyof T]: T[K]
-}
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-    [SubKey in K]?: Maybe<T[SubKey]>
-}
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-    [SubKey in K]: Maybe<T[SubKey]>
-}
-export type MakeEmpty<
-    T extends { [key: string]: unknown },
-    K extends keyof T,
-> = { [_ in K]?: never }
-export type Incremental<T> =
-    | T
-    | {
-          [P in keyof T]?: P extends ' $fragmentName' | '__typename'
-              ? T[P]
-              : never
-      }
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-    ID: { input: string; output: string }
-    String: { input: string; output: string }
-    Boolean: { input: boolean; output: boolean }
-    Int: { input: number; output: number }
-    Float: { input: number; output: number }
-    BigInt: { input: any; output: any }
-}
-
-export type Account = {
-    __typename?: 'Account'
-    id: Scalars['String']['output']
-    pointsTotal: Scalars['BigInt']['output']
-    positions?: Maybe<PositionPage>
-    slPoints: Scalars['BigInt']['output']
-    swapPoints: Scalars['BigInt']['output']
-    wrPoints: Scalars['BigInt']['output']
-}
-
-export type AccountPositionsArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    where?: InputMaybe<AccountFilter>
-}
-
-export type AccountFilter = {
-    AND?: InputMaybe<Array<InputMaybe<AccountFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<AccountFilter>>>
-    id?: InputMaybe<Scalars['String']['input']>
-    id_gt?: InputMaybe<Scalars['String']['input']>
-    id_gte?: InputMaybe<Scalars['String']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_lt?: InputMaybe<Scalars['String']['input']>
-    id_lte?: InputMaybe<Scalars['String']['input']>
-    id_not?: InputMaybe<Scalars['String']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    pointsTotal?: InputMaybe<Scalars['BigInt']['input']>
-    pointsTotal_gt?: InputMaybe<Scalars['BigInt']['input']>
-    pointsTotal_gte?: InputMaybe<Scalars['BigInt']['input']>
-    pointsTotal_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    pointsTotal_lt?: InputMaybe<Scalars['BigInt']['input']>
-    pointsTotal_lte?: InputMaybe<Scalars['BigInt']['input']>
-    pointsTotal_not?: InputMaybe<Scalars['BigInt']['input']>
-    pointsTotal_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    slPoints?: InputMaybe<Scalars['BigInt']['input']>
-    slPoints_gt?: InputMaybe<Scalars['BigInt']['input']>
-    slPoints_gte?: InputMaybe<Scalars['BigInt']['input']>
-    slPoints_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    slPoints_lt?: InputMaybe<Scalars['BigInt']['input']>
-    slPoints_lte?: InputMaybe<Scalars['BigInt']['input']>
-    slPoints_not?: InputMaybe<Scalars['BigInt']['input']>
-    slPoints_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapPoints?: InputMaybe<Scalars['BigInt']['input']>
-    swapPoints_gt?: InputMaybe<Scalars['BigInt']['input']>
-    swapPoints_gte?: InputMaybe<Scalars['BigInt']['input']>
-    swapPoints_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapPoints_lt?: InputMaybe<Scalars['BigInt']['input']>
-    swapPoints_lte?: InputMaybe<Scalars['BigInt']['input']>
-    swapPoints_not?: InputMaybe<Scalars['BigInt']['input']>
-    swapPoints_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    wrPoints?: InputMaybe<Scalars['BigInt']['input']>
-    wrPoints_gt?: InputMaybe<Scalars['BigInt']['input']>
-    wrPoints_gte?: InputMaybe<Scalars['BigInt']['input']>
-    wrPoints_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    wrPoints_lt?: InputMaybe<Scalars['BigInt']['input']>
-    wrPoints_lte?: InputMaybe<Scalars['BigInt']['input']>
-    wrPoints_not?: InputMaybe<Scalars['BigInt']['input']>
-    wrPoints_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-}
-
-export type AccountPage = {
-    __typename?: 'AccountPage'
-    items: Array<Account>
-    pageInfo: PageInfo
-}
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  BigInt: { input: any; output: any; }
+};
 
 export type Allocate = {
-    __typename?: 'Allocate'
-    block: Scalars['BigInt']['output']
-    deltaLiquidity: Scalars['Float']['output']
-    deltaLiquidityWad: Scalars['BigInt']['output']
-    deltas: Array<Scalars['Float']['output']>
-    deltasWad: Array<Scalars['BigInt']['output']>
-    id: Scalars['String']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-    sender: Scalars['String']['output']
-    timestamp: Scalars['BigInt']['output']
-}
+  __typename?: 'Allocate';
+  block: Scalars['BigInt']['output'];
+  debitX: Scalars['BigInt']['output'];
+  debitY: Scalars['BigInt']['output'];
+  deltaLiquidity: Scalars['BigInt']['output'];
+  id: Scalars['String']['output'];
+  pool: Pool;
+  poolId: Scalars['String']['output'];
+  sender: Scalars['String']['output'];
+  timestamp: Scalars['BigInt']['output'];
+};
 
 export type AllocateFilter = {
-    AND?: InputMaybe<Array<InputMaybe<AllocateFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<AllocateFilter>>>
-    block?: InputMaybe<Scalars['BigInt']['input']>
-    block_gt?: InputMaybe<Scalars['BigInt']['input']>
-    block_gte?: InputMaybe<Scalars['BigInt']['input']>
-    block_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    block_lt?: InputMaybe<Scalars['BigInt']['input']>
-    block_lte?: InputMaybe<Scalars['BigInt']['input']>
-    block_not?: InputMaybe<Scalars['BigInt']['input']>
-    block_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    deltaLiquidity?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidityWad?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_gt?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_gte?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    deltaLiquidityWad_lt?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_lte?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_not?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    deltaLiquidity_gt?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_gte?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    deltaLiquidity_lt?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_lte?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_not?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Float']['input']>>
-    >
-    deltas?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    deltasWad?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    deltasWad_has?: InputMaybe<Scalars['BigInt']['input']>
-    deltasWad_not?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    deltasWad_not_has?: InputMaybe<Scalars['BigInt']['input']>
-    deltas_has?: InputMaybe<Scalars['Float']['input']>
-    deltas_not?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    deltas_not_has?: InputMaybe<Scalars['Float']['input']>
-    id?: InputMaybe<Scalars['String']['input']>
-    id_gt?: InputMaybe<Scalars['String']['input']>
-    id_gte?: InputMaybe<Scalars['String']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_lt?: InputMaybe<Scalars['String']['input']>
-    id_lte?: InputMaybe<Scalars['String']['input']>
-    id_not?: InputMaybe<Scalars['String']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    sender?: InputMaybe<Scalars['String']['input']>
-    sender_gt?: InputMaybe<Scalars['String']['input']>
-    sender_gte?: InputMaybe<Scalars['String']['input']>
-    sender_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    sender_lt?: InputMaybe<Scalars['String']['input']>
-    sender_lte?: InputMaybe<Scalars['String']['input']>
-    sender_not?: InputMaybe<Scalars['String']['input']>
-    sender_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    timestamp?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_not?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-}
+  AND?: InputMaybe<Array<InputMaybe<AllocateFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<AllocateFilter>>>;
+  block?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  block_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  debitX?: InputMaybe<Scalars['BigInt']['input']>;
+  debitX_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  debitX_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  debitX_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  debitX_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  debitX_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  debitX_not?: InputMaybe<Scalars['BigInt']['input']>;
+  debitX_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  debitY?: InputMaybe<Scalars['BigInt']['input']>;
+  debitY_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  debitY_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  debitY_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  debitY_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  debitY_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  debitY_not?: InputMaybe<Scalars['BigInt']['input']>;
+  debitY_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_not?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId?: InputMaybe<Scalars['String']['input']>;
+  poolId_gt?: InputMaybe<Scalars['String']['input']>;
+  poolId_gte?: InputMaybe<Scalars['String']['input']>;
+  poolId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId_lt?: InputMaybe<Scalars['String']['input']>;
+  poolId_lte?: InputMaybe<Scalars['String']['input']>;
+  poolId_not?: InputMaybe<Scalars['String']['input']>;
+  poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sender?: InputMaybe<Scalars['String']['input']>;
+  sender_gt?: InputMaybe<Scalars['String']['input']>;
+  sender_gte?: InputMaybe<Scalars['String']['input']>;
+  sender_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sender_lt?: InputMaybe<Scalars['String']['input']>;
+  sender_lte?: InputMaybe<Scalars['String']['input']>;
+  sender_not?: InputMaybe<Scalars['String']['input']>;
+  sender_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+};
 
 export type AllocatePage = {
-    __typename?: 'AllocatePage'
-    items: Array<Allocate>
-    pageInfo: PageInfo
-}
+  __typename?: 'AllocatePage';
+  items: Array<Allocate>;
+  pageInfo: PageInfo;
+};
 
-export type ConstantSumParams = {
-    __typename?: 'ConstantSumParams'
-    controller: Scalars['String']['output']
-    id: Scalars['BigInt']['output']
-    lastComputedPrice: Scalars['Float']['output']
-    lastComputedPriceWad: Scalars['BigInt']['output']
-    lastPriceUpdate: Scalars['Int']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-    priceUpdateEnd: Scalars['Int']['output']
-    priceUpdatePerSecond: Scalars['Float']['output']
-    priceUpdatePerSecondWad: Scalars['BigInt']['output']
-    swapFee: Scalars['BigInt']['output']
-}
+export type Curator = {
+  __typename?: 'Curator';
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  link?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+};
 
-export type ConstantSumParamsFilter = {
-    AND?: InputMaybe<Array<InputMaybe<ConstantSumParamsFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<ConstantSumParamsFilter>>>
-    controller?: InputMaybe<Scalars['String']['input']>
-    controller_gt?: InputMaybe<Scalars['String']['input']>
-    controller_gte?: InputMaybe<Scalars['String']['input']>
-    controller_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    controller_lt?: InputMaybe<Scalars['String']['input']>
-    controller_lte?: InputMaybe<Scalars['String']['input']>
-    controller_not?: InputMaybe<Scalars['String']['input']>
-    controller_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['String']['input']>>
-    >
-    id?: InputMaybe<Scalars['BigInt']['input']>
-    id_gt?: InputMaybe<Scalars['BigInt']['input']>
-    id_gte?: InputMaybe<Scalars['BigInt']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    id_lt?: InputMaybe<Scalars['BigInt']['input']>
-    id_lte?: InputMaybe<Scalars['BigInt']['input']>
-    id_not?: InputMaybe<Scalars['BigInt']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    lastComputedPrice?: InputMaybe<Scalars['Float']['input']>
-    lastComputedPriceWad?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedPriceWad_gt?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedPriceWad_gte?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedPriceWad_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastComputedPriceWad_lt?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedPriceWad_lte?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedPriceWad_not?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedPriceWad_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastComputedPrice_gt?: InputMaybe<Scalars['Float']['input']>
-    lastComputedPrice_gte?: InputMaybe<Scalars['Float']['input']>
-    lastComputedPrice_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Float']['input']>>
-    >
-    lastComputedPrice_lt?: InputMaybe<Scalars['Float']['input']>
-    lastComputedPrice_lte?: InputMaybe<Scalars['Float']['input']>
-    lastComputedPrice_not?: InputMaybe<Scalars['Float']['input']>
-    lastComputedPrice_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Float']['input']>>
-    >
-    lastPriceUpdate?: InputMaybe<Scalars['Int']['input']>
-    lastPriceUpdate_gt?: InputMaybe<Scalars['Int']['input']>
-    lastPriceUpdate_gte?: InputMaybe<Scalars['Int']['input']>
-    lastPriceUpdate_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    lastPriceUpdate_lt?: InputMaybe<Scalars['Int']['input']>
-    lastPriceUpdate_lte?: InputMaybe<Scalars['Int']['input']>
-    lastPriceUpdate_not?: InputMaybe<Scalars['Int']['input']>
-    lastPriceUpdate_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    priceUpdateEnd?: InputMaybe<Scalars['Int']['input']>
-    priceUpdateEnd_gt?: InputMaybe<Scalars['Int']['input']>
-    priceUpdateEnd_gte?: InputMaybe<Scalars['Int']['input']>
-    priceUpdateEnd_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    priceUpdateEnd_lt?: InputMaybe<Scalars['Int']['input']>
-    priceUpdateEnd_lte?: InputMaybe<Scalars['Int']['input']>
-    priceUpdateEnd_not?: InputMaybe<Scalars['Int']['input']>
-    priceUpdateEnd_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    priceUpdatePerSecond?: InputMaybe<Scalars['Float']['input']>
-    priceUpdatePerSecondWad?: InputMaybe<Scalars['BigInt']['input']>
-    priceUpdatePerSecondWad_gt?: InputMaybe<Scalars['BigInt']['input']>
-    priceUpdatePerSecondWad_gte?: InputMaybe<Scalars['BigInt']['input']>
-    priceUpdatePerSecondWad_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    priceUpdatePerSecondWad_lt?: InputMaybe<Scalars['BigInt']['input']>
-    priceUpdatePerSecondWad_lte?: InputMaybe<Scalars['BigInt']['input']>
-    priceUpdatePerSecondWad_not?: InputMaybe<Scalars['BigInt']['input']>
-    priceUpdatePerSecondWad_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    priceUpdatePerSecond_gt?: InputMaybe<Scalars['Float']['input']>
-    priceUpdatePerSecond_gte?: InputMaybe<Scalars['Float']['input']>
-    priceUpdatePerSecond_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Float']['input']>>
-    >
-    priceUpdatePerSecond_lt?: InputMaybe<Scalars['Float']['input']>
-    priceUpdatePerSecond_lte?: InputMaybe<Scalars['Float']['input']>
-    priceUpdatePerSecond_not?: InputMaybe<Scalars['Float']['input']>
-    priceUpdatePerSecond_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Float']['input']>>
-    >
-    swapFee?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_gt?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_gte?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapFee_lt?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_lte?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_not?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-}
+export type CuratorFilter = {
+  AND?: InputMaybe<Array<InputMaybe<CuratorFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<CuratorFilter>>>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  icon_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not?: InputMaybe<Scalars['String']['input']>;
+  icon_not_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  icon_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  link?: InputMaybe<Scalars['String']['input']>;
+  link_contains?: InputMaybe<Scalars['String']['input']>;
+  link_ends_with?: InputMaybe<Scalars['String']['input']>;
+  link_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  link_not?: InputMaybe<Scalars['String']['input']>;
+  link_not_contains?: InputMaybe<Scalars['String']['input']>;
+  link_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  link_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  link_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  link_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_contains?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
 
-export type ConstantSumParamsPage = {
-    __typename?: 'ConstantSumParamsPage'
-    items: Array<ConstantSumParams>
-    pageInfo: PageInfo
-}
+export type CuratorPage = {
+  __typename?: 'CuratorPage';
+  items: Array<Curator>;
+  pageInfo: PageInfo;
+};
 
 export type Deallocate = {
-    __typename?: 'Deallocate'
-    block: Scalars['BigInt']['output']
-    deltaLiquidity: Scalars['Float']['output']
-    deltaLiquidityWad: Scalars['BigInt']['output']
-    deltas?: Maybe<Array<Scalars['Float']['output']>>
-    deltasWad?: Maybe<Array<Scalars['BigInt']['output']>>
-    id: Scalars['String']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-    sender: Scalars['String']['output']
-    timestamp: Scalars['BigInt']['output']
-}
+  __typename?: 'Deallocate';
+  block: Scalars['BigInt']['output'];
+  creditX: Scalars['BigInt']['output'];
+  creditY: Scalars['BigInt']['output'];
+  deltaLiquidity: Scalars['BigInt']['output'];
+  id: Scalars['String']['output'];
+  pool: Pool;
+  poolId: Scalars['String']['output'];
+  sender: Scalars['String']['output'];
+  timestamp: Scalars['BigInt']['output'];
+};
 
 export type DeallocateFilter = {
-    AND?: InputMaybe<Array<InputMaybe<DeallocateFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<DeallocateFilter>>>
-    block?: InputMaybe<Scalars['BigInt']['input']>
-    block_gt?: InputMaybe<Scalars['BigInt']['input']>
-    block_gte?: InputMaybe<Scalars['BigInt']['input']>
-    block_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    block_lt?: InputMaybe<Scalars['BigInt']['input']>
-    block_lte?: InputMaybe<Scalars['BigInt']['input']>
-    block_not?: InputMaybe<Scalars['BigInt']['input']>
-    block_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    deltaLiquidity?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidityWad?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_gt?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_gte?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    deltaLiquidityWad_lt?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_lte?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_not?: InputMaybe<Scalars['BigInt']['input']>
-    deltaLiquidityWad_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    deltaLiquidity_gt?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_gte?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    deltaLiquidity_lt?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_lte?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_not?: InputMaybe<Scalars['Float']['input']>
-    deltaLiquidity_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Float']['input']>>
-    >
-    deltas?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    deltasWad?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    deltasWad_has?: InputMaybe<Scalars['BigInt']['input']>
-    deltasWad_not?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    deltasWad_not_has?: InputMaybe<Scalars['BigInt']['input']>
-    deltas_has?: InputMaybe<Scalars['Float']['input']>
-    deltas_not?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    deltas_not_has?: InputMaybe<Scalars['Float']['input']>
-    id?: InputMaybe<Scalars['String']['input']>
-    id_gt?: InputMaybe<Scalars['String']['input']>
-    id_gte?: InputMaybe<Scalars['String']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_lt?: InputMaybe<Scalars['String']['input']>
-    id_lte?: InputMaybe<Scalars['String']['input']>
-    id_not?: InputMaybe<Scalars['String']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    sender?: InputMaybe<Scalars['String']['input']>
-    sender_gt?: InputMaybe<Scalars['String']['input']>
-    sender_gte?: InputMaybe<Scalars['String']['input']>
-    sender_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    sender_lt?: InputMaybe<Scalars['String']['input']>
-    sender_lte?: InputMaybe<Scalars['String']['input']>
-    sender_not?: InputMaybe<Scalars['String']['input']>
-    sender_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    timestamp?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_not?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-}
+  AND?: InputMaybe<Array<InputMaybe<DeallocateFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<DeallocateFilter>>>;
+  block?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  block_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  creditX?: InputMaybe<Scalars['BigInt']['input']>;
+  creditX_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  creditX_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  creditX_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  creditX_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  creditX_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  creditX_not?: InputMaybe<Scalars['BigInt']['input']>;
+  creditX_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  creditY?: InputMaybe<Scalars['BigInt']['input']>;
+  creditY_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  creditY_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  creditY_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  creditY_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  creditY_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  creditY_not?: InputMaybe<Scalars['BigInt']['input']>;
+  creditY_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_not?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId?: InputMaybe<Scalars['String']['input']>;
+  poolId_gt?: InputMaybe<Scalars['String']['input']>;
+  poolId_gte?: InputMaybe<Scalars['String']['input']>;
+  poolId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId_lt?: InputMaybe<Scalars['String']['input']>;
+  poolId_lte?: InputMaybe<Scalars['String']['input']>;
+  poolId_not?: InputMaybe<Scalars['String']['input']>;
+  poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sender?: InputMaybe<Scalars['String']['input']>;
+  sender_gt?: InputMaybe<Scalars['String']['input']>;
+  sender_gte?: InputMaybe<Scalars['String']['input']>;
+  sender_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sender_lt?: InputMaybe<Scalars['String']['input']>;
+  sender_lte?: InputMaybe<Scalars['String']['input']>;
+  sender_not?: InputMaybe<Scalars['String']['input']>;
+  sender_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+};
 
 export type DeallocatePage = {
-    __typename?: 'DeallocatePage'
-    items: Array<Deallocate>
-    pageInfo: PageInfo
-}
+  __typename?: 'DeallocatePage';
+  items: Array<Deallocate>;
+  pageInfo: PageInfo;
+};
 
-export type GeometricMeanParams = {
-    __typename?: 'GeometricMeanParams'
-    controller: Scalars['String']['output']
-    id: Scalars['BigInt']['output']
-    lastComputedWeightX: Scalars['BigInt']['output']
-    lastWeightXUpdate: Scalars['Int']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-    swapFee: Scalars['BigInt']['output']
-    weightXUpdateEnd: Scalars['Int']['output']
-    weightXUpdatePerSecond: Scalars['BigInt']['output']
-}
+export type ExchangeRateHourly = {
+  __typename?: 'ExchangeRateHourly';
+  average: Scalars['Float']['output'];
+  close: Scalars['Float']['output'];
+  count: Scalars['Int']['output'];
+  high: Scalars['Float']['output'];
+  id: Scalars['Int']['output'];
+  low: Scalars['Float']['output'];
+  marketId: Scalars['String']['output'];
+  open: Scalars['Float']['output'];
+};
 
-export type GeometricMeanParamsFilter = {
-    AND?: InputMaybe<Array<InputMaybe<GeometricMeanParamsFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<GeometricMeanParamsFilter>>>
-    controller?: InputMaybe<Scalars['String']['input']>
-    controller_gt?: InputMaybe<Scalars['String']['input']>
-    controller_gte?: InputMaybe<Scalars['String']['input']>
-    controller_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    controller_lt?: InputMaybe<Scalars['String']['input']>
-    controller_lte?: InputMaybe<Scalars['String']['input']>
-    controller_not?: InputMaybe<Scalars['String']['input']>
-    controller_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['String']['input']>>
-    >
-    id?: InputMaybe<Scalars['BigInt']['input']>
-    id_gt?: InputMaybe<Scalars['BigInt']['input']>
-    id_gte?: InputMaybe<Scalars['BigInt']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    id_lt?: InputMaybe<Scalars['BigInt']['input']>
-    id_lte?: InputMaybe<Scalars['BigInt']['input']>
-    id_not?: InputMaybe<Scalars['BigInt']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    lastComputedWeightX?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWeightX_gt?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWeightX_gte?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWeightX_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastComputedWeightX_lt?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWeightX_lte?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWeightX_not?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWeightX_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastWeightXUpdate?: InputMaybe<Scalars['Int']['input']>
-    lastWeightXUpdate_gt?: InputMaybe<Scalars['Int']['input']>
-    lastWeightXUpdate_gte?: InputMaybe<Scalars['Int']['input']>
-    lastWeightXUpdate_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    lastWeightXUpdate_lt?: InputMaybe<Scalars['Int']['input']>
-    lastWeightXUpdate_lte?: InputMaybe<Scalars['Int']['input']>
-    lastWeightXUpdate_not?: InputMaybe<Scalars['Int']['input']>
-    lastWeightXUpdate_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapFee?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_gt?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_gte?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapFee_lt?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_lte?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_not?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    weightXUpdateEnd?: InputMaybe<Scalars['Int']['input']>
-    weightXUpdateEnd_gt?: InputMaybe<Scalars['Int']['input']>
-    weightXUpdateEnd_gte?: InputMaybe<Scalars['Int']['input']>
-    weightXUpdateEnd_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    weightXUpdateEnd_lt?: InputMaybe<Scalars['Int']['input']>
-    weightXUpdateEnd_lte?: InputMaybe<Scalars['Int']['input']>
-    weightXUpdateEnd_not?: InputMaybe<Scalars['Int']['input']>
-    weightXUpdateEnd_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    weightXUpdatePerSecond?: InputMaybe<Scalars['BigInt']['input']>
-    weightXUpdatePerSecond_gt?: InputMaybe<Scalars['BigInt']['input']>
-    weightXUpdatePerSecond_gte?: InputMaybe<Scalars['BigInt']['input']>
-    weightXUpdatePerSecond_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    weightXUpdatePerSecond_lt?: InputMaybe<Scalars['BigInt']['input']>
-    weightXUpdatePerSecond_lte?: InputMaybe<Scalars['BigInt']['input']>
-    weightXUpdatePerSecond_not?: InputMaybe<Scalars['BigInt']['input']>
-    weightXUpdatePerSecond_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-}
+export type ExchangeRateHourlyFilter = {
+  AND?: InputMaybe<Array<InputMaybe<ExchangeRateHourlyFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<ExchangeRateHourlyFilter>>>;
+  average?: InputMaybe<Scalars['Float']['input']>;
+  average_gt?: InputMaybe<Scalars['Float']['input']>;
+  average_gte?: InputMaybe<Scalars['Float']['input']>;
+  average_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  average_lt?: InputMaybe<Scalars['Float']['input']>;
+  average_lte?: InputMaybe<Scalars['Float']['input']>;
+  average_not?: InputMaybe<Scalars['Float']['input']>;
+  average_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  close?: InputMaybe<Scalars['Float']['input']>;
+  close_gt?: InputMaybe<Scalars['Float']['input']>;
+  close_gte?: InputMaybe<Scalars['Float']['input']>;
+  close_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  close_lt?: InputMaybe<Scalars['Float']['input']>;
+  close_lte?: InputMaybe<Scalars['Float']['input']>;
+  close_not?: InputMaybe<Scalars['Float']['input']>;
+  close_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  count?: InputMaybe<Scalars['Int']['input']>;
+  count_gt?: InputMaybe<Scalars['Int']['input']>;
+  count_gte?: InputMaybe<Scalars['Int']['input']>;
+  count_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  count_lt?: InputMaybe<Scalars['Int']['input']>;
+  count_lte?: InputMaybe<Scalars['Int']['input']>;
+  count_not?: InputMaybe<Scalars['Int']['input']>;
+  count_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  high?: InputMaybe<Scalars['Float']['input']>;
+  high_gt?: InputMaybe<Scalars['Float']['input']>;
+  high_gte?: InputMaybe<Scalars['Float']['input']>;
+  high_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  high_lt?: InputMaybe<Scalars['Float']['input']>;
+  high_lte?: InputMaybe<Scalars['Float']['input']>;
+  high_not?: InputMaybe<Scalars['Float']['input']>;
+  high_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  id_gt?: InputMaybe<Scalars['Int']['input']>;
+  id_gte?: InputMaybe<Scalars['Int']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  id_lt?: InputMaybe<Scalars['Int']['input']>;
+  id_lte?: InputMaybe<Scalars['Int']['input']>;
+  id_not?: InputMaybe<Scalars['Int']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  low?: InputMaybe<Scalars['Float']['input']>;
+  low_gt?: InputMaybe<Scalars['Float']['input']>;
+  low_gte?: InputMaybe<Scalars['Float']['input']>;
+  low_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  low_lt?: InputMaybe<Scalars['Float']['input']>;
+  low_lte?: InputMaybe<Scalars['Float']['input']>;
+  low_not?: InputMaybe<Scalars['Float']['input']>;
+  low_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  marketId?: InputMaybe<Scalars['String']['input']>;
+  marketId_gt?: InputMaybe<Scalars['String']['input']>;
+  marketId_gte?: InputMaybe<Scalars['String']['input']>;
+  marketId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  marketId_lt?: InputMaybe<Scalars['String']['input']>;
+  marketId_lte?: InputMaybe<Scalars['String']['input']>;
+  marketId_not?: InputMaybe<Scalars['String']['input']>;
+  marketId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  open?: InputMaybe<Scalars['Float']['input']>;
+  open_gt?: InputMaybe<Scalars['Float']['input']>;
+  open_gte?: InputMaybe<Scalars['Float']['input']>;
+  open_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  open_lt?: InputMaybe<Scalars['Float']['input']>;
+  open_lte?: InputMaybe<Scalars['Float']['input']>;
+  open_not?: InputMaybe<Scalars['Float']['input']>;
+  open_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+};
 
-export type GeometricMeanParamsPage = {
-    __typename?: 'GeometricMeanParamsPage'
-    items: Array<GeometricMeanParams>
-    pageInfo: PageInfo
-}
+export type ExchangeRateHourlyPage = {
+  __typename?: 'ExchangeRateHourlyPage';
+  items: Array<ExchangeRateHourly>;
+  pageInfo: PageInfo;
+};
 
-export type LogNormalParams = {
-    __typename?: 'LogNormalParams'
-    controller: Scalars['String']['output']
-    id: Scalars['BigInt']['output']
-    lastComputedMean: Scalars['BigInt']['output']
-    lastComputedWidth: Scalars['BigInt']['output']
-    lastMeanUpdate: Scalars['Int']['output']
-    lastWidthUpdate: Scalars['Int']['output']
-    meanUpdateEnd: Scalars['Int']['output']
-    meanUpdatePerSecond: Scalars['BigInt']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-    swapFee: Scalars['BigInt']['output']
-    widthUpdateEnd: Scalars['Int']['output']
-    widthUpdatePerSecond: Scalars['BigInt']['output']
-}
+export type Market = {
+  __typename?: 'Market';
+  expiry: Scalars['BigInt']['output'];
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  pool: Pool;
+  poolId: Scalars['String']['output'];
+  pt: PToken;
+  ptId: Scalars['String']['output'];
+  sy: SyToken;
+  syId: Scalars['String']['output'];
+  yt: YToken;
+  ytId: Scalars['String']['output'];
+};
 
-export type LogNormalParamsFilter = {
-    AND?: InputMaybe<Array<InputMaybe<LogNormalParamsFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<LogNormalParamsFilter>>>
-    controller?: InputMaybe<Scalars['String']['input']>
-    controller_gt?: InputMaybe<Scalars['String']['input']>
-    controller_gte?: InputMaybe<Scalars['String']['input']>
-    controller_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    controller_lt?: InputMaybe<Scalars['String']['input']>
-    controller_lte?: InputMaybe<Scalars['String']['input']>
-    controller_not?: InputMaybe<Scalars['String']['input']>
-    controller_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['String']['input']>>
-    >
-    id?: InputMaybe<Scalars['BigInt']['input']>
-    id_gt?: InputMaybe<Scalars['BigInt']['input']>
-    id_gte?: InputMaybe<Scalars['BigInt']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    id_lt?: InputMaybe<Scalars['BigInt']['input']>
-    id_lte?: InputMaybe<Scalars['BigInt']['input']>
-    id_not?: InputMaybe<Scalars['BigInt']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    lastComputedMean?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedMean_gt?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedMean_gte?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedMean_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastComputedMean_lt?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedMean_lte?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedMean_not?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedMean_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastComputedWidth?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWidth_gt?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWidth_gte?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWidth_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastComputedWidth_lt?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWidth_lte?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWidth_not?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWidth_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastMeanUpdate?: InputMaybe<Scalars['Int']['input']>
-    lastMeanUpdate_gt?: InputMaybe<Scalars['Int']['input']>
-    lastMeanUpdate_gte?: InputMaybe<Scalars['Int']['input']>
-    lastMeanUpdate_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    lastMeanUpdate_lt?: InputMaybe<Scalars['Int']['input']>
-    lastMeanUpdate_lte?: InputMaybe<Scalars['Int']['input']>
-    lastMeanUpdate_not?: InputMaybe<Scalars['Int']['input']>
-    lastMeanUpdate_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    lastWidthUpdate?: InputMaybe<Scalars['Int']['input']>
-    lastWidthUpdate_gt?: InputMaybe<Scalars['Int']['input']>
-    lastWidthUpdate_gte?: InputMaybe<Scalars['Int']['input']>
-    lastWidthUpdate_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    lastWidthUpdate_lt?: InputMaybe<Scalars['Int']['input']>
-    lastWidthUpdate_lte?: InputMaybe<Scalars['Int']['input']>
-    lastWidthUpdate_not?: InputMaybe<Scalars['Int']['input']>
-    lastWidthUpdate_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    meanUpdateEnd?: InputMaybe<Scalars['Int']['input']>
-    meanUpdateEnd_gt?: InputMaybe<Scalars['Int']['input']>
-    meanUpdateEnd_gte?: InputMaybe<Scalars['Int']['input']>
-    meanUpdateEnd_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    meanUpdateEnd_lt?: InputMaybe<Scalars['Int']['input']>
-    meanUpdateEnd_lte?: InputMaybe<Scalars['Int']['input']>
-    meanUpdateEnd_not?: InputMaybe<Scalars['Int']['input']>
-    meanUpdateEnd_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    meanUpdatePerSecond?: InputMaybe<Scalars['BigInt']['input']>
-    meanUpdatePerSecond_gt?: InputMaybe<Scalars['BigInt']['input']>
-    meanUpdatePerSecond_gte?: InputMaybe<Scalars['BigInt']['input']>
-    meanUpdatePerSecond_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    meanUpdatePerSecond_lt?: InputMaybe<Scalars['BigInt']['input']>
-    meanUpdatePerSecond_lte?: InputMaybe<Scalars['BigInt']['input']>
-    meanUpdatePerSecond_not?: InputMaybe<Scalars['BigInt']['input']>
-    meanUpdatePerSecond_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapFee?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_gt?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_gte?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapFee_lt?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_lte?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_not?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    widthUpdateEnd?: InputMaybe<Scalars['Int']['input']>
-    widthUpdateEnd_gt?: InputMaybe<Scalars['Int']['input']>
-    widthUpdateEnd_gte?: InputMaybe<Scalars['Int']['input']>
-    widthUpdateEnd_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    widthUpdateEnd_lt?: InputMaybe<Scalars['Int']['input']>
-    widthUpdateEnd_lte?: InputMaybe<Scalars['Int']['input']>
-    widthUpdateEnd_not?: InputMaybe<Scalars['Int']['input']>
-    widthUpdateEnd_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    widthUpdatePerSecond?: InputMaybe<Scalars['BigInt']['input']>
-    widthUpdatePerSecond_gt?: InputMaybe<Scalars['BigInt']['input']>
-    widthUpdatePerSecond_gte?: InputMaybe<Scalars['BigInt']['input']>
-    widthUpdatePerSecond_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    widthUpdatePerSecond_lt?: InputMaybe<Scalars['BigInt']['input']>
-    widthUpdatePerSecond_lte?: InputMaybe<Scalars['BigInt']['input']>
-    widthUpdatePerSecond_not?: InputMaybe<Scalars['BigInt']['input']>
-    widthUpdatePerSecond_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-}
+export type MarketFilter = {
+  AND?: InputMaybe<Array<InputMaybe<MarketFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<MarketFilter>>>;
+  expiry?: InputMaybe<Scalars['BigInt']['input']>;
+  expiry_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  expiry_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  expiry_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  expiry_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  expiry_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  expiry_not?: InputMaybe<Scalars['BigInt']['input']>;
+  expiry_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_contains?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
+  poolId?: InputMaybe<Scalars['String']['input']>;
+  poolId_gt?: InputMaybe<Scalars['String']['input']>;
+  poolId_gte?: InputMaybe<Scalars['String']['input']>;
+  poolId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId_lt?: InputMaybe<Scalars['String']['input']>;
+  poolId_lte?: InputMaybe<Scalars['String']['input']>;
+  poolId_not?: InputMaybe<Scalars['String']['input']>;
+  poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  ptId?: InputMaybe<Scalars['String']['input']>;
+  ptId_gt?: InputMaybe<Scalars['String']['input']>;
+  ptId_gte?: InputMaybe<Scalars['String']['input']>;
+  ptId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  ptId_lt?: InputMaybe<Scalars['String']['input']>;
+  ptId_lte?: InputMaybe<Scalars['String']['input']>;
+  ptId_not?: InputMaybe<Scalars['String']['input']>;
+  ptId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  syId?: InputMaybe<Scalars['String']['input']>;
+  syId_gt?: InputMaybe<Scalars['String']['input']>;
+  syId_gte?: InputMaybe<Scalars['String']['input']>;
+  syId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  syId_lt?: InputMaybe<Scalars['String']['input']>;
+  syId_lte?: InputMaybe<Scalars['String']['input']>;
+  syId_not?: InputMaybe<Scalars['String']['input']>;
+  syId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  ytId?: InputMaybe<Scalars['String']['input']>;
+  ytId_gt?: InputMaybe<Scalars['String']['input']>;
+  ytId_gte?: InputMaybe<Scalars['String']['input']>;
+  ytId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  ytId_lt?: InputMaybe<Scalars['String']['input']>;
+  ytId_lte?: InputMaybe<Scalars['String']['input']>;
+  ytId_not?: InputMaybe<Scalars['String']['input']>;
+  ytId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
 
-export type LogNormalParamsPage = {
-    __typename?: 'LogNormalParamsPage'
-    items: Array<LogNormalParams>
-    pageInfo: PageInfo
-}
+export type MarketPage = {
+  __typename?: 'MarketPage';
+  items: Array<Market>;
+  pageInfo: PageInfo;
+};
 
-export type NTokenGeometricMeanParams = {
-    __typename?: 'NTokenGeometricMeanParams'
-    controller: Scalars['String']['output']
-    id: Scalars['BigInt']['output']
-    lastComputedWeights: Array<Scalars['BigInt']['output']>
-    lastWeightsUpdate: Scalars['Int']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-    swapFee: Scalars['BigInt']['output']
-    weightsUpdateEnd: Scalars['Int']['output']
-    weightsUpdatePerSecond: Array<Scalars['BigInt']['output']>
-}
+export type MarketPricesHourly = {
+  __typename?: 'MarketPricesHourly';
+  average: Scalars['Float']['output'];
+  close: Scalars['Float']['output'];
+  count: Scalars['Int']['output'];
+  high: Scalars['Float']['output'];
+  id: Scalars['Int']['output'];
+  low: Scalars['Float']['output'];
+  marketId: Scalars['String']['output'];
+  open: Scalars['Float']['output'];
+};
 
-export type NTokenGeometricMeanParamsFilter = {
-    AND?: InputMaybe<Array<InputMaybe<NTokenGeometricMeanParamsFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<NTokenGeometricMeanParamsFilter>>>
-    controller?: InputMaybe<Scalars['String']['input']>
-    controller_gt?: InputMaybe<Scalars['String']['input']>
-    controller_gte?: InputMaybe<Scalars['String']['input']>
-    controller_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    controller_lt?: InputMaybe<Scalars['String']['input']>
-    controller_lte?: InputMaybe<Scalars['String']['input']>
-    controller_not?: InputMaybe<Scalars['String']['input']>
-    controller_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['String']['input']>>
-    >
-    id?: InputMaybe<Scalars['BigInt']['input']>
-    id_gt?: InputMaybe<Scalars['BigInt']['input']>
-    id_gte?: InputMaybe<Scalars['BigInt']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    id_lt?: InputMaybe<Scalars['BigInt']['input']>
-    id_lte?: InputMaybe<Scalars['BigInt']['input']>
-    id_not?: InputMaybe<Scalars['BigInt']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    lastComputedWeights?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastComputedWeights_has?: InputMaybe<Scalars['BigInt']['input']>
-    lastComputedWeights_not?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    lastComputedWeights_not_has?: InputMaybe<Scalars['BigInt']['input']>
-    lastWeightsUpdate?: InputMaybe<Scalars['Int']['input']>
-    lastWeightsUpdate_gt?: InputMaybe<Scalars['Int']['input']>
-    lastWeightsUpdate_gte?: InputMaybe<Scalars['Int']['input']>
-    lastWeightsUpdate_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    lastWeightsUpdate_lt?: InputMaybe<Scalars['Int']['input']>
-    lastWeightsUpdate_lte?: InputMaybe<Scalars['Int']['input']>
-    lastWeightsUpdate_not?: InputMaybe<Scalars['Int']['input']>
-    lastWeightsUpdate_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapFee?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_gt?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_gte?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    swapFee_lt?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_lte?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_not?: InputMaybe<Scalars['BigInt']['input']>
-    swapFee_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    weightsUpdateEnd?: InputMaybe<Scalars['Int']['input']>
-    weightsUpdateEnd_gt?: InputMaybe<Scalars['Int']['input']>
-    weightsUpdateEnd_gte?: InputMaybe<Scalars['Int']['input']>
-    weightsUpdateEnd_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    weightsUpdateEnd_lt?: InputMaybe<Scalars['Int']['input']>
-    weightsUpdateEnd_lte?: InputMaybe<Scalars['Int']['input']>
-    weightsUpdateEnd_not?: InputMaybe<Scalars['Int']['input']>
-    weightsUpdateEnd_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['Int']['input']>>
-    >
-    weightsUpdatePerSecond?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    weightsUpdatePerSecond_has?: InputMaybe<Scalars['BigInt']['input']>
-    weightsUpdatePerSecond_not?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    weightsUpdatePerSecond_not_has?: InputMaybe<Scalars['BigInt']['input']>
-}
+export type MarketPricesHourlyFilter = {
+  AND?: InputMaybe<Array<InputMaybe<MarketPricesHourlyFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<MarketPricesHourlyFilter>>>;
+  average?: InputMaybe<Scalars['Float']['input']>;
+  average_gt?: InputMaybe<Scalars['Float']['input']>;
+  average_gte?: InputMaybe<Scalars['Float']['input']>;
+  average_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  average_lt?: InputMaybe<Scalars['Float']['input']>;
+  average_lte?: InputMaybe<Scalars['Float']['input']>;
+  average_not?: InputMaybe<Scalars['Float']['input']>;
+  average_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  close?: InputMaybe<Scalars['Float']['input']>;
+  close_gt?: InputMaybe<Scalars['Float']['input']>;
+  close_gte?: InputMaybe<Scalars['Float']['input']>;
+  close_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  close_lt?: InputMaybe<Scalars['Float']['input']>;
+  close_lte?: InputMaybe<Scalars['Float']['input']>;
+  close_not?: InputMaybe<Scalars['Float']['input']>;
+  close_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  count?: InputMaybe<Scalars['Int']['input']>;
+  count_gt?: InputMaybe<Scalars['Int']['input']>;
+  count_gte?: InputMaybe<Scalars['Int']['input']>;
+  count_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  count_lt?: InputMaybe<Scalars['Int']['input']>;
+  count_lte?: InputMaybe<Scalars['Int']['input']>;
+  count_not?: InputMaybe<Scalars['Int']['input']>;
+  count_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  high?: InputMaybe<Scalars['Float']['input']>;
+  high_gt?: InputMaybe<Scalars['Float']['input']>;
+  high_gte?: InputMaybe<Scalars['Float']['input']>;
+  high_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  high_lt?: InputMaybe<Scalars['Float']['input']>;
+  high_lte?: InputMaybe<Scalars['Float']['input']>;
+  high_not?: InputMaybe<Scalars['Float']['input']>;
+  high_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  id_gt?: InputMaybe<Scalars['Int']['input']>;
+  id_gte?: InputMaybe<Scalars['Int']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  id_lt?: InputMaybe<Scalars['Int']['input']>;
+  id_lte?: InputMaybe<Scalars['Int']['input']>;
+  id_not?: InputMaybe<Scalars['Int']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  low?: InputMaybe<Scalars['Float']['input']>;
+  low_gt?: InputMaybe<Scalars['Float']['input']>;
+  low_gte?: InputMaybe<Scalars['Float']['input']>;
+  low_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  low_lt?: InputMaybe<Scalars['Float']['input']>;
+  low_lte?: InputMaybe<Scalars['Float']['input']>;
+  low_not?: InputMaybe<Scalars['Float']['input']>;
+  low_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  marketId?: InputMaybe<Scalars['String']['input']>;
+  marketId_gt?: InputMaybe<Scalars['String']['input']>;
+  marketId_gte?: InputMaybe<Scalars['String']['input']>;
+  marketId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  marketId_lt?: InputMaybe<Scalars['String']['input']>;
+  marketId_lte?: InputMaybe<Scalars['String']['input']>;
+  marketId_not?: InputMaybe<Scalars['String']['input']>;
+  marketId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  open?: InputMaybe<Scalars['Float']['input']>;
+  open_gt?: InputMaybe<Scalars['Float']['input']>;
+  open_gte?: InputMaybe<Scalars['Float']['input']>;
+  open_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  open_lt?: InputMaybe<Scalars['Float']['input']>;
+  open_lte?: InputMaybe<Scalars['Float']['input']>;
+  open_not?: InputMaybe<Scalars['Float']['input']>;
+  open_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+};
 
-export type NTokenGeometricMeanParamsPage = {
-    __typename?: 'NTokenGeometricMeanParamsPage'
-    items: Array<NTokenGeometricMeanParams>
-    pageInfo: PageInfo
-}
+export type MarketPricesHourlyPage = {
+  __typename?: 'MarketPricesHourlyPage';
+  items: Array<MarketPricesHourly>;
+  pageInfo: PageInfo;
+};
+
+export type PToken = {
+  __typename?: 'PToken';
+  decimals: Scalars['Int']['output'];
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  symbol: Scalars['String']['output'];
+};
+
+export type PTokenFilter = {
+  AND?: InputMaybe<Array<InputMaybe<PTokenFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<PTokenFilter>>>;
+  decimals?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  decimals_lt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_lte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  icon_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not?: InputMaybe<Scalars['String']['input']>;
+  icon_not_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  icon_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_contains?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol?: InputMaybe<Scalars['String']['input']>;
+  symbol_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  symbol_not?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  symbol_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PTokenPage = {
+  __typename?: 'PTokenPage';
+  items: Array<PToken>;
+  pageInfo: PageInfo;
+};
 
 export type PageInfo = {
-    __typename?: 'PageInfo'
-    endCursor?: Maybe<Scalars['String']['output']>
-    hasNextPage: Scalars['Boolean']['output']
-    hasPreviousPage: Scalars['Boolean']['output']
-    startCursor?: Maybe<Scalars['String']['output']>
-}
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['String']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  startCursor?: Maybe<Scalars['String']['output']>;
+};
 
 export type Pool = {
-    __typename?: 'Pool'
-    id: Scalars['BigInt']['output']
-    initTimestamp: Scalars['BigInt']['output']
-    liquidity: Scalars['Float']['output']
-    liquidityWad: Scalars['BigInt']['output']
-    lpToken: Scalars['String']['output']
-    name: Scalars['String']['output']
-    poolTokens?: Maybe<PoolTokenPage>
-    positions?: Maybe<PositionPage>
-    reserves: Array<Scalars['Float']['output']>
-    reservesWad: Array<Scalars['BigInt']['output']>
-    strategy: Strategy
-    strategyId: Scalars['String']['output']
-    tokens: Array<Scalars['String']['output']>
-}
-
-export type PoolPoolTokensArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    where?: InputMaybe<PoolFilter>
-}
-
-export type PoolPositionsArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    where?: InputMaybe<PoolFilter>
-}
+  __typename?: 'Pool';
+  curator: Curator;
+  curatorId: Scalars['String']['output'];
+  fee: Scalars['BigInt']['output'];
+  id: Scalars['String']['output'];
+  maturity: Scalars['BigInt']['output'];
+  reserveX: Scalars['BigInt']['output'];
+  reserveY: Scalars['BigInt']['output'];
+  sigma: Scalars['BigInt']['output'];
+  strike: Scalars['BigInt']['output'];
+  tokenX: SyToken;
+  tokenXId: Scalars['String']['output'];
+  tokenY: PToken;
+  tokenYId: Scalars['String']['output'];
+  totalLiquidity: Scalars['BigInt']['output'];
+};
 
 export type PoolFilter = {
-    AND?: InputMaybe<Array<InputMaybe<PoolFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<PoolFilter>>>
-    id?: InputMaybe<Scalars['BigInt']['input']>
-    id_gt?: InputMaybe<Scalars['BigInt']['input']>
-    id_gte?: InputMaybe<Scalars['BigInt']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    id_lt?: InputMaybe<Scalars['BigInt']['input']>
-    id_lte?: InputMaybe<Scalars['BigInt']['input']>
-    id_not?: InputMaybe<Scalars['BigInt']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    initTimestamp?: InputMaybe<Scalars['BigInt']['input']>
-    initTimestamp_gt?: InputMaybe<Scalars['BigInt']['input']>
-    initTimestamp_gte?: InputMaybe<Scalars['BigInt']['input']>
-    initTimestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    initTimestamp_lt?: InputMaybe<Scalars['BigInt']['input']>
-    initTimestamp_lte?: InputMaybe<Scalars['BigInt']['input']>
-    initTimestamp_not?: InputMaybe<Scalars['BigInt']['input']>
-    initTimestamp_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    liquidity?: InputMaybe<Scalars['Float']['input']>
-    liquidityWad?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_gt?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_gte?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    liquidityWad_lt?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_lte?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_not?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    liquidity_gt?: InputMaybe<Scalars['Float']['input']>
-    liquidity_gte?: InputMaybe<Scalars['Float']['input']>
-    liquidity_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    liquidity_lt?: InputMaybe<Scalars['Float']['input']>
-    liquidity_lte?: InputMaybe<Scalars['Float']['input']>
-    liquidity_not?: InputMaybe<Scalars['Float']['input']>
-    liquidity_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    lpToken?: InputMaybe<Scalars['String']['input']>
-    lpToken_gt?: InputMaybe<Scalars['String']['input']>
-    lpToken_gte?: InputMaybe<Scalars['String']['input']>
-    lpToken_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    lpToken_lt?: InputMaybe<Scalars['String']['input']>
-    lpToken_lte?: InputMaybe<Scalars['String']['input']>
-    lpToken_not?: InputMaybe<Scalars['String']['input']>
-    lpToken_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name?: InputMaybe<Scalars['String']['input']>
-    name_contains?: InputMaybe<Scalars['String']['input']>
-    name_ends_with?: InputMaybe<Scalars['String']['input']>
-    name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name_not?: InputMaybe<Scalars['String']['input']>
-    name_not_contains?: InputMaybe<Scalars['String']['input']>
-    name_not_ends_with?: InputMaybe<Scalars['String']['input']>
-    name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name_not_starts_with?: InputMaybe<Scalars['String']['input']>
-    name_starts_with?: InputMaybe<Scalars['String']['input']>
-    reserves?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    reservesWad?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    reservesWad_has?: InputMaybe<Scalars['BigInt']['input']>
-    reservesWad_not?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    reservesWad_not_has?: InputMaybe<Scalars['BigInt']['input']>
-    reserves_has?: InputMaybe<Scalars['Float']['input']>
-    reserves_not?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    reserves_not_has?: InputMaybe<Scalars['Float']['input']>
-    strategyId?: InputMaybe<Scalars['String']['input']>
-    strategyId_gt?: InputMaybe<Scalars['String']['input']>
-    strategyId_gte?: InputMaybe<Scalars['String']['input']>
-    strategyId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    strategyId_lt?: InputMaybe<Scalars['String']['input']>
-    strategyId_lte?: InputMaybe<Scalars['String']['input']>
-    strategyId_not?: InputMaybe<Scalars['String']['input']>
-    strategyId_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['String']['input']>>
-    >
-    tokens?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    tokens_has?: InputMaybe<Scalars['String']['input']>
-    tokens_not?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    tokens_not_has?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<InputMaybe<PoolFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<PoolFilter>>>;
+  curatorId?: InputMaybe<Scalars['String']['input']>;
+  curatorId_gt?: InputMaybe<Scalars['String']['input']>;
+  curatorId_gte?: InputMaybe<Scalars['String']['input']>;
+  curatorId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  curatorId_lt?: InputMaybe<Scalars['String']['input']>;
+  curatorId_lte?: InputMaybe<Scalars['String']['input']>;
+  curatorId_not?: InputMaybe<Scalars['String']['input']>;
+  curatorId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  fee?: InputMaybe<Scalars['BigInt']['input']>;
+  fee_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  fee_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  fee_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  fee_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  fee_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  fee_not?: InputMaybe<Scalars['BigInt']['input']>;
+  fee_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  maturity?: InputMaybe<Scalars['BigInt']['input']>;
+  maturity_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  maturity_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  maturity_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  maturity_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  maturity_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  maturity_not?: InputMaybe<Scalars['BigInt']['input']>;
+  maturity_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  reserveX?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveX_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveX_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveX_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  reserveX_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveX_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveX_not?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveX_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  reserveY?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveY_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveY_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveY_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  reserveY_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveY_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveY_not?: InputMaybe<Scalars['BigInt']['input']>;
+  reserveY_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  sigma?: InputMaybe<Scalars['BigInt']['input']>;
+  sigma_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  sigma_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  sigma_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  sigma_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  sigma_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  sigma_not?: InputMaybe<Scalars['BigInt']['input']>;
+  sigma_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  strike?: InputMaybe<Scalars['BigInt']['input']>;
+  strike_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  strike_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  strike_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  strike_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  strike_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  strike_not?: InputMaybe<Scalars['BigInt']['input']>;
+  strike_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  tokenXId?: InputMaybe<Scalars['String']['input']>;
+  tokenXId_gt?: InputMaybe<Scalars['String']['input']>;
+  tokenXId_gte?: InputMaybe<Scalars['String']['input']>;
+  tokenXId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenXId_lt?: InputMaybe<Scalars['String']['input']>;
+  tokenXId_lte?: InputMaybe<Scalars['String']['input']>;
+  tokenXId_not?: InputMaybe<Scalars['String']['input']>;
+  tokenXId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenYId?: InputMaybe<Scalars['String']['input']>;
+  tokenYId_gt?: InputMaybe<Scalars['String']['input']>;
+  tokenYId_gte?: InputMaybe<Scalars['String']['input']>;
+  tokenYId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenYId_lt?: InputMaybe<Scalars['String']['input']>;
+  tokenYId_lte?: InputMaybe<Scalars['String']['input']>;
+  tokenYId_not?: InputMaybe<Scalars['String']['input']>;
+  tokenYId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  totalLiquidity?: InputMaybe<Scalars['BigInt']['input']>;
+  totalLiquidity_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalLiquidity_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalLiquidity_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  totalLiquidity_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalLiquidity_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalLiquidity_not?: InputMaybe<Scalars['BigInt']['input']>;
+  totalLiquidity_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+};
 
 export type PoolPage = {
-    __typename?: 'PoolPage'
-    items: Array<Pool>
-    pageInfo: PageInfo
-}
-
-export type PoolToken = {
-    __typename?: 'PoolToken'
-    id: Scalars['String']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-    token: Token
-    tokenId: Scalars['String']['output']
-}
-
-export type PoolTokenFilter = {
-    AND?: InputMaybe<Array<InputMaybe<PoolTokenFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<PoolTokenFilter>>>
-    id?: InputMaybe<Scalars['String']['input']>
-    id_contains?: InputMaybe<Scalars['String']['input']>
-    id_ends_with?: InputMaybe<Scalars['String']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_not?: InputMaybe<Scalars['String']['input']>
-    id_not_contains?: InputMaybe<Scalars['String']['input']>
-    id_not_ends_with?: InputMaybe<Scalars['String']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_not_starts_with?: InputMaybe<Scalars['String']['input']>
-    id_starts_with?: InputMaybe<Scalars['String']['input']>
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    tokenId?: InputMaybe<Scalars['String']['input']>
-    tokenId_gt?: InputMaybe<Scalars['String']['input']>
-    tokenId_gte?: InputMaybe<Scalars['String']['input']>
-    tokenId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    tokenId_lt?: InputMaybe<Scalars['String']['input']>
-    tokenId_lte?: InputMaybe<Scalars['String']['input']>
-    tokenId_not?: InputMaybe<Scalars['String']['input']>
-    tokenId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-}
-
-export type PoolTokenPage = {
-    __typename?: 'PoolTokenPage'
-    items: Array<PoolToken>
-    pageInfo: PageInfo
-}
-
-export type Position = {
-    __typename?: 'Position'
-    account: Account
-    accountId: Scalars['String']['output']
-    id: Scalars['String']['output']
-    liquidity: Scalars['Float']['output']
-    liquidityWad: Scalars['BigInt']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-}
-
-export type PositionFilter = {
-    AND?: InputMaybe<Array<InputMaybe<PositionFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<PositionFilter>>>
-    accountId?: InputMaybe<Scalars['String']['input']>
-    accountId_gt?: InputMaybe<Scalars['String']['input']>
-    accountId_gte?: InputMaybe<Scalars['String']['input']>
-    accountId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    accountId_lt?: InputMaybe<Scalars['String']['input']>
-    accountId_lte?: InputMaybe<Scalars['String']['input']>
-    accountId_not?: InputMaybe<Scalars['String']['input']>
-    accountId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id?: InputMaybe<Scalars['String']['input']>
-    id_gt?: InputMaybe<Scalars['String']['input']>
-    id_gte?: InputMaybe<Scalars['String']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_lt?: InputMaybe<Scalars['String']['input']>
-    id_lte?: InputMaybe<Scalars['String']['input']>
-    id_not?: InputMaybe<Scalars['String']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    liquidity?: InputMaybe<Scalars['Float']['input']>
-    liquidityWad?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_gt?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_gte?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    liquidityWad_lt?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_lte?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_not?: InputMaybe<Scalars['BigInt']['input']>
-    liquidityWad_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    liquidity_gt?: InputMaybe<Scalars['Float']['input']>
-    liquidity_gte?: InputMaybe<Scalars['Float']['input']>
-    liquidity_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    liquidity_lt?: InputMaybe<Scalars['Float']['input']>
-    liquidity_lte?: InputMaybe<Scalars['Float']['input']>
-    liquidity_not?: InputMaybe<Scalars['Float']['input']>
-    liquidity_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-}
-
-export type PositionPage = {
-    __typename?: 'PositionPage'
-    items: Array<Position>
-    pageInfo: PageInfo
-}
+  __typename?: 'PoolPage';
+  items: Array<Pool>;
+  pageInfo: PageInfo;
+};
 
 export type Query = {
-    __typename?: 'Query'
-    account?: Maybe<Account>
-    accounts: AccountPage
-    allocate?: Maybe<Allocate>
-    allocates: AllocatePage
-    constantSumParams?: Maybe<ConstantSumParams>
-    constantSumParamss: ConstantSumParamsPage
-    deallocate?: Maybe<Deallocate>
-    deallocates: DeallocatePage
-    geometricMeanParams?: Maybe<GeometricMeanParams>
-    geometricMeanParamss: GeometricMeanParamsPage
-    logNormalParams?: Maybe<LogNormalParams>
-    logNormalParamss: LogNormalParamsPage
-    nTokenGeometricMeanParams?: Maybe<NTokenGeometricMeanParams>
-    nTokenGeometricMeanParamss: NTokenGeometricMeanParamsPage
-    pool?: Maybe<Pool>
-    poolToken?: Maybe<PoolToken>
-    poolTokens: PoolTokenPage
-    pools: PoolPage
-    position?: Maybe<Position>
-    positions: PositionPage
-    strategy?: Maybe<Strategy>
-    strategys: StrategyPage
-    swap?: Maybe<Swap>
-    swaps: SwapPage
-    token?: Maybe<Token>
-    tokens: TokenPage
-}
+  __typename?: 'Query';
+  allocate?: Maybe<Allocate>;
+  allocates: AllocatePage;
+  curator?: Maybe<Curator>;
+  curators: CuratorPage;
+  deallocate?: Maybe<Deallocate>;
+  deallocates: DeallocatePage;
+  exchangeRateHourly?: Maybe<ExchangeRateHourly>;
+  exchangeRateHourlys: ExchangeRateHourlyPage;
+  market?: Maybe<Market>;
+  marketPricesHourly?: Maybe<MarketPricesHourly>;
+  marketPricesHourlys: MarketPricesHourlyPage;
+  markets: MarketPage;
+  pToken?: Maybe<PToken>;
+  pTokens: PTokenPage;
+  pool?: Maybe<Pool>;
+  pools: PoolPage;
+  sYToken?: Maybe<SyToken>;
+  sYTokens: SyTokenPage;
+  swap?: Maybe<Swap>;
+  swaps: SwapPage;
+  token?: Maybe<Token>;
+  tokens: TokenPage;
+  yToken?: Maybe<YToken>;
+  yTokens: YTokenPage;
+};
 
-export type QueryAccountArgs = {
-    id: Scalars['String']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
-
-export type QueryAccountsArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<AccountFilter>
-}
 
 export type QueryAllocateArgs = {
-    id: Scalars['String']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryAllocatesArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<AllocateFilter>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<AllocateFilter>;
+};
 
-export type QueryConstantSumParamsArgs = {
-    id: Scalars['BigInt']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
 
-export type QueryConstantSumParamssArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<ConstantSumParamsFilter>
-}
+export type QueryCuratorArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryCuratorsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<CuratorFilter>;
+};
+
 
 export type QueryDeallocateArgs = {
-    id: Scalars['String']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryDeallocatesArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<DeallocateFilter>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<DeallocateFilter>;
+};
 
-export type QueryGeometricMeanParamsArgs = {
-    id: Scalars['BigInt']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
 
-export type QueryGeometricMeanParamssArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<GeometricMeanParamsFilter>
-}
+export type QueryExchangeRateHourlyArgs = {
+  id: Scalars['Int']['input'];
+};
 
-export type QueryLogNormalParamsArgs = {
-    id: Scalars['BigInt']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
 
-export type QueryLogNormalParamssArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<LogNormalParamsFilter>
-}
+export type QueryExchangeRateHourlysArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<ExchangeRateHourlyFilter>;
+};
 
-export type QueryNTokenGeometricMeanParamsArgs = {
-    id: Scalars['BigInt']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
 
-export type QueryNTokenGeometricMeanParamssArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<NTokenGeometricMeanParamsFilter>
-}
+export type QueryMarketArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryMarketPricesHourlyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryMarketPricesHourlysArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<MarketPricesHourlyFilter>;
+};
+
+
+export type QueryMarketsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<MarketFilter>;
+};
+
+
+export type QueryPTokenArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryPTokensArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<PTokenFilter>;
+};
+
 
 export type QueryPoolArgs = {
-    id: Scalars['BigInt']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
+  id: Scalars['String']['input'];
+};
 
-export type QueryPoolTokenArgs = {
-    id: Scalars['String']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
-
-export type QueryPoolTokensArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<PoolTokenFilter>
-}
 
 export type QueryPoolsArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<PoolFilter>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<PoolFilter>;
+};
 
-export type QueryPositionArgs = {
-    id: Scalars['String']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
 
-export type QueryPositionsArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<PositionFilter>
-}
+export type QuerySyTokenArgs = {
+  id: Scalars['String']['input'];
+};
 
-export type QueryStrategyArgs = {
-    id: Scalars['String']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
 
-export type QueryStrategysArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<StrategyFilter>
-}
+export type QuerySyTokensArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<SyTokenFilter>;
+};
+
 
 export type QuerySwapArgs = {
-    id: Scalars['String']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QuerySwapsArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<SwapFilter>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<SwapFilter>;
+};
+
 
 export type QueryTokenArgs = {
-    id: Scalars['String']['input']
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryTokensArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    timestamp?: InputMaybe<Scalars['Int']['input']>
-    where?: InputMaybe<TokenFilter>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<TokenFilter>;
+};
 
-export type Strategy = {
-    __typename?: 'Strategy'
-    id: Scalars['String']['output']
-    name: Scalars['String']['output']
-    pools?: Maybe<PoolPage>
-}
 
-export type StrategyPoolsArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    where?: InputMaybe<StrategyFilter>
-}
+export type QueryYTokenArgs = {
+  id: Scalars['String']['input'];
+};
 
-export type StrategyFilter = {
-    AND?: InputMaybe<Array<InputMaybe<StrategyFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<StrategyFilter>>>
-    id?: InputMaybe<Scalars['String']['input']>
-    id_gt?: InputMaybe<Scalars['String']['input']>
-    id_gte?: InputMaybe<Scalars['String']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_lt?: InputMaybe<Scalars['String']['input']>
-    id_lte?: InputMaybe<Scalars['String']['input']>
-    id_not?: InputMaybe<Scalars['String']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name?: InputMaybe<Scalars['String']['input']>
-    name_contains?: InputMaybe<Scalars['String']['input']>
-    name_ends_with?: InputMaybe<Scalars['String']['input']>
-    name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name_not?: InputMaybe<Scalars['String']['input']>
-    name_not_contains?: InputMaybe<Scalars['String']['input']>
-    name_not_ends_with?: InputMaybe<Scalars['String']['input']>
-    name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name_not_starts_with?: InputMaybe<Scalars['String']['input']>
-    name_starts_with?: InputMaybe<Scalars['String']['input']>
-}
 
-export type StrategyPage = {
-    __typename?: 'StrategyPage'
-    items: Array<Strategy>
-    pageInfo: PageInfo
-}
+export type QueryYTokensArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<YTokenFilter>;
+};
+
+export type SyToken = {
+  __typename?: 'SYToken';
+  decimals: Scalars['Int']['output'];
+  exchangeRate: Scalars['BigInt']['output'];
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  symbol: Scalars['String']['output'];
+};
+
+export type SyTokenFilter = {
+  AND?: InputMaybe<Array<InputMaybe<SyTokenFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<SyTokenFilter>>>;
+  decimals?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  decimals_lt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_lte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  exchangeRate?: InputMaybe<Scalars['BigInt']['input']>;
+  exchangeRate_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  exchangeRate_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  exchangeRate_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  exchangeRate_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  exchangeRate_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  exchangeRate_not?: InputMaybe<Scalars['BigInt']['input']>;
+  exchangeRate_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  icon_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not?: InputMaybe<Scalars['String']['input']>;
+  icon_not_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  icon_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_contains?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol?: InputMaybe<Scalars['String']['input']>;
+  symbol_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  symbol_not?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  symbol_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SyTokenPage = {
+  __typename?: 'SYTokenPage';
+  items: Array<SyToken>;
+  pageInfo: PageInfo;
+};
 
 export type Swap = {
-    __typename?: 'Swap'
-    amountIn: Scalars['Float']['output']
-    amountInWad: Scalars['BigInt']['output']
-    amountOut: Scalars['Float']['output']
-    amountOutWad: Scalars['BigInt']['output']
-    block: Scalars['BigInt']['output']
-    id: Scalars['String']['output']
-    pool: Pool
-    poolId: Scalars['BigInt']['output']
-    sender: Scalars['String']['output']
-    timestamp: Scalars['BigInt']['output']
-    tokenIn: Scalars['String']['output']
-    tokenOut: Scalars['String']['output']
-}
+  __typename?: 'Swap';
+  amountIn: Scalars['BigInt']['output'];
+  amountOut: Scalars['BigInt']['output'];
+  block: Scalars['BigInt']['output'];
+  deltaLiquidity: Scalars['BigInt']['output'];
+  id: Scalars['String']['output'];
+  pool: Pool;
+  poolId: Scalars['String']['output'];
+  sender: Scalars['String']['output'];
+  timestamp: Scalars['BigInt']['output'];
+  tokenIn: Scalars['String']['output'];
+  tokenOut: Scalars['String']['output'];
+};
 
 export type SwapFilter = {
-    AND?: InputMaybe<Array<InputMaybe<SwapFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<SwapFilter>>>
-    amountIn?: InputMaybe<Scalars['Float']['input']>
-    amountInWad?: InputMaybe<Scalars['BigInt']['input']>
-    amountInWad_gt?: InputMaybe<Scalars['BigInt']['input']>
-    amountInWad_gte?: InputMaybe<Scalars['BigInt']['input']>
-    amountInWad_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    amountInWad_lt?: InputMaybe<Scalars['BigInt']['input']>
-    amountInWad_lte?: InputMaybe<Scalars['BigInt']['input']>
-    amountInWad_not?: InputMaybe<Scalars['BigInt']['input']>
-    amountInWad_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    amountIn_gt?: InputMaybe<Scalars['Float']['input']>
-    amountIn_gte?: InputMaybe<Scalars['Float']['input']>
-    amountIn_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    amountIn_lt?: InputMaybe<Scalars['Float']['input']>
-    amountIn_lte?: InputMaybe<Scalars['Float']['input']>
-    amountIn_not?: InputMaybe<Scalars['Float']['input']>
-    amountIn_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    amountOut?: InputMaybe<Scalars['Float']['input']>
-    amountOutWad?: InputMaybe<Scalars['BigInt']['input']>
-    amountOutWad_gt?: InputMaybe<Scalars['BigInt']['input']>
-    amountOutWad_gte?: InputMaybe<Scalars['BigInt']['input']>
-    amountOutWad_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    amountOutWad_lt?: InputMaybe<Scalars['BigInt']['input']>
-    amountOutWad_lte?: InputMaybe<Scalars['BigInt']['input']>
-    amountOutWad_not?: InputMaybe<Scalars['BigInt']['input']>
-    amountOutWad_not_in?: InputMaybe<
-        Array<InputMaybe<Scalars['BigInt']['input']>>
-    >
-    amountOut_gt?: InputMaybe<Scalars['Float']['input']>
-    amountOut_gte?: InputMaybe<Scalars['Float']['input']>
-    amountOut_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    amountOut_lt?: InputMaybe<Scalars['Float']['input']>
-    amountOut_lte?: InputMaybe<Scalars['Float']['input']>
-    amountOut_not?: InputMaybe<Scalars['Float']['input']>
-    amountOut_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>
-    block?: InputMaybe<Scalars['BigInt']['input']>
-    block_gt?: InputMaybe<Scalars['BigInt']['input']>
-    block_gte?: InputMaybe<Scalars['BigInt']['input']>
-    block_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    block_lt?: InputMaybe<Scalars['BigInt']['input']>
-    block_lte?: InputMaybe<Scalars['BigInt']['input']>
-    block_not?: InputMaybe<Scalars['BigInt']['input']>
-    block_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    id?: InputMaybe<Scalars['String']['input']>
-    id_gt?: InputMaybe<Scalars['String']['input']>
-    id_gte?: InputMaybe<Scalars['String']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_lt?: InputMaybe<Scalars['String']['input']>
-    id_lte?: InputMaybe<Scalars['String']['input']>
-    id_not?: InputMaybe<Scalars['String']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    poolId?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_gte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    poolId_lt?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_lte?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not?: InputMaybe<Scalars['BigInt']['input']>
-    poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    sender?: InputMaybe<Scalars['String']['input']>
-    sender_gt?: InputMaybe<Scalars['String']['input']>
-    sender_gte?: InputMaybe<Scalars['String']['input']>
-    sender_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    sender_lt?: InputMaybe<Scalars['String']['input']>
-    sender_lte?: InputMaybe<Scalars['String']['input']>
-    sender_not?: InputMaybe<Scalars['String']['input']>
-    sender_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    timestamp?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_not?: InputMaybe<Scalars['BigInt']['input']>
-    timestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>
-    tokenIn?: InputMaybe<Scalars['String']['input']>
-    tokenIn_gt?: InputMaybe<Scalars['String']['input']>
-    tokenIn_gte?: InputMaybe<Scalars['String']['input']>
-    tokenIn_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    tokenIn_lt?: InputMaybe<Scalars['String']['input']>
-    tokenIn_lte?: InputMaybe<Scalars['String']['input']>
-    tokenIn_not?: InputMaybe<Scalars['String']['input']>
-    tokenIn_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    tokenOut?: InputMaybe<Scalars['String']['input']>
-    tokenOut_gt?: InputMaybe<Scalars['String']['input']>
-    tokenOut_gte?: InputMaybe<Scalars['String']['input']>
-    tokenOut_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    tokenOut_lt?: InputMaybe<Scalars['String']['input']>
-    tokenOut_lte?: InputMaybe<Scalars['String']['input']>
-    tokenOut_not?: InputMaybe<Scalars['String']['input']>
-    tokenOut_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-}
+  AND?: InputMaybe<Array<InputMaybe<SwapFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<SwapFilter>>>;
+  amountIn?: InputMaybe<Scalars['BigInt']['input']>;
+  amountIn_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  amountIn_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  amountIn_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  amountIn_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  amountIn_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  amountIn_not?: InputMaybe<Scalars['BigInt']['input']>;
+  amountIn_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  amountOut?: InputMaybe<Scalars['BigInt']['input']>;
+  amountOut_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  amountOut_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  amountOut_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  amountOut_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  amountOut_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  amountOut_not?: InputMaybe<Scalars['BigInt']['input']>;
+  amountOut_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  block?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  block_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  deltaLiquidity_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_not?: InputMaybe<Scalars['BigInt']['input']>;
+  deltaLiquidity_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId?: InputMaybe<Scalars['String']['input']>;
+  poolId_gt?: InputMaybe<Scalars['String']['input']>;
+  poolId_gte?: InputMaybe<Scalars['String']['input']>;
+  poolId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  poolId_lt?: InputMaybe<Scalars['String']['input']>;
+  poolId_lte?: InputMaybe<Scalars['String']['input']>;
+  poolId_not?: InputMaybe<Scalars['String']['input']>;
+  poolId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sender?: InputMaybe<Scalars['String']['input']>;
+  sender_gt?: InputMaybe<Scalars['String']['input']>;
+  sender_gte?: InputMaybe<Scalars['String']['input']>;
+  sender_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sender_lt?: InputMaybe<Scalars['String']['input']>;
+  sender_lte?: InputMaybe<Scalars['String']['input']>;
+  sender_not?: InputMaybe<Scalars['String']['input']>;
+  sender_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  tokenIn?: InputMaybe<Scalars['String']['input']>;
+  tokenIn_gt?: InputMaybe<Scalars['String']['input']>;
+  tokenIn_gte?: InputMaybe<Scalars['String']['input']>;
+  tokenIn_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenIn_lt?: InputMaybe<Scalars['String']['input']>;
+  tokenIn_lte?: InputMaybe<Scalars['String']['input']>;
+  tokenIn_not?: InputMaybe<Scalars['String']['input']>;
+  tokenIn_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenOut?: InputMaybe<Scalars['String']['input']>;
+  tokenOut_gt?: InputMaybe<Scalars['String']['input']>;
+  tokenOut_gte?: InputMaybe<Scalars['String']['input']>;
+  tokenOut_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenOut_lt?: InputMaybe<Scalars['String']['input']>;
+  tokenOut_lte?: InputMaybe<Scalars['String']['input']>;
+  tokenOut_not?: InputMaybe<Scalars['String']['input']>;
+  tokenOut_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
 
 export type SwapPage = {
-    __typename?: 'SwapPage'
-    items: Array<Swap>
-    pageInfo: PageInfo
-}
+  __typename?: 'SwapPage';
+  items: Array<Swap>;
+  pageInfo: PageInfo;
+};
 
 export type Token = {
-    __typename?: 'Token'
-    decimals: Scalars['Int']['output']
-    id: Scalars['String']['output']
-    name: Scalars['String']['output']
-    poolTokens?: Maybe<PoolTokenPage>
-    symbol: Scalars['String']['output']
-}
-
-export type TokenPoolTokensArgs = {
-    after?: InputMaybe<Scalars['String']['input']>
-    before?: InputMaybe<Scalars['String']['input']>
-    limit?: InputMaybe<Scalars['Int']['input']>
-    orderBy?: InputMaybe<Scalars['String']['input']>
-    orderDirection?: InputMaybe<Scalars['String']['input']>
-    where?: InputMaybe<TokenFilter>
-}
+  __typename?: 'Token';
+  decimals: Scalars['Int']['output'];
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  symbol: Scalars['String']['output'];
+};
 
 export type TokenFilter = {
-    AND?: InputMaybe<Array<InputMaybe<TokenFilter>>>
-    OR?: InputMaybe<Array<InputMaybe<TokenFilter>>>
-    decimals?: InputMaybe<Scalars['Int']['input']>
-    decimals_gt?: InputMaybe<Scalars['Int']['input']>
-    decimals_gte?: InputMaybe<Scalars['Int']['input']>
-    decimals_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    decimals_lt?: InputMaybe<Scalars['Int']['input']>
-    decimals_lte?: InputMaybe<Scalars['Int']['input']>
-    decimals_not?: InputMaybe<Scalars['Int']['input']>
-    decimals_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>
-    id?: InputMaybe<Scalars['String']['input']>
-    id_gt?: InputMaybe<Scalars['String']['input']>
-    id_gte?: InputMaybe<Scalars['String']['input']>
-    id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    id_lt?: InputMaybe<Scalars['String']['input']>
-    id_lte?: InputMaybe<Scalars['String']['input']>
-    id_not?: InputMaybe<Scalars['String']['input']>
-    id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name?: InputMaybe<Scalars['String']['input']>
-    name_contains?: InputMaybe<Scalars['String']['input']>
-    name_ends_with?: InputMaybe<Scalars['String']['input']>
-    name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name_not?: InputMaybe<Scalars['String']['input']>
-    name_not_contains?: InputMaybe<Scalars['String']['input']>
-    name_not_ends_with?: InputMaybe<Scalars['String']['input']>
-    name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    name_not_starts_with?: InputMaybe<Scalars['String']['input']>
-    name_starts_with?: InputMaybe<Scalars['String']['input']>
-    symbol?: InputMaybe<Scalars['String']['input']>
-    symbol_contains?: InputMaybe<Scalars['String']['input']>
-    symbol_ends_with?: InputMaybe<Scalars['String']['input']>
-    symbol_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    symbol_not?: InputMaybe<Scalars['String']['input']>
-    symbol_not_contains?: InputMaybe<Scalars['String']['input']>
-    symbol_not_ends_with?: InputMaybe<Scalars['String']['input']>
-    symbol_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
-    symbol_not_starts_with?: InputMaybe<Scalars['String']['input']>
-    symbol_starts_with?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<InputMaybe<TokenFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<TokenFilter>>>;
+  decimals?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  decimals_lt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_lte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  icon_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not?: InputMaybe<Scalars['String']['input']>;
+  icon_not_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  icon_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_contains?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol?: InputMaybe<Scalars['String']['input']>;
+  symbol_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  symbol_not?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  symbol_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type TokenPage = {
-    __typename?: 'TokenPage'
-    items: Array<Token>
-    pageInfo: PageInfo
-}
+  __typename?: 'TokenPage';
+  items: Array<Token>;
+  pageInfo: PageInfo;
+};
 
-export type AllocateItemFragment = {
-    __typename?: 'Allocate'
-    id: string
-    poolId: any
-    sender: string
-    block: any
-    deltas: Array<number>
-    deltaLiquidity: number
-    timestamp: any
-} & { ' $fragmentName'?: 'AllocateItemFragment' }
+export type YToken = {
+  __typename?: 'YToken';
+  decimals: Scalars['Int']['output'];
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  redeemableInterest: Scalars['BigInt']['output'];
+  redeemableRewards: Scalars['BigInt']['output'];
+  symbol: Scalars['String']['output'];
+};
+
+export type YTokenFilter = {
+  AND?: InputMaybe<Array<InputMaybe<YTokenFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<YTokenFilter>>>;
+  decimals?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  decimals_lt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_lte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  icon_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not?: InputMaybe<Scalars['String']['input']>;
+  icon_not_contains?: InputMaybe<Scalars['String']['input']>;
+  icon_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  icon_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  icon_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  icon_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_contains?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
+  redeemableInterest?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableInterest_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableInterest_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableInterest_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  redeemableInterest_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableInterest_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableInterest_not?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableInterest_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  redeemableRewards?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableRewards_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableRewards_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableRewards_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  redeemableRewards_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableRewards_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableRewards_not?: InputMaybe<Scalars['BigInt']['input']>;
+  redeemableRewards_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  symbol?: InputMaybe<Scalars['String']['input']>;
+  symbol_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  symbol_not?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  symbol_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type YTokenPage = {
+  __typename?: 'YTokenPage';
+  items: Array<YToken>;
+  pageInfo: PageInfo;
+};
+
+export type AllocateItemFragment = { __typename?: 'Allocate', id: string, sender: string, debitX: any, debitY: any, deltaLiquidity: any, timestamp: any, block: any, pool: { __typename?: 'Pool', id: string, reserveX: any, reserveY: any, totalLiquidity: any, strike: any, sigma: any, fee: any, maturity: any, tokenX: { __typename?: 'SYToken', id: string, name: string, symbol: string, decimals: number, icon?: string | null, exchangeRate: any }, tokenY: { __typename?: 'PToken', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, curator: { __typename?: 'Curator', id: string, name: string } } } & { ' $fragmentName'?: 'AllocateItemFragment' };
 
 export type AllAllocatesQueryVariables = Exact<{
-    poolId: Scalars['BigInt']['input']
-}>
+  poolId: Scalars['String']['input'];
+}>;
 
-export type AllAllocatesQuery = {
-    __typename?: 'Query'
-    allocates: {
-        __typename?: 'AllocatePage'
-        items: Array<
-            { __typename?: 'Allocate' } & {
-                ' $fragmentRefs'?: {
-                    AllocateItemFragment: AllocateItemFragment
-                }
-            }
-        >
-    }
-}
 
-export type DeallocateItemFragment = {
-    __typename?: 'Deallocate'
-    id: string
-    poolId: any
-    sender: string
-    block: any
-    deltas?: Array<number> | null
-    deltaLiquidity: number
-    timestamp: any
-} & { ' $fragmentName'?: 'DeallocateItemFragment' }
+export type AllAllocatesQuery = { __typename?: 'Query', allocates: { __typename?: 'AllocatePage', items: Array<(
+      { __typename?: 'Allocate' }
+      & { ' $fragmentRefs'?: { 'AllocateItemFragment': AllocateItemFragment } }
+    )> } };
+
+export type DeallocateItemFragment = { __typename?: 'Deallocate', id: string, sender: string, creditX: any, creditY: any, deltaLiquidity: any, timestamp: any, block: any, pool: { __typename?: 'Pool', id: string, reserveX: any, reserveY: any, totalLiquidity: any, strike: any, sigma: any, fee: any, maturity: any, tokenX: { __typename?: 'SYToken', id: string, name: string, symbol: string, decimals: number, icon?: string | null, exchangeRate: any }, tokenY: { __typename?: 'PToken', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, curator: { __typename?: 'Curator', id: string, name: string } } } & { ' $fragmentName'?: 'DeallocateItemFragment' };
 
 export type AllDeallocatesQueryVariables = Exact<{
-    poolId: Scalars['BigInt']['input']
-}>
+  poolId: Scalars['String']['input'];
+}>;
 
-export type AllDeallocatesQuery = {
-    __typename?: 'Query'
-    deallocates: {
-        __typename?: 'DeallocatePage'
-        items: Array<
-            { __typename?: 'Deallocate' } & {
-                ' $fragmentRefs'?: {
-                    DeallocateItemFragment: DeallocateItemFragment
-                }
-            }
-        >
-    }
-}
 
-export type NgParamsItemFragment = {
-    __typename?: 'NTokenGeometricMeanParams'
-    id: any
-    poolId: any
-    swapFee: any
-    controller: string
-    lastComputedWeights: Array<any>
-    weightsUpdatePerSecond: Array<any>
-    weightsUpdateEnd: number
-    lastWeightsUpdate: number
-} & { ' $fragmentName'?: 'NgParamsItemFragment' }
+export type AllDeallocatesQuery = { __typename?: 'Query', deallocates: { __typename?: 'DeallocatePage', items: Array<(
+      { __typename?: 'Deallocate' }
+      & { ' $fragmentRefs'?: { 'DeallocateItemFragment': DeallocateItemFragment } }
+    )> } };
 
-export type NgParamsQueryVariables = Exact<{
-    id: Scalars['BigInt']['input']
-}>
+export type MarketItemFragment = { __typename?: 'Market', id: string, name: string, expiry: any, pool: { __typename?: 'Pool', id: string, reserveX: any, reserveY: any, totalLiquidity: any, strike: any, sigma: any, fee: any, maturity: any, tokenX: { __typename?: 'SYToken', id: string, name: string, symbol: string, decimals: number, icon?: string | null, exchangeRate: any }, tokenY: { __typename?: 'PToken', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, curator: { __typename?: 'Curator', id: string, name: string } }, sy: { __typename?: 'SYToken', id: string, name: string, symbol: string, decimals: number, exchangeRate: any }, yt: { __typename?: 'YToken', id: string, name: string, symbol: string, decimals: number, redeemableInterest: any, redeemableRewards: any }, pt: { __typename?: 'PToken', id: string, name: string, symbol: string, decimals: number } } & { ' $fragmentName'?: 'MarketItemFragment' };
 
-export type NgParamsQuery = {
-    __typename?: 'Query'
-    nTokenGeometricMeanParams?:
-        | ({ __typename?: 'NTokenGeometricMeanParams' } & {
-              ' $fragmentRefs'?: { NgParamsItemFragment: NgParamsItemFragment }
-          })
-        | null
-}
+export type AllMarketsQueryVariables = Exact<{
+  limit: Scalars['Int']['input'];
+}>;
 
-export type CsParamsItemFragment = {
-    __typename?: 'ConstantSumParams'
-    id: any
-    poolId: any
-    swapFee: any
-    controller: string
-    lastComputedPrice: number
-    priceUpdatePerSecond: number
-    priceUpdateEnd: number
-    lastPriceUpdate: number
-} & { ' $fragmentName'?: 'CsParamsItemFragment' }
 
-export type CsParamsQueryVariables = Exact<{
-    id: Scalars['BigInt']['input']
-}>
+export type AllMarketsQuery = { __typename?: 'Query', markets: { __typename?: 'MarketPage', items: Array<(
+      { __typename?: 'Market' }
+      & { ' $fragmentRefs'?: { 'MarketItemFragment': MarketItemFragment } }
+    )> } };
 
-export type CsParamsQuery = {
-    __typename?: 'Query'
-    constantSumParams?:
-        | ({ __typename?: 'ConstantSumParams' } & {
-              ' $fragmentRefs'?: { CsParamsItemFragment: CsParamsItemFragment }
-          })
-        | null
-}
+export type MarketQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
 
-export type LNParamsItemFragment = {
-    __typename?: 'LogNormalParams'
-    id: any
-    poolId: any
-    swapFee: any
-    controller: string
-    lastComputedMean: any
-    lastComputedWidth: any
-    lastMeanUpdate: number
-    lastWidthUpdate: number
-    meanUpdateEnd: number
-    meanUpdatePerSecond: any
-    widthUpdateEnd: number
-    widthUpdatePerSecond: any
-} & { ' $fragmentName'?: 'LNParamsItemFragment' }
 
-export type LnParamsQueryVariables = Exact<{
-    id: Scalars['BigInt']['input']
-}>
+export type MarketQuery = { __typename?: 'Query', markets: { __typename?: 'MarketPage', items: Array<(
+      { __typename?: 'Market' }
+      & { ' $fragmentRefs'?: { 'MarketItemFragment': MarketItemFragment } }
+    )> } };
 
-export type LnParamsQuery = {
-    __typename?: 'Query'
-    logNormalParams?:
-        | ({ __typename?: 'LogNormalParams' } & {
-              ' $fragmentRefs'?: { LNParamsItemFragment: LNParamsItemFragment }
-          })
-        | null
-}
+export type ExchangeRateItemFragment = { __typename?: 'ExchangeRateHourly', id: number, marketId: string, open: number, close: number, high: number, low: number, average: number, count: number } & { ' $fragmentName'?: 'ExchangeRateItemFragment' };
 
-export type PoolTokenItemFragment = {
-    __typename?: 'PoolToken'
-    token: {
-        __typename?: 'Token'
-        id: string
-        name: string
-        symbol: string
-        decimals: number
-    }
-} & { ' $fragmentName'?: 'PoolTokenItemFragment' }
+export type ExchangeRateQueryVariables = Exact<{
+  limit: Scalars['Int']['input'];
+}>;
 
-export type PoolItemFragment = {
-    __typename?: 'Pool'
-    id: any
-    tokens: Array<string>
-    reserves: Array<number>
-    liquidity: number
-    lpToken: string
-    name: string
-    initTimestamp: any
-    poolTokens?: {
-        __typename?: 'PoolTokenPage'
-        items: Array<
-            { __typename?: 'PoolToken' } & {
-                ' $fragmentRefs'?: {
-                    PoolTokenItemFragment: PoolTokenItemFragment
-                }
-            }
-        >
-    } | null
-    strategy: { __typename?: 'Strategy'; name: string }
-} & { ' $fragmentName'?: 'PoolItemFragment' }
 
-export type AllPoolsQueryVariables = Exact<{
-    limit: Scalars['Int']['input']
-}>
+export type ExchangeRateQuery = { __typename?: 'Query', exchangeRateHourlys: { __typename?: 'ExchangeRateHourlyPage', items: Array<(
+      { __typename?: 'ExchangeRateHourly' }
+      & { ' $fragmentRefs'?: { 'ExchangeRateItemFragment': ExchangeRateItemFragment } }
+    )> } };
 
-export type AllPoolsQuery = {
-    __typename?: 'Query'
-    pools: {
-        __typename?: 'PoolPage'
-        items: Array<
-            { __typename?: 'Pool' } & {
-                ' $fragmentRefs'?: { PoolItemFragment: PoolItemFragment }
-            }
-        >
-    }
-}
+export type MarketPriceItemFragment = { __typename?: 'MarketPricesHourly', id: number, marketId: string, open: number, close: number, high: number, low: number, average: number, count: number } & { ' $fragmentName'?: 'MarketPriceItemFragment' };
 
-export type PoolWithTokensFragment = {
-    __typename?: 'Pool'
-    id: any
-    tokens: Array<string>
-    reserves: Array<number>
-    liquidity: number
-    lpToken: string
-    name: string
-    initTimestamp: any
-    poolTokens?: {
-        __typename?: 'PoolTokenPage'
-        items: Array<{
-            __typename?: 'PoolToken'
-            token: {
-                __typename?: 'Token'
-                id: string
-                name: string
-                symbol: string
-                decimals: number
-            }
-        }>
-    } | null
-    strategy: { __typename?: 'Strategy'; name: string }
-    positions?: {
-        __typename?: 'PositionPage'
-        items: Array<{ __typename?: 'Position'; accountId: string }>
-    } | null
-} & { ' $fragmentName'?: 'PoolWithTokensFragment' }
+export type MarketPriceQueryVariables = Exact<{
+  limit: Scalars['Int']['input'];
+}>;
 
-export type PoolInfoQueryVariables = Exact<{
-    id: Scalars['BigInt']['input']
-}>
 
-export type PoolInfoQuery = {
-    __typename?: 'Query'
-    pool?:
-        | ({ __typename?: 'Pool' } & {
-              ' $fragmentRefs'?: {
-                  PoolWithTokensFragment: PoolWithTokensFragment
-              }
-          })
-        | null
-}
+export type MarketPriceQuery = { __typename?: 'Query', marketPricesHourlys: { __typename?: 'MarketPricesHourlyPage', items: Array<(
+      { __typename?: 'MarketPricesHourly' }
+      & { ' $fragmentRefs'?: { 'MarketPriceItemFragment': MarketPriceItemFragment } }
+    )> } };
 
-export type PositionItemFragment = {
-    __typename?: 'Position'
-    id: string
-    accountId: string
-    liquidity: number
-    liquidityWad: any
-    poolId: any
-    pool: { __typename?: 'Pool' } & {
-        ' $fragmentRefs'?: { PoolWithTokensFragment: PoolWithTokensFragment }
-    }
-} & { ' $fragmentName'?: 'PositionItemFragment' }
-
-export type AllPositionsQueryVariables = Exact<{
-    limit: Scalars['Int']['input']
-}>
-
-export type AllPositionsQuery = {
-    __typename?: 'Query'
-    positions: {
-        __typename?: 'PositionPage'
-        items: Array<
-            { __typename?: 'Position' } & {
-                ' $fragmentRefs'?: {
-                    PositionItemFragment: PositionItemFragment
-                }
-            }
-        >
-    }
-}
-
-export type SwapItemFragment = {
-    __typename?: 'Swap'
-    id: string
-    poolId: any
-    sender: string
-    amountIn: number
-    amountOut: number
-    tokenIn: string
-    tokenOut: string
-    timestamp: any
-    block: any
-    pool: { __typename?: 'Pool' } & {
-        ' $fragmentRefs'?: { PoolItemFragment: PoolItemFragment }
-    }
-} & { ' $fragmentName'?: 'SwapItemFragment' }
+export type SwapItemFragment = { __typename?: 'Swap', id: string, sender: string, tokenIn: string, tokenOut: string, amountIn: any, amountOut: any, timestamp: any, block: any } & { ' $fragmentName'?: 'SwapItemFragment' };
 
 export type AllSwapsQueryVariables = Exact<{
-    poolId: Scalars['BigInt']['input']
-}>
+  poolId: Scalars['String']['input'];
+}>;
 
-export type AllSwapsQuery = {
-    __typename?: 'Query'
-    swaps: {
-        __typename?: 'SwapPage'
-        items: Array<
-            { __typename?: 'Swap' } & {
-                ' $fragmentRefs'?: { SwapItemFragment: SwapItemFragment }
-            }
-        >
-    }
-}
 
-export const AllocateItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'AllocateItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Allocate' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'sender' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'deltas' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'deltaLiquidity' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'timestamp' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<AllocateItemFragment, unknown>
-export const DeallocateItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'DeallocateItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Deallocate' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'sender' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'deltas' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'deltaLiquidity' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'timestamp' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<DeallocateItemFragment, unknown>
-export const NgParamsItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'NgParamsItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'NTokenGeometricMeanParams' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'swapFee' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'controller' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastComputedWeights' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'weightsUpdatePerSecond' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'weightsUpdateEnd' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastWeightsUpdate' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<NgParamsItemFragment, unknown>
-export const CsParamsItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'CSParamsItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'ConstantSumParams' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'swapFee' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'controller' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastComputedPrice' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'priceUpdatePerSecond' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'priceUpdateEnd' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastPriceUpdate' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<CsParamsItemFragment, unknown>
-export const LNParamsItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'lNParamsItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'LogNormalParams' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'swapFee' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'controller' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastComputedMean' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastComputedWidth' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastMeanUpdate' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastWidthUpdate' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'meanUpdateEnd' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'meanUpdatePerSecond' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'widthUpdateEnd' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'widthUpdatePerSecond' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<LNParamsItemFragment, unknown>
-export const PoolWithTokensFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolWithTokens' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Pool' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'poolTokens' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'token',
-                                                },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'id',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'name',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'symbol',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'decimals',
-                                                            },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'strategy' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'positions' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'accountId',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokens' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'reserves' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'lpToken' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'initTimestamp' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<PoolWithTokensFragment, unknown>
-export const PositionItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PositionItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Position' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'accountId' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidityWad' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'pool' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: {
-                                        kind: 'Name',
-                                        value: 'PoolWithTokens',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolWithTokens' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Pool' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'poolTokens' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'token',
-                                                },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'id',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'name',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'symbol',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'decimals',
-                                                            },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'strategy' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'positions' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'accountId',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokens' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'reserves' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'lpToken' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'initTimestamp' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<PositionItemFragment, unknown>
-export const PoolTokenItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolTokenItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'PoolToken' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'token' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'symbol' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'decimals' },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<PoolTokenItemFragment, unknown>
-export const PoolItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Pool' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'poolTokens' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'PoolTokenItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'strategy' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokens' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'reserves' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'lpToken' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'initTimestamp' },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolTokenItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'PoolToken' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'token' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'symbol' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'decimals' },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<PoolItemFragment, unknown>
-export const SwapItemFragmentDoc = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'SwapItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Swap' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'pool' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: { kind: 'Name', value: 'PoolItem' },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'sender' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'amountIn' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'amountOut' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokenIn' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'tokenOut' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'timestamp' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolTokenItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'PoolToken' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'token' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'symbol' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'decimals' },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Pool' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'poolTokens' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'PoolTokenItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'strategy' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokens' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'reserves' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'lpToken' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'initTimestamp' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<SwapItemFragment, unknown>
-export const AllAllocatesDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'allAllocates' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'poolId' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'BigInt' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'allocates' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'where' },
-                                value: {
-                                    kind: 'ObjectValue',
-                                    fields: [
-                                        {
-                                            kind: 'ObjectField',
-                                            name: {
-                                                kind: 'Name',
-                                                value: 'poolId',
-                                            },
-                                            value: {
-                                                kind: 'Variable',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'poolId',
-                                                },
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'AllocateItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'AllocateItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Allocate' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'sender' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'deltas' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'deltaLiquidity' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'timestamp' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<AllAllocatesQuery, AllAllocatesQueryVariables>
-export const AllDeallocatesDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'allDeallocates' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'poolId' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'BigInt' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'deallocates' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'where' },
-                                value: {
-                                    kind: 'ObjectValue',
-                                    fields: [
-                                        {
-                                            kind: 'ObjectField',
-                                            name: {
-                                                kind: 'Name',
-                                                value: 'poolId',
-                                            },
-                                            value: {
-                                                kind: 'Variable',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'poolId',
-                                                },
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'DeallocateItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'DeallocateItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Deallocate' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'sender' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'deltas' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'deltaLiquidity' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'timestamp' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<AllDeallocatesQuery, AllDeallocatesQueryVariables>
-export const NGParamsDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'nGParams' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'id' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'BigInt' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: {
-                            kind: 'Name',
-                            value: 'nTokenGeometricMeanParams',
-                        },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'id' },
-                                value: {
-                                    kind: 'Variable',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: {
-                                        kind: 'Name',
-                                        value: 'NgParamsItem',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'NgParamsItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'NTokenGeometricMeanParams' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'swapFee' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'controller' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastComputedWeights' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'weightsUpdatePerSecond' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'weightsUpdateEnd' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastWeightsUpdate' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<NGParamsQuery, NGParamsQueryVariables>
-export const CsParamsDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'csParams' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'id' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'BigInt' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'constantSumParams' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'id' },
-                                value: {
-                                    kind: 'Variable',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: {
-                                        kind: 'Name',
-                                        value: 'CSParamsItem',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'CSParamsItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'ConstantSumParams' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'swapFee' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'controller' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastComputedPrice' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'priceUpdatePerSecond' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'priceUpdateEnd' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastPriceUpdate' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<CsParamsQuery, CsParamsQueryVariables>
-export const LNParamsDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'lNParams' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'id' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'BigInt' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logNormalParams' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'id' },
-                                value: {
-                                    kind: 'Variable',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: {
-                                        kind: 'Name',
-                                        value: 'lNParamsItem',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'lNParamsItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'LogNormalParams' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'swapFee' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'controller' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastComputedMean' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastComputedWidth' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastMeanUpdate' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastWidthUpdate' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'meanUpdateEnd' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'meanUpdatePerSecond' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'widthUpdateEnd' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'widthUpdatePerSecond' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<LNParamsQuery, LNParamsQueryVariables>
-export const AllPoolsDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'allPools' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'limit' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'Int' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'pools' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'limit' },
-                                value: {
-                                    kind: 'Variable',
-                                    name: { kind: 'Name', value: 'limit' },
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'PoolItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolTokenItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'PoolToken' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'token' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'symbol' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'decimals' },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Pool' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'poolTokens' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'PoolTokenItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'strategy' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokens' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'reserves' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'lpToken' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'initTimestamp' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<AllPoolsQuery, AllPoolsQueryVariables>
-export const PoolInfoDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'poolInfo' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'id' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'BigInt' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'pool' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'id' },
-                                value: {
-                                    kind: 'Variable',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: {
-                                        kind: 'Name',
-                                        value: 'PoolWithTokens',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolWithTokens' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Pool' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'poolTokens' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'token',
-                                                },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'id',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'name',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'symbol',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'decimals',
-                                                            },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'strategy' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'positions' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'accountId',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokens' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'reserves' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'lpToken' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'initTimestamp' },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<PoolInfoQuery, PoolInfoQueryVariables>
-export const AllPositionsDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'allPositions' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'limit' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'Int' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'positions' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'limit' },
-                                value: {
-                                    kind: 'Variable',
-                                    name: { kind: 'Name', value: 'limit' },
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'PositionItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolWithTokens' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Pool' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'poolTokens' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'token',
-                                                },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'id',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'name',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'symbol',
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: {
-                                                                kind: 'Name',
-                                                                value: 'decimals',
-                                                            },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'strategy' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'positions' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'accountId',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokens' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'reserves' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'lpToken' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'initTimestamp' },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PositionItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Position' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'accountId' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidityWad' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'pool' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: {
-                                        kind: 'Name',
-                                        value: 'PoolWithTokens',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<AllPositionsQuery, AllPositionsQueryVariables>
-export const AllSwapsDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'allSwaps' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: {
-                        kind: 'Variable',
-                        name: { kind: 'Name', value: 'poolId' },
-                    },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'BigInt' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'swaps' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'where' },
-                                value: {
-                                    kind: 'ObjectValue',
-                                    fields: [
-                                        {
-                                            kind: 'ObjectField',
-                                            name: {
-                                                kind: 'Name',
-                                                value: 'poolId',
-                                            },
-                                            value: {
-                                                kind: 'Variable',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'poolId',
-                                                },
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'SwapItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolTokenItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'PoolToken' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'token' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'symbol' },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'decimals' },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'PoolItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Pool' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'poolTokens' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: {
-                                                    kind: 'Name',
-                                                    value: 'PoolTokenItem',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'strategy' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokens' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'reserves' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'liquidity' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'lpToken' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'initTimestamp' },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'SwapItem' },
-            typeCondition: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'Swap' },
-            },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'poolId' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'pool' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: { kind: 'Name', value: 'PoolItem' },
-                                },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'sender' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'amountIn' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'amountOut' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'tokenIn' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'tokenOut' },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'timestamp' },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'block' } },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<AllSwapsQuery, AllSwapsQueryVariables>
+export type AllSwapsQuery = { __typename?: 'Query', swaps: { __typename?: 'SwapPage', items: Array<(
+      { __typename?: 'Swap' }
+      & { ' $fragmentRefs'?: { 'SwapItemFragment': SwapItemFragment } }
+    )> } };
+
+export const AllocateItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AllocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Allocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"debitX"}},{"kind":"Field","name":{"kind":"Name","value":"debitY"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllocateItemFragment, unknown>;
+export const DeallocateItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DeallocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Deallocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"creditX"}},{"kind":"Field","name":{"kind":"Name","value":"creditY"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<DeallocateItemFragment, unknown>;
+export const MarketItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yt"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"redeemableInterest"}},{"kind":"Field","name":{"kind":"Name","value":"redeemableRewards"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pt"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}}]}}]} as unknown as DocumentNode<MarketItemFragment, unknown>;
+export const ExchangeRateItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ExchangeRateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ExchangeRateHourly"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"open"}},{"kind":"Field","name":{"kind":"Name","value":"close"}},{"kind":"Field","name":{"kind":"Name","value":"high"}},{"kind":"Field","name":{"kind":"Name","value":"low"}},{"kind":"Field","name":{"kind":"Name","value":"average"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]} as unknown as DocumentNode<ExchangeRateItemFragment, unknown>;
+export const MarketPriceItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketPriceItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MarketPricesHourly"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"open"}},{"kind":"Field","name":{"kind":"Name","value":"close"}},{"kind":"Field","name":{"kind":"Name","value":"high"}},{"kind":"Field","name":{"kind":"Name","value":"low"}},{"kind":"Field","name":{"kind":"Name","value":"average"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]} as unknown as DocumentNode<MarketPriceItemFragment, unknown>;
+export const SwapItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SwapItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Swap"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"tokenIn"}},{"kind":"Field","name":{"kind":"Name","value":"tokenOut"}},{"kind":"Field","name":{"kind":"Name","value":"amountIn"}},{"kind":"Field","name":{"kind":"Name","value":"amountOut"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<SwapItemFragment, unknown>;
+export const AllAllocatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allAllocates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allocates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"poolId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AllocateItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AllocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Allocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"debitX"}},{"kind":"Field","name":{"kind":"Name","value":"debitY"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllAllocatesQuery, AllAllocatesQueryVariables>;
+export const AllDeallocatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allDeallocates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deallocates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"poolId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DeallocateItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DeallocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Deallocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"creditX"}},{"kind":"Field","name":{"kind":"Name","value":"creditY"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllDeallocatesQuery, AllDeallocatesQueryVariables>;
+export const AllMarketsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allMarkets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yt"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"redeemableInterest"}},{"kind":"Field","name":{"kind":"Name","value":"redeemableRewards"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pt"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}}]}}]} as unknown as DocumentNode<AllMarketsQuery, AllMarketsQueryVariables>;
+export const MarketDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"market"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yt"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"redeemableInterest"}},{"kind":"Field","name":{"kind":"Name","value":"redeemableRewards"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pt"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}}]}}]} as unknown as DocumentNode<MarketQuery, MarketQueryVariables>;
+export const ExchangeRateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"exchangeRate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"exchangeRateHourlys"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ExchangeRateItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ExchangeRateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ExchangeRateHourly"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"open"}},{"kind":"Field","name":{"kind":"Name","value":"close"}},{"kind":"Field","name":{"kind":"Name","value":"high"}},{"kind":"Field","name":{"kind":"Name","value":"low"}},{"kind":"Field","name":{"kind":"Name","value":"average"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]} as unknown as DocumentNode<ExchangeRateQuery, ExchangeRateQueryVariables>;
+export const MarketPriceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"marketPrice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"marketPricesHourlys"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketPriceItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketPriceItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MarketPricesHourly"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"open"}},{"kind":"Field","name":{"kind":"Name","value":"close"}},{"kind":"Field","name":{"kind":"Name","value":"high"}},{"kind":"Field","name":{"kind":"Name","value":"low"}},{"kind":"Field","name":{"kind":"Name","value":"average"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]} as unknown as DocumentNode<MarketPriceQuery, MarketPriceQueryVariables>;
+export const AllSwapsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allSwaps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swaps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"poolId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SwapItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SwapItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Swap"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"tokenIn"}},{"kind":"Field","name":{"kind":"Name","value":"tokenOut"}},{"kind":"Field","name":{"kind":"Name","value":"amountIn"}},{"kind":"Field","name":{"kind":"Name","value":"amountOut"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllSwapsQuery, AllSwapsQueryVariables>;

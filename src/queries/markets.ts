@@ -6,8 +6,21 @@ export const MarketFragment = graphql(`
         name
         pool {
             id
-            tokenX
-            tokenY
+            tokenX {
+                id
+                name
+                symbol
+                decimals
+                icon
+                exchangeRate
+            }
+            tokenY {
+                id
+                name
+                symbol
+                decimals
+                icon
+            }
             reserveX
             reserveY
             totalLiquidity
@@ -26,7 +39,6 @@ export const MarketFragment = graphql(`
             symbol
             decimals
             exchangeRate
-            rewardTokens
         }
         yt {
             id
@@ -34,7 +46,7 @@ export const MarketFragment = graphql(`
             symbol
             decimals
             redeemableInterest
-            redeemaableRewards
+            redeemableRewards
         }
         pt {
             id
@@ -57,7 +69,7 @@ export const allMarketsQueryDocument = graphql(`
 `)
 
 export const MarketInfoQueryDocument = graphql(`
-    query allMarkets($id: BigInt!) {
+    query market($id: String!) {
         markets(where: { id: $id }) {
             items {
                 ...MarketItem
@@ -67,7 +79,7 @@ export const MarketInfoQueryDocument = graphql(`
 `)
 
 export const ExchangeRateFragment = graphql(`
-    fragment ExchangeRateItem on ExchangeRateHouly {
+    fragment ExchangeRateItem on ExchangeRateHourly {
         id
         marketId
         open
@@ -79,9 +91,10 @@ export const ExchangeRateFragment = graphql(`
     }
 `)
 
+// TODO: sort
 export const ExchangeRateQueryDocument = graphql(`
     query exchangeRate($limit: Int!) {
-        ExchangeRateHourly(limit: $limit, sort: "count:desc") {
+        exchangeRateHourlys(limit: $limit) {
             items {
                 ...ExchangeRateItem
             }
@@ -101,10 +114,10 @@ export const MarketPriceFragment = graphql(`
         count
     }
 `)
-
+// TODO: add sort
 export const MarketPriceQueryDocument = graphql(`
     query marketPrice($limit: Int!) {
-        MarketPriceHourly(limit: $limit, sort: "count:desc") {
+        marketPricesHourlys(limit: $limit) {
             items {
                 ...MarketPriceItem
             }

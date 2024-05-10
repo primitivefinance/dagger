@@ -1,19 +1,12 @@
 import { graphql } from '../gql'
 
+//TODO: update tokenin/out pattern to include full token struct
 export const SwapFragment = graphql(/* GraphQL */ `
     fragment SwapItem on Swap {
         id
         sender
-        tokenIn {
-            id
-            name
-            symbol
-        }
-        tokenOut {
-            id
-            name
-            symbol
-        }
+        tokenIn
+        tokenOut
         amountIn
         amountOut
         timestamp

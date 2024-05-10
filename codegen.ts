@@ -2,7 +2,7 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "https://dfmm-indexer-production-9708.up.railway.app/",
+  schema: "https://rmm-indexer-production.up.railway.app/",
   documents: ["src/**/{*.ts, *.tsx}"],
   generates: {
     "src/gql/": {

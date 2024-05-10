@@ -11,11 +11,8 @@ import {
 
 import Root from './components/Root'
 import Home from './pages/home'
-import Trade from './pages/trade'
-import CreatePool from './pages/create-pool'
-import Pool from './pages/pool'
+import Market from './pages/market'
 import Faucet from './pages/faucet'
-import Dashboard from './pages/dashboard'
 import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from './components/ui/toaster'
 import Curator from './pages/curator'
@@ -43,28 +40,12 @@ const router = createBrowserRouter([
                 element: <Home />,
             },
             {
-                path: '/trade/:tokenIn/:tokenOut',
-                element: <Trade />,
-            },
-            {
-                path: '/create-pool',
-                element: <CreatePool />,
-            },
-            {
-                path: '/pool/:id',
-                element: <Pool />,
+                path: '/market/:id',
+                element: <Market />,
             },
             {
                 path: '/faucet',
                 element: <Faucet />,
-            },
-            {
-                path: '/dashboard',
-                element: <Dashboard />,
-            },
-            {
-                path: '/curator/',
-                element: <Curator />,
             },
             {
                 path: '/curator/:id',

@@ -6,8 +6,21 @@ export const AllocateFragment = graphql(/* GraphQL */ `
         sender
         pool {
             id
-            tokenX
-            tokenY
+            tokenX {
+                id
+                name
+                symbol
+                decimals
+                icon
+                exchangeRate
+            }
+            tokenY {
+                id
+                name
+                symbol
+                decimals
+                icon
+            }
             reserveX
             reserveY
             totalLiquidity
@@ -44,8 +57,21 @@ export const DeallocateFragment = graphql(/* GraphQL */ `
         sender
         pool {
             id
-            tokenX
-            tokenY
+            tokenX {
+                id
+                name
+                symbol
+                decimals
+                icon
+                exchangeRate
+            }
+            tokenY {
+                id
+                name
+                symbol
+                decimals
+                icon
+            }
             reserveX
             reserveY
             totalLiquidity
