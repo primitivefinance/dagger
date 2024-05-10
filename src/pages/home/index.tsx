@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@radix-ui/react-separator'
 import { useGraphQL } from '../../useGraphQL'
-import PoolsTable from '@/components/PoolsTable'
-import { allPoolsQueryDocument } from '../../queries/pools'
+import { allMarketsQueryDocument } from '../../queries/markets'
 import { zeroAddress } from 'viem'
 import { LabelWithEtherscan } from '@/components/EtherscanLinkLabels'
 import { Card } from '@/components/ui/card'
@@ -16,8 +15,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { PoolWithTokensFragment } from 'gql/graphql'
-import { TokenBadge } from '../pool'
+import { MarketItemFragment } from 'gql/graphql'
 
 type CuratorInfo = {
     name: string
@@ -150,12 +148,12 @@ const HoldingsCell = ({ poolTokens, reserves }) => {
 }
 
 export const PoolCard = ({
-    pool,
+    market,
 }: {
-    pool: PoolWithTokensFragment
+    market: MarketItemFragment
 }): JSX.Element => {
     const poolTokens = pool?.poolTokens?.items?.map((poolToken) => poolToken)
-    const reserves = pool?.reserves?.map((reserve) => reserve)
+    const reserves = market?.reserves?.map((reserve) => reserve)
 
     return (
         <Card className="p-lg hover:bg-muted/50 rounded-none">
@@ -219,7 +217,7 @@ export const PoolCard = ({
 }
 
 function Home(): JSX.Element {
-    const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 })
+    const { data } = useGraphQL(allMarketsQueryDocument, { limit: 10 })
 
     return (
         <div className="flex flex-col gap-2xl">
@@ -232,7 +230,7 @@ function Home(): JSX.Element {
             <div className="flex flex-col gap-md">
                 <div className="flex flex-row items-center w-full justify-between">
                     <h4 className="scroll-m-20">
-                        Highlighted Pools ({data?.pools?.items?.length ?? 0})
+                        Yield Markets ({data?.markets?.items?.length ?? 0})
                     </h4>
                     <TooltipProvider delayDuration={200}>
                         <Tooltip>
@@ -264,8 +262,8 @@ function Home(): JSX.Element {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                    {data?.pools?.items?.map((pool, i) => (
-                        <PoolCard key={pool?.id ?? i} pool={pool} />
+                    {data?.markets?.items?.map((market, i) => (
+                        <PoolCard key={market?.id ?? i} pool={market} />
                     ))}
                 </div>
             </div>
