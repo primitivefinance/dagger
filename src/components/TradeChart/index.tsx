@@ -6,14 +6,15 @@ import { useGraphQL } from '../../useGraphQL'
 import { MarketPriceQueryDocument } from '../../queries/markets'
 
 export type TradeChartProps = {
-    market: number
-    isPT: boolean
+    marketId: string
+    isLong: boolean
 }
 
-const TradeChart: FC<TradeChartProps> = ({ market, isPT = true }) => {
+const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
     const chartContainerRef = useRef()
+
+    // convert query to where: marketId
     const { data } = useGraphQL(MarketPriceQueryDocument, { limit: 100 })
-    const ptData = data?.pools?.items
 
     useEffect(() => {
         const chart = createChart(chartContainerRef.current, {
@@ -35,7 +36,7 @@ const TradeChart: FC<TradeChartProps> = ({ market, isPT = true }) => {
             wickUpColor: '#26a69a',
             wickDownColor: '#ef5350',
         })
-        ptSeries.setData(isPT ? longPricePath : shortPricePath)
+        ptSeries.setData(isLong ? longPricePath : shortPricePath)
         chart.timeScale().fitContent()
 
         window.addEventListener('resize', handleResize)
@@ -44,9 +45,8 @@ const TradeChart: FC<TradeChartProps> = ({ market, isPT = true }) => {
             window.removeEventListener('resize', handleResize)
             chart.remove()
         }
-    }, [isPT])
-
-    return <div ref={chartContainerRef} />
+    }, [isLong])
+    return <></>
 }
 
 export default TradeChart
