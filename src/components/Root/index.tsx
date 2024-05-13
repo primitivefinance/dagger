@@ -14,15 +14,13 @@ const externalApplicationDisclaimer =
 
 const Wordmark = ({ className }) => {
     return (
-        <Link to="/" aria-label="header">
-            <img
-                src="/primitive-wordmark-dark.png"
-                width={144}
-                height={144}
-                alt={`Cover Image for ${'header'}`}
-                className={cn('dark:invert', className)}
-            />
-        </Link>
+        <img
+            src="/primitive-wordmark-dark.png"
+            width={144}
+            height={144}
+            alt={`Cover Image for ${'header'}`}
+            className={cn('dark:invert', className)}
+        />
     )
 }
 
@@ -85,6 +83,15 @@ function Root(): JSX.Element {
                             </Link>
                         </div>
                         <ul className="flex-grow w-full flex-row flex gap-xs items-center">
+                            <li
+                                className={`${loc.pathname.startsWith('/trade/') ? 'underline' : 'no-underline'}`}
+                            >
+                                <Button variant="link" asChild>
+                                    <Link to="/trade/wsteth/superliquid">
+                                        Trade
+                                    </Link>
+                                </Button>
+                            </li>
                             <li
                                 className={`${loc.pathname === '/' || loc.pathname.startsWith('/pool/') ? 'underline' : 'no-underline'}`}
                             >

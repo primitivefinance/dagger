@@ -8,11 +8,6 @@ import {
 } from '../ui/table'
 
 import { FragmentType, useFragment } from '../../gql'
-import {
-    PoolFragment,
-    TokenFragment,
-    allPoolsQueryDocument,
-} from '../../queries/pools'
 import { tokens } from '@/data/tokens'
 
 import { FC } from 'react'
@@ -35,7 +30,6 @@ import {
 } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
 import { FALLBACK_LOGO } from '@/utils/pools'
-import { TokenBadge } from '@/pages/pool'
 
 const tooltipContent = {
     lptOutstanding:
@@ -43,6 +37,38 @@ const tooltipContent = {
     curator:
         'Curators have power over pool calibration that can impact the value of deposits.',
     autonomous: 'Algorithmic pool calibrated upon creation; cannot be altered.',
+}
+
+export function TokenBadge({
+    address,
+}: {
+    address?: `0x${string}`
+}): JSX.Element {
+    const chainId = useChainId()
+    const token =
+        typeof address !== 'undefined'
+            ? tokens?.[chainId]?.find(
+                  (t) => getAddress(t.address) === getAddress(address)
+              )
+            : undefined
+    const FALLBACK_SYMBOL = 'N/A'
+
+    return (
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger>
+                    <img
+                        src={token?.logo ?? FALLBACK_LOGO}
+                        alt={token?.symbol ?? FALLBACK_SYMBOL}
+                        className="rounded-full size-lg"
+                    />
+                </TooltipTrigger>
+                <TooltipContent>
+                    {token?.symbol ?? FALLBACK_SYMBOL}
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    )
 }
 
 type TokenCellProps = {
@@ -101,11 +127,11 @@ const HoldingsCell = ({ poolTokens, reserves }) => {
 }
 
 type PoolCellProps = {
-    pool: FragmentType<typeof PoolFragment>
+    pool: FragmentType<typeof MarketFragment>
 }
 
 const PoolCell: FC<PoolCellProps> = (props: {
-    pool: FragmentType<typeof PoolFragment>
+    pool: FragmentType<typeof MarketFragment>
 }) => {
     const poolData = useFragment(PoolFragment, props.pool)
     const navigate = useNavigate()
@@ -171,8 +197,8 @@ const PoolsTable: FC = () => {
         <Table>
             <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-left">Tokens</TableHead>
                     <TableHead className="text-left">Name</TableHead>
+                    <TableHead className="text-left">Tokens</TableHead>
                     <TableHead className="text-left">Total Holdings</TableHead>
                     <TableHead className="text-left">
                         <TooltipProvider delayDuration={200}>

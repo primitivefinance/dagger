@@ -10,9 +10,9 @@ export function useGraphQL<TResult, TVariables>(
         queryKey: [(document.definitions[0] as any).name.value, variables],
         queryFn: async ({ queryKey }) =>
             request(
-                'https://dfmm-indexer-production-9708.up.railway.app/',
+                'https://rmm-indexer-production.up.railway.app/',
                 document,
-                queryKey[1] ? queryKey[1] : undefined
+                queryKey[1] ? queryKey[1] : undefined,
             ),
     })
 }

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { http, WagmiProvider } from 'wagmi'
-import { optimismSepolia, mainnet } from 'wagmi/chains'
+import {  mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
     RainbowKitProvider,
@@ -11,24 +11,22 @@ import {
 
 import Root from './components/Root'
 import Home from './pages/home'
-import CreatePool from './pages/create-pool'
-import Pool from './pages/pool'
+import Market from './pages/market'
 import Faucet from './pages/faucet'
-import Dashboard from './pages/dashboard'
 import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from './components/ui/toaster'
 import Curator from './pages/curator'
-import Admin from './pages/admin'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
 export const config = getDefaultConfig({
     appName: 'Primitive',
-    chains: [optimismSepolia],
+    chains: [mainnet],
     projectId,
     transports: {
-        [optimismSepolia.id]: http(),
-        [mainnet.id]: http(),
+        [mainnet.id]: http(
+            'https://virtual.mainnet.rpc.tenderly.co/3d94d062-ece1-4942-9ca2-f0876a728970'
+        ),
     },
 })
 
@@ -42,32 +40,16 @@ const router = createBrowserRouter([
                 element: <Home />,
             },
             {
-                path: '/create-pool',
-                element: <CreatePool />,
-            },
-            {
-                path: '/pool/:id',
-                element: <Pool />,
+                path: '/market/:id',
+                element: <Market />,
             },
             {
                 path: '/faucet',
                 element: <Faucet />,
             },
             {
-                path: '/dashboard',
-                element: <Dashboard />,
-            },
-            {
-                path: '/curator/',
-                element: <Curator />,
-            },
-            {
                 path: '/curator/:id',
                 element: <Curator />,
-            },
-            {
-                path: '/admin',
-                element: <Admin />,
             },
         ],
     },
@@ -94,7 +76,7 @@ function App(): JSX.Element {
                         accentColor: '#0E4CF7',
                         borderRadius: 'small',
                     })}
-                    initialChain={optimismSepolia}
+                    initialChain={mainnet}
                 >
                     <ThemeProvider
                         defaultTheme="dark"
