@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@radix-ui/react-separator'
 import { useGraphQL } from '../../useGraphQL'
-import { allMarketsQueryDocument } from '../../queries/markets'
+import { allMarketsQueryDocument, MarketFragment } from '../../queries/markets'
 import { zeroAddress } from 'viem'
 import { LabelWithEtherscan } from '@/components/EtherscanLinkLabels'
 import { Card } from '@/components/ui/card'
@@ -16,7 +16,6 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { TokenBadge } from '@/components/PoolsTable'
-import { MarketItemFragment } from 'gql/graphql'
 
 type CuratorInfo = {
     name: string
@@ -148,11 +147,17 @@ const HoldingsCell = ({ poolTokens, reserves }) => {
     )
 }
 
-export const PoolCard = ({
-    market,
-}: {
-    market: MarketItemFragment
-}): JSX.Element => {
+export type Market = {
+    expiry: number
+    id: string
+    name: string
+    pool: any
+    pt: any
+    sy: any
+    yt: any
+}
+export const PoolCard = ({ market }: { market: Market }): JSX.Element => {
+    console.log(market)
     return (
         <Card className="p-lg hover:bg-muted/50 rounded-none">
             <Link
@@ -178,7 +183,7 @@ export const PoolCard = ({
                                     Address
                                 </small>
                             }
-                            address={market.id}
+                            address={market.id as any}
                         />
                     </div>
 
@@ -222,7 +227,8 @@ export const PoolCard = ({
 
 function Home(): JSX.Element {
     const { data } = useGraphQL(allMarketsQueryDocument, { limit: 10 })
-
+    console.log(data?.markets.items.map((market) => console.log(market)))
+    if (!data?.markets?.items) return <></>
     return (
         <div className="flex flex-col gap-2xl">
             <div className="gap-sm flex flex-col">
@@ -266,8 +272,8 @@ function Home(): JSX.Element {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                    {data?.markets?.items?.map((market, i) => (
-                        <PoolCard key={market?.id ?? i} pool={market} />
+                    {data?.markets.items.map((market, i) => (
+                        <PoolCard key={i} market={market} />
                     ))}
                 </div>
             </div>

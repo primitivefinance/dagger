@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { http, WagmiProvider } from 'wagmi'
-import { optimismSepolia, mainnet } from 'wagmi/chains'
+import {  mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
     RainbowKitProvider,
@@ -21,11 +21,12 @@ const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
 export const config = getDefaultConfig({
     appName: 'Primitive',
-    chains: [optimismSepolia],
+    chains: [mainnet],
     projectId,
     transports: {
-        [optimismSepolia.id]: http(),
-        [mainnet.id]: http(),
+        [mainnet.id]: http(
+            'https://virtual.mainnet.rpc.tenderly.co/3d94d062-ece1-4942-9ca2-f0876a728970'
+        ),
     },
 })
 
@@ -75,7 +76,7 @@ function App(): JSX.Element {
                         accentColor: '#0E4CF7',
                         borderRadius: 'small',
                     })}
-                    initialChain={optimismSepolia}
+                    initialChain={mainnet}
                 >
                     <ThemeProvider
                         defaultTheme="dark"
