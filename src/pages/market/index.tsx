@@ -14,13 +14,11 @@ const Market: React.FC = () => {
     const address = useAccount()
     const { id } = useParams()
 
-    const [isPT, setPT] = useState(true)
+    const [isLong, setIsLong] = useState(true)
 
     const { data } = useGraphQL(MarketInfoQueryDocument, {
         id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
     })
-
-    const [amounts, setAmounts] = useState<string[]>(['', ''])
 
     const market = data?.markets?.items[0]
 
@@ -28,16 +26,11 @@ const Market: React.FC = () => {
     return (
         <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-xl">
             <div className="w-full">
-                <TradeChart marketId={market.id} isPT={isPT} />
+                <TradeChart marketId={market.id} isLong={isLong} />
             </div>
             <div className="grid grid-col">
-                <TradeForm
-                    market={market}
-                    isPt={isPT}
-                    amounts={amounts}
-                    setAmounts={setAmounts}
-                ></TradeForm>
-                <TradeInfo market={market} isPT={isPT} />
+                <TradeForm market={market} isLong={isLong}></TradeForm>
+                <TradeInfo market={market} />
             </div>
             <TradePositions account={address} />
         </div>
