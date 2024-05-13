@@ -7,40 +7,41 @@ import TradeChart from '@/components/TradeChart'
 import TradePositions from '@/components/TradePositions'
 import TradeForm from '@/components/TradeForm'
 
-import { useAccount, useChainId } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { MarketInfoQueryDocument } from '../../queries/markets'
 
 const Market: React.FC = () => {
     const address = useAccount()
-    const chainId = useChainId()
-    const {id} = useParams()
+    const { id } = useParams()
 
     const [isPT, setPT] = useState(true)
 
-    const { data } = useGraphQL(MarketInfoQueryDocument, { id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee'})
-    const [amounts, setAmounts] = useState<string[]>(['',''])
+    const { data } = useGraphQL(MarketInfoQueryDocument, {
+        id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
+    })
 
-    return <></>
-    /** 
+    const [amounts, setAmounts] = useState<string[]>(['', ''])
+
+    const market = data?.markets?.items[0]
+
+    if (!market) return <></>
     return (
         <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-xl">
             <div className="w-full">
-                <TradeChart market={id} isPT={isPT} />
+                <TradeChart marketId={market.id} isPT={isPT} />
             </div>
             <div className="grid grid-col">
                 <TradeForm
-                    market={id}
+                    market={market}
                     isPt={isPT}
                     amounts={amounts}
                     setAmounts={setAmounts}
-                >
-                </TradeForm>
-                <TradeInfo market={id} isPT={isPT} />
+                ></TradeForm>
+                <TradeInfo market={market} isPT={isPT} />
             </div>
-            <TradePositions market={id} account={address} />
+            <TradePositions account={address} />
         </div>
     )
-    */
 }
 
 export default Market
