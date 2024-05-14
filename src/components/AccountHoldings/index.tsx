@@ -131,11 +131,13 @@ const AccountInfo = (): JSX.Element => {
                         <DataItem
                             label="Account"
                             value={
-                                ensName || address
-                                    ? shortAddress(
-                                          address as unknown as `0x${string}`
-                                      )
-                                    : FALLBACK_ENS_NAME
+                                ensName
+                                    ? normalize(ensName)
+                                    : address
+                                      ? shortAddress(
+                                            address as unknown as `0x${string}`
+                                        )
+                                      : FALLBACK_ENS_NAME
                             }
                             valueRaw={address}
                             isLoading={isFetchingName}

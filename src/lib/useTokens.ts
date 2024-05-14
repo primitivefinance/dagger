@@ -13,21 +13,12 @@ export function useTokens({ id }: { id?: string }): {
     return useMemo(() => {
         if (!data || !data.markets || !data.markets.items) return { data: [] }
 
+        console.log({ marketItems: data.markets.items })
+
         // Gets a flat map of all tokens in all the markets tracked in the indexer.
         const allTokens = (data.markets.items as MarketItemFragment[]).flatMap(
-            (market) => [
-                {
-                    id: market?.id,
-                    symbol: market?.name,
-                    name: market?.name,
-                    decimals: 18,
-                },
-                market?.pool?.tokenX,
-                market?.pool?.tokenY,
-                market?.sy,
-                market?.pt,
-                market?.yt,
-            ]
+            (market) =>
+                market?.marketTokens?.items.map((item) => item.token) ?? []
         )
 
         // Filter out duplicates based on a combination of 'id' and 'symbol' for uniqueness
