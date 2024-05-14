@@ -33,31 +33,71 @@ export const MarketFragment = graphql(`
                 name
             }
         }
-        sy {
-            id
-            name
-            symbol
-            decimals
-            exchangeRate
-        }
-        yt {
-            id
-            name
-            symbol
-            decimals
-            redeemableInterest
-            redeemableRewards
-        }
-        pt {
-            id
-            name
-            symbol
-            decimals
+        marketTokens {
+            items {
+                token {
+                    id
+                    name
+                    symbol
+                    decimals
+                    icon
+                }
+            }
         }
         expiry
     }
 `)
 
+export const SYTokenQueryDocument = graphql(`
+    query syToken($tokenId: String!) {
+        syTokens(where: { id: $tokenId }) {
+            items {
+                token {
+                    id
+                    name
+                    symbol
+                    decimals
+                    icon
+                }
+                exchangeRate
+                tokensIn
+                tokensOut
+            }
+        }
+    }
+`)
+export const PTokenQueryDocument = graphql(`
+    query pToken($tokenId: String!) {
+        pTokens(where: { id: $tokenId }) {
+            items {
+                token {
+                    id
+                    name
+                    symbol
+                    decimals
+                    icon
+                }
+            }
+        }
+    }
+`)
+export const YTokenQueryDocument = graphql(`
+    query yToken($tokenId: String!) {
+        yTokens(where: { id: $tokenId }) {
+            items {
+                token {
+                    id
+                    name
+                    symbol
+                    decimals
+                    icon
+                }
+                redeemableInterest
+                redeemableRewards
+            }
+        }
+    }
+`)
 export const allMarketsQueryDocument = graphql(`
     query allMarkets($limit: Int!) {
         markets(limit: $limit) {
