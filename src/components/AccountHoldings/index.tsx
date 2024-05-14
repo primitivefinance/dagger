@@ -15,7 +15,7 @@ import { Skeleton } from '../ui/skeleton'
 import { formatWad } from '@/utils/numbers'
 import { useTokens } from '@/lib/useTokens'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { TokenBadge } from '../PoolsTable'
+import TokenBadge from '../TokenBadge'
 import {
     Tooltip,
     TooltipContent,
@@ -237,13 +237,9 @@ const TokenBalance = ({
 
 const Holdings = (): JSX.Element => {
     const { address, isConnecting, isReconnecting } = useAccount()
-    const { data: allTokens } = useTokens({})
-
-    // sorting is important here since we want to display the tokens in a consistent order
-    const filteredSortedTokens = allTokens?.sort(
-        (a: { id: string }, b: { id: string }) =>
-            getAddress(a.id) > getAddress(b.id) ? 1 : -1
-    )
+    const {
+        data: { sorted: filteredSortedTokens },
+    } = useTokens({})
 
     const balanceCall = {
         abi: erc20Abi,

@@ -2,16 +2,26 @@ import { useMemo } from 'react'
 import { useGraphQL } from '../useGraphQL'
 import { MarketInfoQueryDocument } from '../queries/markets'
 import { MarketItemFragment } from 'gql/graphql'
+import { getAddress } from 'viem'
 
 export function useTokens({ id }: { id?: string }): {
-    data: any[]
+    data: {
+        raw: any[]
+        sorted: any[]
+    }
 } {
     const { data } = useGraphQL(MarketInfoQueryDocument, {
         id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
     })
 
     return useMemo(() => {
-        if (!data || !data.markets || !data.markets.items) return { data: [] }
+        if (!data || !data.markets || !data.markets.items)
+            return {
+                data: {
+                    raw: [],
+                    sorted: [],
+                },
+            }
 
         console.log({ marketItems: data.markets.items })
 
@@ -28,6 +38,14 @@ export function useTokens({ id }: { id?: string }): {
             ).values()
         )
 
-        return { data: uniqueTokens as any[] }
+        return {
+            data: {
+                raw: uniqueTokens as any[],
+                sorted: uniqueTokens.sort(
+                    (a: { id: string }, b: { id: string }) =>
+                        getAddress(a.id) > getAddress(b.id) ? 1 : -1
+                ) as any[],
+            },
+        }
     }, [data])
 }

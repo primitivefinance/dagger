@@ -1,5 +1,5 @@
 import { formatWad } from '@/utils/numbers'
-import { TokenBadge } from '../PoolsTable'
+import TokenBadge from '../TokenBadge'
 import SkeletonText from '../SkeletonText'
 
 /**
