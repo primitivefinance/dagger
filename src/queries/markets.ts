@@ -12,7 +12,6 @@ export const MarketFragment = graphql(`
                 symbol
                 decimals
                 icon
-                exchangeRate
             }
             tokenY {
                 id
@@ -50,7 +49,7 @@ export const MarketFragment = graphql(`
 
 export const SYTokenQueryDocument = graphql(`
     query syToken($tokenId: String!) {
-        syTokens(where: { id: $tokenId }) {
+        sYTokens(where: { id: $tokenId }) {
             items {
                 token {
                     id
