@@ -30,6 +30,8 @@ import {
 } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
 import { FALLBACK_LOGO } from '@/utils/pools'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { Skeleton } from '../ui/skeleton'
 
 const tooltipContent = {
     lptOutstanding:
@@ -41,12 +43,14 @@ const tooltipContent = {
 
 export function TokenBadge({
     address,
-    size = 'size-lg',
+    size = 'size-2xl',
     chainId,
+    symbol,
 }: {
     address?: `0x${string}`
     size?: string
     chainId?: number
+    symbol?: string
 }): JSX.Element {
     const connectedChainId = useChainId()
 
@@ -63,17 +67,25 @@ export function TokenBadge({
     const FALLBACK_SYMBOL = 'N/A'
 
     return (
-        <TooltipProvider>
+        <TooltipProvider delayDuration={50}>
             <Tooltip>
                 <TooltipTrigger>
-                    <img
-                        src={token?.logo ?? FALLBACK_LOGO}
-                        alt={token?.symbol ?? FALLBACK_SYMBOL}
-                        className={`rounded-full ${size}`}
-                    />
+                    {address ? (
+                        <Avatar className={`rounded-full ${size}`}>
+                            <AvatarImage
+                                src={token?.logo ?? FALLBACK_LOGO}
+                                alt={token?.symbol ?? FALLBACK_SYMBOL}
+                            />
+                            <AvatarFallback>C</AvatarFallback>
+                        </Avatar>
+                    ) : (
+                        <Avatar className={`rounded-full ${size}`}>
+                            <Skeleton className={`w-full h-full`}></Skeleton>
+                        </Avatar>
+                    )}
                 </TooltipTrigger>
                 <TooltipContent>
-                    {token?.symbol ?? FALLBACK_SYMBOL}
+                    {symbol ?? token?.symbol ?? FALLBACK_SYMBOL}
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

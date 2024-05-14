@@ -230,3 +230,44 @@
     }
   }
   
+
+  @keyframes shimmer {
+    0% {
+        background-position: -40rem 0;
+    }
+    100% {
+        background-position: 40rem 0;
+    }
+}
+
+.copied-shimmer {
+    animation: shimmer 1.5s infinite linear;
+    background-size: 80rem 100%;
+    color: transparent;
+}
+
+/* Light mode shimmer */
+.copied-shimmer {
+    background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+}
+
+/* Dark mode shimmer */
+@media (prefers-color-scheme: dark) {
+    .copied-shimmer {
+        background: linear-gradient(to right, #2c2c2c 8%, #1c1c1c 18%, #2c2c2c 33%);
+    }
+}
+
+@keyframes textShimmer {
+    0%, 100% {
+        color: inherit; /* Default text color */
+        opacity: 100%;
+    }
+    50% {
+        opacity: 50%; /* Shimmer color - adjust based on your theme */
+    }
+}
+
+.copied-text-shimmer {
+    animation: textShimmer 0.25s ease-in-out 1;
+}
