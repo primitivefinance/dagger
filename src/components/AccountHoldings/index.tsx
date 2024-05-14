@@ -22,6 +22,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '../ui/tooltip'
+import SkeletonText from '../SkeletonText'
 
 const DataItem = ({
     label,
@@ -204,11 +205,7 @@ const TokenBalance = ({
                     {ticker}
                 </h5>
             ) : (
-                <Skeleton className="w-full h-full">
-                    <h4 className="text-transparent selection:text-transparent">
-                        Loading
-                    </h4>
-                </Skeleton>
+                <SkeletonText />
             )}
             <TokenBadge
                 address={token}
@@ -232,11 +229,7 @@ const TokenBalance = ({
                     <h4 className="truncate">{balance?.error?.message}</h4>
                 )
             ) : (
-                <Skeleton className="w-full h-full">
-                    <h4 className="text-transparent selection:text-transparent">
-                        Loading
-                    </h4>
-                </Skeleton>
+                <SkeletonText />
             )}
         </div>
     )

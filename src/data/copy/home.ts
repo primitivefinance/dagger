@@ -1,4 +1,4 @@
-export const title: string = 'Deposit'
+export const title: string = 'Choose a Market'
 
 export const subtitle: string =
-    'Add liquidity to an existing pool or create your own.'
+    'Pick a market to trade yield rates or manage existing positions.'

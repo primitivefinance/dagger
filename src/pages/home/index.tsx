@@ -1,13 +1,15 @@
 import { title, subtitle } from '@/data/copy/home'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@radix-ui/react-separator'
 import { useGraphQL } from '../../useGraphQL'
-import { allMarketsQueryDocument, MarketFragment } from '../../queries/markets'
+import {
+    SYTokenQueryDocument,
+    allMarketsQueryDocument,
+} from '../../queries/markets'
 import { zeroAddress } from 'viem'
 import { LabelWithEtherscan } from '@/components/EtherscanLinkLabels'
 import { Card } from '@/components/ui/card'
-import { formatNumber, formatPercentage } from '@/utils/numbers'
+import { formatNumber, formatPercentage, formatWad } from '@/utils/numbers'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
     Tooltip,
@@ -15,7 +17,16 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { TokenBadge } from '@/components/PoolsTable'
+import PoolsTable, { TokenBadge } from '@/components/PoolsTable'
+import React from 'react'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { MarketItemFragment } from 'gql/graphql'
+import { Skeleton } from '@/components/ui/skeleton'
+import AvatarSkeletonTooltip from '@/components/AvatarSkeletonTooltip'
+import { FALLBACK_AVATAR } from '@/utils/address'
+import SkeletonText from '@/components/SkeletonText'
+import TokenHoldings from '@/components/TokenHoldings'
 
 type CuratorInfo = {
     name: string
@@ -122,40 +133,15 @@ export const CuratorCard = ({
     )
 }
 
-const HoldingsCell = ({ poolTokens, reserves }) => {
-    return (
-        <div className="flex flex-wrap items-center gap-xs">
-            {poolTokens.map((token, index) => {
-                const reserve = reserves[index]
+export const PoolCard = ({
+    market,
+}: {
+    market?: MarketItemFragment
+}): JSX.Element => {
+    const { data: sy } = useGraphQL(SYTokenQueryDocument, {
+        tokenId: market?.pool?.tokenX?.id,
+    })
 
-                return (
-                    <div
-                        key={index}
-                        className="flex flex-row items-center gap-xs"
-                    >
-                        <TokenBadge address={token?.id as `0x${string}`} />
-                        <span>{formatNumber(reserve)}</span>
-                        {index === poolTokens.length - 1 ? null : (
-                            <span className="text-dagger4">/</span>
-                        )}
-                    </div>
-                )
-            })}
-        </div>
-    )
-}
-
-export type Market = {
-    expiry: number
-    id: string
-    name: string
-    pool: any
-    pt: any
-    sy: any
-    yt: any
-}
-export const PoolCard = ({ market }: { market: Market }): JSX.Element => {
-    console.log(market)
     return (
         <Card className="p-lg hover:bg-muted/50 rounded-none">
             <Link
@@ -164,16 +150,17 @@ export const PoolCard = ({ market }: { market: Market }): JSX.Element => {
             >
                 <div className="flex flex-col gap-lg h-full justify-between">
                     <div className="flex w-full items-center justify-center">
-                        <Avatar className="h-24 w-24">
-                            <AvatarImage
-                                src="https://github.com/shadcn.png"
-                                alt="@shadcn"
-                            />
-                            <AvatarFallback>C</AvatarFallback>
-                        </Avatar>
+                        <AvatarSkeletonTooltip
+                            src={market?.icon ?? FALLBACK_AVATAR}
+                            alt={market?.name ?? 'Market'}
+                            loading={typeof market === 'undefined'}
+                            size="size-[6rem]"
+                        >
+                            {market?.name ?? 'Market'}
+                        </AvatarSkeletonTooltip>
                     </div>
                     <div className="flex flex-col gap-xs justify-center items-center">
-                        <h3>{market.name}</h3>
+                        {market ? <h3>{market.name}</h3> : <SkeletonText />}
 
                         <LabelWithEtherscan
                             label={
@@ -181,7 +168,7 @@ export const PoolCard = ({ market }: { market: Market }): JSX.Element => {
                                     Address
                                 </small>
                             }
-                            address={market.id as any}
+                            address={market?.id as `0x${string}`}
                         />
                     </div>
 
@@ -189,32 +176,61 @@ export const PoolCard = ({ market }: { market: Market }): JSX.Element => {
                         <h5 className="text-muted dark:text-muted-foreground">
                             Holdings
                         </h5>
-                        <HoldingsCell
-                            poolTokens={[
-                                market.pool.tokenX,
-                                market.pool.tokenY,
+                        <TokenHoldings
+                            tokens={[
+                                market?.pool?.tokenX,
+                                market?.pool?.tokenY,
                             ]}
                             reserves={[
-                                market.pool.reserveX,
-                                market.pool.reserveY,
+                                market?.pool?.reserveX,
+                                market?.pool?.reserveY,
                             ]}
                         />
                     </div>
 
                     <div className="flex flex-col h-full gap-sm justify-end">
                         <div className="flex flex-row gap-sm items-center justify-between">
-                            <small className="text-muted dark:text-muted-foreground">
-                                Total Supply
-                            </small>
-                            <small>{formatNumber(1000)}</small>
+                            <p className="text-muted dark:text-muted-foreground">
+                                Rate
+                            </p>
+                            <div>
+                                {sy?.sYTokens?.items?.[0]?.exchangeRate ? (
+                                    <p>
+                                        {formatWad(
+                                            sy?.sYTokens?.items?.[0]
+                                                ?.exchangeRate
+                                        )}
+                                    </p>
+                                ) : (
+                                    <SkeletonText />
+                                )}
+                            </div>
                         </div>
+
+                        <div className="flex flex-row gap-sm items-center justify-between">
+                            <p className="text-muted dark:text-muted-foreground">
+                                Expiry
+                            </p>
+                            <div>
+                                {market?.expiry ? (
+                                    <p>
+                                        {new Date(
+                                            market.expiry * 1000
+                                        ).toLocaleDateString()}
+                                    </p>
+                                ) : (
+                                    <SkeletonText />
+                                )}
+                            </div>
+                        </div>
+
                         <LabelWithEtherscan
                             label={
-                                <small className="text-muted dark:text-muted-foreground">
+                                <p className="text-muted dark:text-muted-foreground">
                                     Curator
-                                </small>
+                                </p>
                             }
-                            address={zeroAddress}
+                            address={market?.pool?.curator?.id as `0x${string}`}
                         />
                     </div>
                 </div>
@@ -225,8 +241,11 @@ export const PoolCard = ({ market }: { market: Market }): JSX.Element => {
 
 function Home(): JSX.Element {
     const { data } = useGraphQL(allMarketsQueryDocument, { limit: 10 })
-    console.log(data?.markets.items.map((market) => console.log(market)))
+
+    const [displayCards, setDisplayCards] = React.useState<boolean>(true)
+
     if (!data?.markets?.items) return <></>
+
     return (
         <div className="flex flex-col gap-2xl p-xl">
             <div className="gap-sm flex flex-col">
@@ -237,9 +256,24 @@ function Home(): JSX.Element {
             </div>
             <div className="flex flex-col gap-md">
                 <div className="flex flex-row items-center w-full justify-between">
-                    <h4 className="scroll-m-20">
-                        Yield Markets ({data?.markets?.items?.length ?? 0})
-                    </h4>
+                    <div className="flex flex-row gap-md items-center">
+                        <h4 className="scroll-m-20">
+                            Yield Markets ({data?.markets?.items?.length ?? 0})
+                        </h4>
+                        <div className="flex flex-row gap-sm items-center">
+                            <Switch
+                                id="card-mode"
+                                onClick={() => setDisplayCards(!displayCards)}
+                                checked={displayCards}
+                            />
+                            <Label
+                                htmlFor="card-mode"
+                                className="text-muted dark:text-muted-foreground"
+                            >
+                                Cards
+                            </Label>
+                        </div>
+                    </div>
                     <TooltipProvider delayDuration={200}>
                         <Tooltip>
                             <TooltipTrigger>
@@ -269,11 +303,17 @@ function Home(): JSX.Element {
                     </TooltipProvider>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                    {data?.markets.items.map((market, i) => (
-                        <PoolCard key={i} market={market} />
-                    ))}
-                </div>
+                {displayCards ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
+                        {data?.markets.items.map((market, i) => (
+                            <PoolCard key={i} market={market} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 gap-md">
+                        <PoolsTable />
+                    </div>
+                )}
             </div>
             <div className="flex flex-col gap-md">
                 <h4 className="scroll-m-20 ">Highlighted Curators</h4>

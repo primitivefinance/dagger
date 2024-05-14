@@ -32,6 +32,9 @@ import { Badge } from '../ui/badge'
 import { FALLBACK_LOGO } from '@/utils/pools'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Skeleton } from '../ui/skeleton'
+import { MarketFragment, allMarketsQueryDocument } from '../../queries/markets'
+import TokenHoldings from '../TokenHoldings'
+import SkeletonText from '../SkeletonText'
 
 const tooltipContent = {
     lptOutstanding:
@@ -122,31 +125,6 @@ const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
     )
 }
 
-const HoldingsCell = ({ poolTokens, reserves }) => {
-    return (
-        <div className="flex flex-row items-center gap-xs">
-            {poolTokens.map((token, index) => {
-                const reserve = reserves[index]
-
-                return (
-                    <div
-                        key={index}
-                        className="flex flex-row items-center gap-xs"
-                    >
-                        <TokenBadge
-                            address={token?.token?.id as `0x${string}`}
-                        />
-                        <span>{formatNumber(reserve)}</span>
-                        {index === poolTokens.length - 1 ? null : (
-                            <span className="text-dagger4">/</span>
-                        )}
-                    </div>
-                )
-            })}
-        </div>
-    )
-}
-
 type PoolCellProps = {
     pool: FragmentType<typeof MarketFragment>
 }
@@ -154,53 +132,39 @@ type PoolCellProps = {
 const PoolCell: FC<PoolCellProps> = (props: {
     pool: FragmentType<typeof MarketFragment>
 }) => {
-    const poolData = useFragment(PoolFragment, props.pool)
     const navigate = useNavigate()
-
-    const poolTokens = poolData?.poolTokens?.items?.map(
-        (poolToken) => poolToken
-    )
-    const reserves = poolData?.reserves?.map((reserve) => reserve)
+    const poolData = useFragment(MarketFragment, props.pool)
 
     // todo: this should be in the database instead of an onchain call.
-    const { data: lpTokenSupply } = useReadContract({
+    const { data: lpTokenSupply, isFetching } = useReadContract({
         abi: erc20Abi,
-        address: poolData.lpToken as `0x${string}`,
+        address: poolData.id as `0x${string}`,
         functionName: 'totalSupply',
     })
 
     return (
         <TableRow
             key={poolData.id}
-            onClick={() => navigate(`/pool/${poolData.id}`)}
+            onClick={() => navigate(`/market/${poolData.id}`)}
         >
-            <TableCell>
-                <div className="flex flex-row items-center">
-                    {poolData?.poolTokens?.items?.map((poolToken, index) => (
-                        <TokenCell
-                            key={index}
-                            token={poolToken}
-                            index={index}
-                            zIndex={
-                                (poolData?.poolTokens?.items
-                                    ?.length as number) - index
-                            }
-                        />
-                    ))}
-                </div>
-            </TableCell>
-            <TableCell className="text-left">{poolData.name}</TableCell>
             <TableCell className="text-left">
-                <HoldingsCell poolTokens={poolTokens} reserves={reserves} />
+                {poolData.name ?? <SkeletonText />}
             </TableCell>
             <TableCell className="text-left">
-                <div className="flex flex-row items-center gap-xs">
-                    <span>
-                        {lpTokenSupply
-                            ? formatWad(lpTokenSupply)
-                            : 'Loading...'}
-                    </span>
-                </div>
+                <TokenHoldings
+                    tokens={[poolData?.pool?.tokenX, poolData?.pool?.tokenY]}
+                    reserves={[
+                        poolData?.pool?.reserveX,
+                        poolData?.pool?.reserveY,
+                    ]}
+                />
+            </TableCell>
+            <TableCell className="text-left">
+                {lpTokenSupply && !isFetching ? (
+                    <span>{formatWad(lpTokenSupply)}</span>
+                ) : (
+                    <SkeletonText />
+                )}
             </TableCell>
 
             <TableCell className="text-left">
@@ -211,15 +175,14 @@ const PoolCell: FC<PoolCellProps> = (props: {
 }
 
 const PoolsTable: FC = () => {
-    const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 })
-    const pools = data?.pools?.items
+    const { data } = useGraphQL(allMarketsQueryDocument, { limit: 10 })
+    const pools = data?.markets?.items
 
     return (
         <Table>
             <TableHeader>
                 <TableRow className="hover:bg-transparent">
                     <TableHead className="text-left">Name</TableHead>
-                    <TableHead className="text-left">Tokens</TableHead>
                     <TableHead className="text-left">Total Holdings</TableHead>
                     <TableHead className="text-left">
                         <TooltipProvider delayDuration={200}>
