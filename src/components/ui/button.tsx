@@ -23,12 +23,15 @@ const buttonVariants = cva(
                 info: 'bg-muted text-muted-foreground hover:text-primary shadow hover:bg-muted/90 dark:hover:bg-muted/80',
                 transparent:
                     'bg-transparent text-muted-foreground hover:bg-transparent hover:text-primary',
+                depth: 'bg-secondary/25 shadow-sm hover:bg-accent hover:text-accent-foreground',
             },
             size: {
                 default: 'h-9 px-4 py-2',
+                xs: 'h-6 rounded-md px-2 text-xs',
                 sm: 'h-8 rounded-md px-3 text-xs',
                 lg: 'h-12 rounded-md px-8 py-2',
                 icon: 'h-9 w-9',
+                full: 'w-full h-full rounded-none',
             },
         },
         defaultVariants: {

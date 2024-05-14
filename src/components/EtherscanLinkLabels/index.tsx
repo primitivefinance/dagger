@@ -1,6 +1,7 @@
 import { shortAddress } from '@/utils/address'
 import { etherscanAddressLink, etherscanTxLink } from '@/utils/etherscan'
 import { LinkIcon } from '../link-icon'
+import { Button } from '../ui/button'
 
 export function EtherscanLink({
     address,
@@ -8,15 +9,17 @@ export function EtherscanLink({
     address: `0x${string}`
 }): JSX.Element {
     return (
-        <a
-            href={etherscanAddressLink(address)}
-            className="flex flex-row gap-1"
-            target="_blank"
-            rel="noreferrer"
-        >
-            <small>{shortAddress(address)}</small>
-            <LinkIcon />
-        </a>
+        <Button variant="link" size="xs">
+            <a
+                href={etherscanAddressLink(address)}
+                className="flex flex-row gap-1"
+                target="_blank"
+                rel="noreferrer"
+            >
+                <small>{shortAddress(address)}</small>
+                <LinkIcon />
+            </a>
+        </Button>
     )
 }
 

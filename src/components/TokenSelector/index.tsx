@@ -6,30 +6,36 @@ import { Button } from '../ui/button'
 import { CaretDownIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons'
 import Modal from '../Modal'
 import { Input } from '../ui/input'
+import { FALLBACK_LOGO } from '@/utils/pools'
 
 type TokenSelectorProps = {
     tokenLogo: string
     tokenSymbol: string
     setToken: (token: `0x${string}`) => void
     disabledTokens?: `0x${string}`[]
+    chainId?: number
 }
 
-function TokenSelector(props: TokenSelectorProps) {
+function TokenSelector(props: TokenSelectorProps): JSX.Element {
     const [open, setOpen] = useState<boolean>(false)
     const [search, setSearch] = useState<string>('')
-    const chainId = useChainId()
+    const connectedChainId = useChainId()
+    const chainId = props?.chainId ?? connectedChainId
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="secondary">
+                <Button variant="depth" size="full">
                     <div className="flex flex-row gap-2 items-center">
-                        <div className="flex flex-row items-center">
+                        <div className="flex flex-row items-center truncate">
                             <img
-                                src={props.tokenLogo}
-                                alt={props.tokenSymbol}
-                                className="rounded-full h-4 w-4 mr-2"
+                                src={props.tokenLogo ?? FALLBACK_LOGO}
+                                alt={props.tokenSymbol ?? 'Token'}
+                                className="rounded-full h-12 w-12 mr-2"
                             />
-                            {props.tokenSymbol}
+                            <p className="truncate max-w-16">
+                                {props.tokenSymbol ?? 'Token'}
+                            </p>
                             <CaretDownIcon className="h-4 w-4 ml-1" />
                         </div>
                     </div>
@@ -47,7 +53,7 @@ function TokenSelector(props: TokenSelectorProps) {
                     />
                 </div>
                 <div className="flex flex-row gap-4 items-center flex-wrap">
-                    {tokens[chainId]?.map((token) => (
+                    {tokens?.[chainId]?.map((token) => (
                         <div
                             key={token.address}
                             className={
@@ -75,8 +81,8 @@ function TokenSelector(props: TokenSelectorProps) {
                     className="flex flex-col justify-center overflow-auto max-h-96"
                     style={{ scrollbarWidth: 'none' }}
                 >
-                    {tokens[chainId]
-                        .filter(
+                    {tokens?.[chainId]
+                        ?.filter(
                             (token) =>
                                 token.name.includes(search) ||
                                 token.symbol.includes(search)

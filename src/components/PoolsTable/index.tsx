@@ -41,10 +41,19 @@ const tooltipContent = {
 
 export function TokenBadge({
     address,
+    size = 'size-lg',
+    chainId,
 }: {
     address?: `0x${string}`
+    size?: string
+    chainId?: number
 }): JSX.Element {
-    const chainId = useChainId()
+    const connectedChainId = useChainId()
+
+    if (typeof chainId === 'undefined') {
+        chainId = connectedChainId
+    }
+
     const token =
         typeof address !== 'undefined'
             ? tokens?.[chainId]?.find(
@@ -60,7 +69,7 @@ export function TokenBadge({
                     <img
                         src={token?.logo ?? FALLBACK_LOGO}
                         alt={token?.symbol ?? FALLBACK_SYMBOL}
-                        className="rounded-full size-lg"
+                        className={`rounded-full ${size}`}
                     />
                 </TooltipTrigger>
                 <TooltipContent>
