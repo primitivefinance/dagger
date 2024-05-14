@@ -8,9 +8,7 @@ type Props = {
  */
 const Container = ({ children }: Props): JSX.Element => {
     return (
-        <div className="mx-auto w-4/5 md:w-3/5 lg:w-1/2 flex flex-col">
-            {children}
-        </div>
+        <div className="mx-auto w-full md:w-4/5 flex flex-col">{children}</div>
     )
 }
 

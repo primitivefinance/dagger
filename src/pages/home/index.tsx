@@ -230,7 +230,7 @@ function Home(): JSX.Element {
     console.log(data?.markets.items.map((market) => console.log(market)))
     if (!data?.markets?.items) return <></>
     return (
-        <div className="flex flex-col gap-2xl">
+        <div className="flex flex-col gap-2xl p-xl">
             <div className="gap-sm flex flex-col">
                 <h2 className="scroll-m-20 ">{title}</h2>
                 <h4 className="scroll-m-20 text-muted-foreground">

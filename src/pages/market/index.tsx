@@ -9,6 +9,9 @@ import TradeForm from '@/components/TradeForm'
 
 import { useAccount } from 'wagmi'
 import { MarketInfoQueryDocument } from '../../queries/markets'
+import AccountHoldings from '@/components/AccountHoldings'
+import MarketView from '@/components/MarketView'
+import TradeView from '@/components/TradeView'
 
 const Market: React.FC = () => {
     const address = useAccount()
@@ -23,18 +26,7 @@ const Market: React.FC = () => {
     const market = data?.markets?.items[0]
 
     if (!market) return <></>
-    return (
-        <div className="container mx-auto max-w-4xl my-8 flex flex-col gap-xl">
-            <div className="w-full">
-                <TradeChart marketId={market.id} isLong={isLong} />
-            </div>
-            <div className="grid grid-col">
-                <TradeForm market={market} isLong={isLong}></TradeForm>
-                <TradeInfo market={market} />
-            </div>
-            <TradePositions account={address} />
-        </div>
-    )
+    return <MarketView />
 }
 
 export default Market

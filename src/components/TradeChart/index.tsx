@@ -17,16 +17,19 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
     const { data } = useGraphQL(MarketPriceQueryDocument, { limit: 100 })
 
     useEffect(() => {
-        const chart = createChart(chartContainerRef.current, {
+        if (!chartContainerRef?.current) return
+        const chart = createChart(chartContainerRef?.current, {
             layout: {
                 background: { type: ColorType.Solid, color: 'black' },
             },
-            width: chartContainerRef.current.clientWidth,
+            width: chartContainerRef?.current.clientWidth,
             height: 300,
         })
 
         const handleResize = () => {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth })
+            chart.applyOptions({
+                width: chartContainerRef?.current.clientWidth,
+            })
         }
 
         const ptSeries = chart.addCandlestickSeries({

@@ -48,9 +48,9 @@ function TransactionDrawer({
     const { address } = useAccount()
 
     const balanceCalls = useReadContracts({
-        contracts: transactionTokens.map((pt: PoolTokenItemFragment) => ({
+        contracts: transactionTokens.map((token: { id: string }) => ({
             abi: erc20Abi,
-            address: pt.token.id as `0x${string}`,
+            address: token.id as `0x${string}`,
             functionName: 'balanceOf',
             args: [address],
         })),
@@ -103,9 +103,12 @@ function TransactionDrawer({
                         <div className="flex flex-col gap-md w-full">
                             <div className="flex flex-col gap-sm w-full">
                                 {transactionTokens?.map(
-                                    (pt: PoolTokenItemFragment, i) => {
-                                        const tokenAddress = pt.token
-                                            .id as `0x${string}`
+                                    (
+                                        token: { id: string; symbol: string },
+                                        i
+                                    ) => {
+                                        const tokenAddress =
+                                            token.id as `0x${string}`
                                         const balance = parseFloat(
                                             formatWad(
                                                 balanceCalls?.data?.[i]
@@ -116,7 +119,7 @@ function TransactionDrawer({
                                             tokens[chainId]?.find(
                                                 (tkn) =>
                                                     tkn.symbol.toLowerCase() ===
-                                                    pt.token.symbol.toLowerCase()
+                                                    token.symbol.toLowerCase()
                                             )?.logo ||
                                             tokens[chainId]?.filter(
                                                 (tkn) =>
@@ -129,10 +132,10 @@ function TransactionDrawer({
 
                                         return (
                                             <TokenAmountInactive
-                                                key={pt?.token?.id}
+                                                key={token?.id}
                                                 disabled
                                                 tokenAddress={tokenAddress}
-                                                tokenSymbol={pt.token.symbol}
+                                                tokenSymbol={token?.symbol}
                                                 tokenBalance={balance}
                                                 tokenLogo={logo}
                                                 tokenPrice={3000} // no price provider

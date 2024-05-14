@@ -6,6 +6,9 @@ import React from 'react'
 import Container from '../Container'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { cn } from '@/lib/utils'
+import AccountHoldings from '../AccountHoldings'
+import TradeView from '../TradeView'
+import Layout from '../Layout'
 
 const VERSION = 'v0.3.0'
 
@@ -59,9 +62,7 @@ function Root(): JSX.Element {
     }, [scrolling])
 
     return (
-        <div
-            className={`flex flex-col justify-between font-primary min-h-screen`}
-        >
+        <div className={`font-primary min-h-screen relative`}>
             <header
                 className={`
                 w-full min-h-16 
@@ -71,41 +72,28 @@ function Root(): JSX.Element {
                 dark:bg-transparent
                 ${
                     scrolling
-                        ? 'drop-shadow-sm backdrop-filter backdrop-blur-sm bg-opacity-80 filter dark:bg-gray-900'
+                        ? 'drop-shadow-sm backdrop-filter backdrop-blur-sm bg-opacity-80 filter dark:bg-gray-900 border-b'
                         : 'bg-opacity-0'
                 }`}
             >
-                <Container>
-                    <div className="flex flex-row items-center justify-between py-2">
-                        <div className="w-1/4 flex-row flex gap-4 items-center justify-start">
-                            <Link to="/" className="hover:no-underline">
-                                <Wordmark className={'w-20'} />
-                            </Link>
-                        </div>
-                        <ul className="flex-grow w-full flex-row flex gap-xs items-center">
-                            <li
-                                className={`${loc.pathname.startsWith('/trade/') ? 'underline' : 'no-underline'}`}
-                            >
-                                <Button variant="link" asChild>
-                                    <Link to="/trade/wsteth/superliquid">
-                                        Trade
-                                    </Link>
-                                </Button>
-                            </li>
+                <div className="flex flex-row items-center justify-between py-2 px-8">
+                    <div className="w-1/4 flex-row flex gap-4 items-center justify-start">
+                        <Link to="/" className="hover:no-underline">
+                            <Wordmark className={'w-20'} />
+                        </Link>
+                    </div>
+                    <Container>
+                        <ul className="flex flex-row gap-xs items-center px-xl">
                             <li
                                 className={`${loc.pathname === '/' || loc.pathname.startsWith('/pool/') ? 'underline' : 'no-underline'}`}
                             >
                                 <Button variant="link" asChild>
-                                    <Link to="/">Pools</Link>
+                                    <Link to="/" className="pl-0">
+                                        Pools
+                                    </Link>
                                 </Button>
                             </li>
-                            <li
-                                className={`${loc.pathname.startsWith('/curator') ? 'underline' : 'no-underline'}`}
-                            >
-                                <Button variant="link" asChild>
-                                    <Link to="/curator">Curators</Link>
-                                </Button>
-                            </li>
+
                             <li
                                 className={`${loc.pathname.startsWith('/faucet') ? 'underline' : 'no-underline'}`}
                             >
@@ -114,18 +102,16 @@ function Root(): JSX.Element {
                                 </Button>
                             </li>
                         </ul>
-                        <div className="w-full flex-row flex gap-4 items-center justify-end">
-                            <ConnectButton />
-                        </div>
+                    </Container>
+                    <div className="w-1/4 flex-row flex gap-4 items-center justify-end">
+                        <ConnectButton />
                     </div>
-                </Container>
+                </div>
             </header>
-            <main className="mb-auto pt-16 pb-32">
-                <Container>
-                    <Outlet />
-                </Container>
-            </main>
-            <footer className="bg-white-200 dark:bg-black py-xl">
+            <Layout>
+                <Outlet />
+            </Layout>
+            <footer className="bg-white-200 dark:bg-black py-xs border-t">
                 <Container>
                     <div className="flex flex-col gap-sm">
                         <div className="flex flex-col md:flex-row w-full justify-between gap-md">
@@ -149,11 +135,6 @@ function Root(): JSX.Element {
                                     ))}
                                 </div>
                             </div>
-                        </div>
-                        <div id="#row-7" className="flex flex-row w-1/2 gap-md">
-                            <p className="disclaimer justify-start text-left">
-                                {externalApplicationDisclaimer}
-                            </p>
                         </div>
                     </div>
                 </Container>
