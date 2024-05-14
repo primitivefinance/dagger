@@ -133,9 +133,7 @@ const HoldingsCell = ({ poolTokens, reserves }) => {
                         key={index}
                         className="flex flex-row items-center gap-xs"
                     >
-                        <TokenBadge
-                            address={token?.token?.id as `0x${string}`}
-                        />
+                        <TokenBadge address={token?.id as `0x${string}`} />
                         <span>{formatNumber(reserve)}</span>
                         {index === poolTokens.length - 1 ? null : (
                             <span className="text-dagger4">/</span>
