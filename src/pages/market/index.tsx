@@ -26,7 +26,7 @@ const Market: React.FC = () => {
     const market = data?.markets?.items[0]
 
     if (!market) return <></>
-    return <MarketView />
+    return <MarketView id={id} />
 }
 
 export default Market

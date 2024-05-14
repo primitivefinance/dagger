@@ -23,8 +23,6 @@ export function useTokens({ id }: { id?: string }): {
                 },
             }
 
-        console.log({ marketItems: data.markets.items })
-
         // Gets a flat map of all tokens in all the markets tracked in the indexer.
         const allTokens = (data.markets.items as MarketItemFragment[]).flatMap(
             (market) =>
