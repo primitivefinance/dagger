@@ -118,11 +118,12 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
                 borderVisible: true,
                 wickUpColor: '#26a69a',
                 wickDownColor: '#ef5350',
+                title: isLong ? 'YT / wstETH' : 'PT / wstETH',
             })
             priceSeries.setData(priceData)
 
             const volSeries = chart.addHistogramSeries({
-                color: '#00FFFF',
+                color: 'gray',
                 baseLineWidth: 2,
                 priceFormat: {
                     type: 'volume',
@@ -131,7 +132,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
             volSeries.setData(volData)
 
             const avgSeries = chart.addLineSeries({
-                color: '#00FFFF',
+                color: 'gray',
             })
 
             avgSeries.setData(avgData)
