@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { useEffect, useRef } from 'react'
 
-import { createChart, ColorType } from 'lightweight-charts'
+import { createChart, CrosshairMode, ColorType } from 'lightweight-charts'
 import { useGraphQL } from '../../useGraphQL'
 import {
     MarketPriceQueryDocument,
@@ -79,7 +79,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
 
     useEffect(() => {
         if (status === 'success' && data) {
-            console.log(data.marketPricesHourlys)
             const priceData = normalizePrice(
                 data.marketPricesHourlys.items,
                 isLong
@@ -91,11 +90,23 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
             )
 
             const chart = createChart(chartContainerRef.current, {
-                layout: {
-                    background: { type: ColorType.Solid, color: 'black' },
-                },
                 width: chartContainerRef.current.clientWidth,
-                height: 300,
+                height: 400,
+                background: {
+                    type: ColorType.Solid,
+                    color: 'black',
+                },
+                watermark: {
+                    visible: true,
+                    text: isLong ? 'YT / wstETH' : 'PT / wstETH',
+                    fontSize: 30,
+                    color: 'gray',
+                    horzAlign: 'left',
+                    vertAlign: 'bottom',
+                },
+                crosshair: {
+                    mode: CrosshairMode.Normal,
+                },
                 overlayPriceScales: true,
                 rightPriceScale: {
                     autoScale: true,
@@ -105,7 +116,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
                     timeVisible: true,
                 },
             })
-
             const handleResize = () => {
                 chart.applyOptions({
                     width: chartContainerRef.current.clientWidth,
