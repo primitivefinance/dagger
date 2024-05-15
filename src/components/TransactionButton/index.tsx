@@ -6,11 +6,12 @@ import { useSimulateContract, useWriteContract } from 'wagmi'
 import { config } from '../../App'
 import { Abi, Address, StateOverride, TransactionReceipt, erc20Abi } from 'viem'
 import { dfmmABI } from '@/lib/abis/dfmm'
+import { rmmABI } from '@/lib/abis/rmm'
 
 export interface TransactionButtonProps extends ButtonProps {
     from?: Address
     to: Address
-    contractName?: 'dfmm' | 'erc20'
+    contractName?: 'dfmm' | 'erc20' | 'rmm'
     functionName: string
     args: any[]
     txHash?: `0x${string}`
@@ -142,11 +143,13 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
 
     const simulation = useSimulateContract({
         abi:
-            props.contractName === 'dfmm'
-                ? dfmmABI
-                : props.contractName === 'erc20'
-                  ? erc20Abi
-                  : ({} as Abi),
+            props.contractName === 'rmm'
+                ? rmmABI
+                : props.contractName === 'dfmm'
+                  ? dfmmABI
+                  : props.contractName === 'erc20'
+                    ? erc20Abi
+                    : ({} as Abi),
         address: props.to,
         functionName: props.functionName,
         args: props.args,
