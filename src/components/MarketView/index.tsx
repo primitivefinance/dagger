@@ -10,6 +10,8 @@ import {
 import SkeletonText from '../SkeletonText'
 import { formatWad } from '@/utils/numbers'
 import { MarketItemFragment, MarketQuery } from 'gql/graphql'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useTradeRoute } from '@/lib/useTradeRoute'
 
 const MarketStatCard = ({
     label,
@@ -35,6 +37,19 @@ const MarketView = ({ id }): JSX.Element => {
         tokenId: market?.pool?.tokenX?.id,
     })
     const syToken = sy?.sYTokens?.items?.[0]
+
+    const loc = useLocation()
+    const navigate = useNavigate()
+
+    const addTradeParams = (tokenIn: string, tokenOut: string) => {
+        const queryParams = new URLSearchParams(loc.search)
+        queryParams.set('tokenIn', tokenIn)
+        queryParams.set('tokenOut', tokenOut)
+
+        return `?${queryParams.toString()}`
+    }
+
+    const { setTokenParams } = useTradeRoute()
 
     return (
         <div className="flex flex-col gap-2xl p-xl">
@@ -90,10 +105,29 @@ const MarketView = ({ id }): JSX.Element => {
                         </Badge>
                     </div>
                     <div className="flex flex-col gap-sm w-1/4">
-                        <Button size="lg" variant="tx">
+                        <Button
+                            size="lg"
+                            variant="tx"
+                            onClick={() =>
+                                setTokenParams(
+                                    market?.pool?.tokenX?.id,
+                                    market?.pool?.tokenY?.id
+                                )
+                            }
+                        >
                             Buy Yield
                         </Button>
-                        <Button size="lg" variant="info">
+
+                        <Button
+                            size="lg"
+                            variant="info"
+                            onClick={() =>
+                                setTokenParams(
+                                    market?.pool?.tokenY?.id,
+                                    market?.pool?.tokenX?.id
+                                )
+                            }
+                        >
                             Sell Yield
                         </Button>
                     </div>

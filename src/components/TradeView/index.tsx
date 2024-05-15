@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import TransactionDrawer from '../TransactionDrawer'
 import { useGraphQL } from '../../useGraphQL'
 import {
@@ -15,23 +15,26 @@ import TokenSelector from '../TokenSelector'
 import { getAddress } from 'viem'
 import { tokens as ListedTokens } from '@/data/tokens'
 import { Button } from '../ui/button'
+import { useTokens } from '@/lib/useTokens'
+import { useLocation, useParams } from 'react-router-dom'
+import { useTradeRoute } from '@/lib/useTradeRoute'
 
 const TokenInput = ({
     token,
+    setToken,
     amount,
     setAmount,
     disabled,
-    setToken,
-    chainId,
+    disabledTokens,
 }): JSX.Element => {
+    console.log({ token })
     return (
         <div className="flex flex-row gap-0 border-b">
-            <div className="flex flex-grow w-1/2 h-auto">
+            <div className="flex flex-grow w-1/2 h-auto justify-start">
                 <TokenSelector
-                    tokenLogo={token?.logo}
-                    tokenSymbol={token?.symbol}
+                    token={token}
                     setToken={setToken}
-                    chainId={chainId}
+                    disabledTokens={disabledTokens}
                 />
             </div>
             <div className="flex flex-grow w-1/2 h-auto">
@@ -48,30 +51,49 @@ const TokenInput = ({
 }
 
 const SwapWidget = ({ id }): JSX.Element => {
-    const [amount, setAmount] = React.useState('')
+    const { getTokenIn, getTokenOut, setTokenParams } = useTradeRoute()
+    const tokenIn = getTokenIn()
+    const tokenOut = getTokenOut()
+
+    const [independentAmount, setIndependentAmount] = React.useState('')
     const [dependentAmount, setDependentAmount] = React.useState('')
     const { data } = useGraphQL(MarketInfoQueryDocument, {
         id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
     })
     const market = data?.markets?.items?.[0]
-    const chainId = 11155420
 
-    const [tokens, setTokens] = React.useState<any[] | undefined>([
-        ListedTokens?.[chainId]?.[4],
-        ListedTokens?.[chainId]?.[2],
-    ])
+    const {
+        data: { sorted: sortedTokens },
+    } = useTokens({})
+
+    const [tokens, setTokens] = React.useState<
+        { id: `0x${string}`; symbol: string; name: string }[]
+    >([])
+
+    useEffect(() => {
+        if (sortedTokens) {
+            const foundTokenIn = sortedTokens.find(
+                (tkn) => tokenIn && getAddress(tkn.id) === getAddress(tokenIn)
+            )
+            const foundTokenOut = sortedTokens.find(
+                (tkn) => tokenOut && getAddress(tkn.id) === getAddress(tokenOut)
+            )
+
+            // Set tokens only if both tokenIn and tokenOut are found in the sortedTokens list
+            if (foundTokenIn && foundTokenOut) {
+                setTokens([foundTokenIn, foundTokenOut])
+            } else {
+                // If either tokenIn or tokenOut is not found, reset to an empty array or default selection
+                setTokens(sortedTokens)
+            }
+        }
+    }, [tokenIn, tokenOut, sortedTokens])
 
     const setTokenIn = (tokenAddress: `0x${string}`): void => {
-        const _token = ListedTokens?.[chainId].find(
-            (tkn) => tkn.address === tokenAddress
-        )
-        setTokens([_token, tokens?.[1]])
+        setTokenParams(tokenAddress, tokenOut)
     }
     const setTokenOut = (tokenAddress: `0x${string}`): void => {
-        const _token = ListedTokens?.[chainId].find(
-            (tkn) => tkn.address === tokenAddress
-        )
-        setTokens([tokens?.[0], _token])
+        setTokenParams(tokenIn, tokenAddress)
     }
 
     return (
@@ -82,20 +104,20 @@ const SwapWidget = ({ id }): JSX.Element => {
             {tokens && (
                 <>
                     <TokenInput
-                        amount={amount}
-                        setAmount={setAmount}
-                        disabled={false}
                         token={tokens?.[0]}
                         setToken={setTokenIn}
-                        chainId={11155420}
+                        amount={independentAmount}
+                        setAmount={setIndependentAmount}
+                        disabled={false}
+                        disabledTokens={tokens.map((t) => t.id)}
                     />
                     <TokenInput
+                        token={tokens?.[1]}
+                        setToken={setTokenOut}
                         amount={dependentAmount}
                         setAmount={setDependentAmount}
                         disabled={true}
-                        token={tokens?.[1]}
-                        setToken={setTokenOut}
-                        chainId={11155420}
+                        disabledTokens={tokens.map((t) => t.id)}
                     />
                 </>
             )}
@@ -176,6 +198,9 @@ const TradeView = ({ id }): JSX.Element => {
         id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
     })
     const market = data?.markets?.items?.[0]
+
+    const { id: marketId } = useParams()
+
     const [amount, setAmount] = React.useState('')
     const [depositAll, setDepositAll] = React.useState(false)
     const tokensToApprove: any[] = []
