@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAccount, useReadContract } from 'wagmi'
-import { getAddress, parseAbi } from 'viem'
+import { erc20Abi, getAddress, parseAbi } from 'viem'
 import { FetchStatus } from '@tanstack/react-query'
 
 import { useGraphQL } from '../../useGraphQL'
@@ -13,6 +13,7 @@ import { useTradeRoute } from '@/lib/useTradeRoute'
 import { formatNumber, fromWad, toWad } from '@/utils/numbers'
 import { useTokens } from '@/lib/useTokens'
 import { Skeleton } from '@/components/ui/skeleton'
+import ApproveAction from '../ApproveAction'
 
 /**
  * Wrapper for TransactionButton component to be used for Swapping.
@@ -48,8 +49,17 @@ const SwapAction: React.FC<{
         tokenOut &&
         sortedTokens?.find((tkn) => getAddress(tkn.id) === getAddress(tokenOut))
 
+    const { data: allowance, status: allowanceStatus } = useReadContract({
+        abi: erc20Abi,
+        functionName: 'allowance',
+        address: tokenIn as `0x${string}`,
+        args: [address as `0x${string}`, id as `0x${string}`],
+    })
+
     const preparedIn =
         !isNaN(parseFloat(amountIn)) && toWad(parseFloat(amountIn))
+
+    const approved = allowance && preparedIn && allowance >= preparedIn
 
     const props = {
         key: id as `0x${string}`,
@@ -58,7 +68,7 @@ const SwapAction: React.FC<{
         setTxHash,
         txReceipt,
         args: [preparedIn, 1, address as `0x${string}`, ''],
-        contractName: 'rmm',
+        contractName: 'rmm' as const,
     }
 
     const timestamp = Math.floor(Date.now() / 1000)
@@ -116,6 +126,16 @@ const SwapAction: React.FC<{
         action = (
             <TransactionButton disabled {...props} functionName={'swapX'} />
         )
+    } else if (!approved) {
+        action = (
+            <ApproveAction
+                token={tokenIn as `0x${string}`}
+                spender={id as `0x${string}`}
+                amount={amountIn}
+                setTxHash={setTxHash}
+                txReceipt={txReceipt}
+            />
+        )
     } else {
         action = <TransactionButton {...props} functionName={'swapX'} />
     }
@@ -132,30 +152,49 @@ const SwapAction: React.FC<{
                         <p className="truncate">{error.message}</p>
                     ) : amountIn ? (
                         <div className="flex flex-wrap gap-xs">
-                            <p className="text-muted dark:text-muted-foreground">
-                                Swapping{' '}
-                            </p>
-                            <p className="text-primary">
-                                {formatNumber(parseFloat(amountIn))}{' '}
-                            </p>
-                            <p className="text-muted dark:text-muted-foreground">
-                                {tokenInMeta?.symbol} for{' '}
-                            </p>
-                            {fetchAmountOutStatus === 'fetching' ||
-                            !amountOutWad ? (
-                                <Skeleton className={`w-auto h-auto`}>
-                                    <p className="text-transparent dark:text-transparent selection:text-transparent">
-                                        100.00
+                            {!approved ? (
+                                <>
+                                    <p className="text-muted dark:text-muted-foreground">
+                                        Approving{' '}
                                     </p>
-                                </Skeleton>
+                                    <p className="text-primary">
+                                        {formatNumber(parseFloat(amountIn))}{' '}
+                                    </p>
+                                    <p className="text-muted dark:text-muted-foreground">
+                                        {tokenInMeta?.symbol}.
+                                    </p>
+                                </>
                             ) : (
-                                <p className="text-primary">
-                                    {formatNumber(fromWad(amountOutWad))}
-                                </p>
-                            )}{' '}
-                            <p className="text-muted dark:text-muted-foreground">
-                                {tokenOutMeta?.symbol}.
-                            </p>
+                                <>
+                                    {' '}
+                                    <p className="text-muted dark:text-muted-foreground">
+                                        Swapping{' '}
+                                    </p>
+                                    <p className="text-primary">
+                                        {formatNumber(parseFloat(amountIn))}{' '}
+                                    </p>
+                                    <p className="text-muted dark:text-muted-foreground">
+                                        {tokenInMeta?.symbol} for{' '}
+                                    </p>
+                                    {fetchAmountOutStatus === 'fetching' ||
+                                    !amountOutWad ? (
+                                        <Skeleton className={`w-auto h-auto`}>
+                                            <p className="text-transparent dark:text-transparent selection:text-transparent">
+                                                100.00
+                                            </p>
+                                        </Skeleton>
+                                    ) : (
+                                        <p className="text-primary">
+                                            {formatNumber(
+                                                fromWad(amountOutWad)
+                                            )}
+                                        </p>
+                                    )}{' '}
+                                    <p className="text-muted dark:text-muted-foreground">
+                                        {tokenOutMeta?.symbol}.
+                                    </p>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <p className="text-muted dark:text-muted-foreground">

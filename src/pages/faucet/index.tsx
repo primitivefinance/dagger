@@ -5,6 +5,8 @@ import { mint } from '../../lib/erc20'
 import { Button } from '@/components/ui/button'
 import React, { useState } from 'react'
 import { Input } from '@/components/ui/input'
+import { useTokens } from '@/lib/useTokens'
+import TokenBadge from '@/components/TokenBadge'
 
 const DiscordAddressForm = () => {
     const [loading, setLoading] = useState(false)
@@ -67,6 +69,9 @@ function Faucet(): JSX.Element {
     const chainId = useChainId()
 
     const [step, setStep] = React.useState(1)
+    const {
+        data: { sorted: sortedTokens },
+    } = useTokens({})
 
     return (
         <div className="flex flex-col gap-2xl">
@@ -74,24 +79,20 @@ function Faucet(): JSX.Element {
                 <DiscordAddressForm />
             </div>
             <div className="flex flex-row flex-wrap gap-lg justify-center max-w-sm m-auto py-8">
-                {tokens[chainId]?.map((token) => (
+                {sortedTokens?.map((token) => (
                     <Button
                         variant="secondary"
-                        key={token.address}
+                        key={token.id}
                         onClick={async () =>
                             await mint(
-                                token.address as `0x${string}`,
+                                token.id as `0x${string}`,
                                 address!,
                                 token.faucet!,
                                 token.decimals
                             )
                         }
                     >
-                        <img
-                            src={token.logo}
-                            alt={token.symbol}
-                            className="rounded-full size-4 mr-2"
-                        />
+                        <TokenBadge address={token.id} size="size-lg" />
                         Mint {token.symbol}
                     </Button>
                 ))}
