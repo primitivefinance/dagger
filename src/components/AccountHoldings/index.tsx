@@ -13,7 +13,7 @@ import { InfoCircledIcon } from '@radix-ui/react-icons'
 import { FALLBACK_ALT, FALLBACK_AVATAR, shortAddress } from '@/utils/address'
 import { Skeleton } from '../ui/skeleton'
 import { formatWad } from '@/utils/numbers'
-import { useTokens } from '@/lib/useTokens'
+import { ETH_ADDRESS, useTokens } from '@/lib/useTokens'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import TokenBadge from '../TokenBadge'
 import {
@@ -238,8 +238,12 @@ const TokenBalance = ({
 const Holdings = (): JSX.Element => {
     const { address, isConnecting, isReconnecting } = useAccount()
     const {
-        data: { sorted: filteredSortedTokens },
+        data: { sorted: sortedTokens },
     } = useTokens({})
+
+    const filteredSortedTokens = sortedTokens?.filter(
+        (token) => getAddress(token?.id) !== getAddress(ETH_ADDRESS)
+    )
 
     const balanceCall = {
         abi: erc20Abi,
@@ -252,6 +256,10 @@ const Holdings = (): JSX.Element => {
             ...balanceCall,
             address: token.id as `0x${string}`,
         })),
+    })
+
+    const { data: ethBalance, isFetching: isEthBalanceFetching } = useBalance({
+        address: address,
     })
 
     if (
@@ -278,6 +286,23 @@ const Holdings = (): JSX.Element => {
             </div>
 
             <div className="grid grid-cols-3 gap-sm items-center py-lg px-md">
+                {!ethBalance ? (
+                    new Array(1)
+                        .fill(null)
+                        .map((_, index) => <TokenBalance key={index} />)
+                ) : (
+                    <TokenBalance
+                        token={ETH_ADDRESS}
+                        ticker="ETH"
+                        balance={{
+                            status: 'success',
+                            result: ethBalance.value,
+                            error: undefined,
+                        }}
+                        decimals={18}
+                        isFetching={isEthBalanceFetching}
+                    />
+                )}
                 {isConnecting || isReconnecting
                     ? new Array(6)
                           .fill(null)

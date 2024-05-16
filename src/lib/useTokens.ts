@@ -4,6 +4,8 @@ import { MarketInfoQueryDocument } from '../queries/markets'
 import { MarketItemFragment } from 'gql/graphql'
 import { getAddress } from 'viem'
 
+export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+
 export function useTokens({ id }: { id?: string }): {
     data: {
         raw: any[]
@@ -35,6 +37,15 @@ export function useTokens({ id }: { id?: string }): {
                 allTokens.map((token) => [`${token.id}-${token.symbol}`, token])
             ).values()
         )
+
+        // Push raw ETH as a token
+        uniqueTokens.push({
+            id: getAddress(ETH_ADDRESS),
+            symbol: 'ETH',
+            name: 'Ethereum',
+            icon: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880',
+            decimals: 18,
+        })
 
         return {
             data: {

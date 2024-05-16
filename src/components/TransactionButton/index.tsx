@@ -7,11 +7,12 @@ import { config } from '../../App'
 import { Abi, Address, StateOverride, TransactionReceipt, erc20Abi } from 'viem'
 import { dfmmABI } from '@/lib/abis/dfmm'
 import { rmmABI } from '@/lib/abis/rmm'
+import { SYABI } from '@/lib/abis/SY'
 
 export interface TransactionButtonProps extends ButtonProps {
     from?: Address
     to: Address
-    contractName?: 'dfmm' | 'erc20' | 'rmm'
+    contractName?: 'dfmm' | 'erc20' | 'rmm' | 'SY'
     functionName: string
     args: any[]
     txHash?: `0x${string}`
@@ -141,15 +142,19 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
         TransactionState.Resting
     )
 
+    const abi =
+        props.contractName === 'SY'
+            ? SYABI
+            : props.contractName === 'rmm'
+              ? rmmABI
+              : props.contractName === 'dfmm'
+                ? dfmmABI
+                : props.contractName === 'erc20'
+                  ? erc20Abi
+                  : ({} as Abi)
+
     const simulation = useSimulateContract({
-        abi:
-            props.contractName === 'rmm'
-                ? rmmABI
-                : props.contractName === 'dfmm'
-                  ? dfmmABI
-                  : props.contractName === 'erc20'
-                    ? erc20Abi
-                    : ({} as Abi),
+        abi,
         address: props.to,
         functionName: props.functionName,
         args: props.args,
@@ -240,6 +245,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
     // React to changes in the requested transaction.
     useEffect(() => {
         if (transaction?.isError) {
+            console.error(transaction.error)
             dispatch({ type: 'TRANSACTION_ERROR' })
         }
 
@@ -389,12 +395,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
             }
             onClick={() =>
                 transaction.writeContract({
-                    abi:
-                        props.contractName === 'dfmm'
-                            ? dfmmABI
-                            : props.contractName === 'erc20'
-                              ? erc20Abi
-                              : ({} as Abi),
+                    abi,
                     address: props.to,
                     functionName: props.functionName,
                     args: props.args,

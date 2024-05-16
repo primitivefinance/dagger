@@ -4,8 +4,7 @@ import { useAccount } from 'wagmi'
 import { useGraphQL } from '../../useGraphQL'
 import { MarketInfoQueryDocument } from '../../queries/markets'
 import { Input } from '../ui/input'
-import TransactionButton from '../TransactionButton'
-import { useTransactionStatus } from '../TransactionButton/useTransactionStatus'
+
 import { LabelWithEtherscan } from '../EtherscanLinkLabels'
 import TokenSelector from '../TokenSelector'
 import { getAddress } from 'viem'
@@ -14,10 +13,8 @@ import { useTokens } from '@/lib/useTokens'
 import { useTradeRoute } from '@/lib/useTradeRoute'
 import { useParams } from 'react-router-dom'
 import SwapAction from '@/actions/SwapAction'
-import SkeletonText from '../SkeletonText'
 import { Skeleton } from '../ui/skeleton'
 import { FetchStatus } from '@tanstack/react-query'
-import { formatNumber } from '@/utils/numbers'
 
 const TokenInput = ({
     token,
@@ -88,8 +85,15 @@ const SwapWidget: React.FC<{
             if (foundTokenIn && foundTokenOut) {
                 setTokens([foundTokenIn, foundTokenOut])
             } else {
-                // If either tokenIn or tokenOut is not found, reset to an empty array or default selection
-                setTokens(sortedTokens)
+                // If either tokenIn or tokenOut is not found, use the first sorted token as a default for the missing one
+                const defaultToken = sortedTokens[0]
+                const newTokenIn = foundTokenIn || defaultToken
+                const newTokenOut =
+                    foundTokenOut ||
+                    (newTokenIn === defaultToken
+                        ? sortedTokens[1]
+                        : defaultToken)
+                setTokens([newTokenIn, newTokenOut])
             }
         }
     }, [tokenIn, tokenOut, sortedTokens])
@@ -114,7 +118,7 @@ const SwapWidget: React.FC<{
                         amount={tokenInForm.amount}
                         setAmount={tokenInForm.setAmount}
                         disabled={false}
-                        disabledTokens={tokens.map((t) => t.id)}
+                        disabledTokens={tokens.map((t) => t?.id)}
                         isFetching={tokenInForm.isFetching}
                     />
                     <TokenInput
@@ -123,7 +127,7 @@ const SwapWidget: React.FC<{
                         amount={tokenOutForm.amount}
                         setAmount={tokenOutForm.setAmount}
                         disabled={true}
-                        disabledTokens={tokens.map((t) => t.id)}
+                        disabledTokens={tokens.map((t) => t?.id)}
                         isFetching={tokenOutForm.isFetching}
                     />
                 </>
