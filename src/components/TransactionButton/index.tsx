@@ -7,7 +7,7 @@ import { config } from '../../App'
 import { Abi, Address, StateOverride, TransactionReceipt, erc20Abi } from 'viem'
 import { dfmmABI } from '@/lib/abis/dfmm'
 import { rmmABI } from '@/lib/abis/rmm'
-import { SYABI } from '@/lib/abis/SY'
+import { SYABI } from '@/lib/abis/sy'
 
 export interface TransactionButtonProps extends ButtonProps {
     from?: Address

@@ -2,7 +2,6 @@ import { shortAddress } from '@/utils/address'
 import { etherscanAddressLink, etherscanTxLink } from '@/utils/etherscan'
 import { LinkIcon } from '../link-icon'
 import { Button } from '../ui/button'
-import { AddressZero } from 'viem'
 import SkeletonText from '../SkeletonText'
 
 export function EtherscanLink({

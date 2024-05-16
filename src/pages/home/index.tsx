@@ -1,5 +1,5 @@
 import { title, subtitle } from '@/data/copy/home'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useGraphQL } from '../../useGraphQL'
 import {
@@ -67,68 +67,65 @@ export const CuratorCard = ({
 }: {
     curator: CuratorInfo
 }): JSX.Element => {
+    const navigate = useNavigate()
     return (
-        <Card className="p-lg hover:bg-muted/50 rounded-none">
-            <Link
-                to={`/curator/${curator.address}`}
-                className="block hover:no-underline h-full"
-            >
-                <div className="flex flex-col gap-lg h-full">
-                    <div className="flex w-full items-center justify-center">
-                        <Avatar className="h-24 w-24">
-                            <AvatarImage
-                                src="https://github.com/shadcn.png"
-                                alt="@shadcn"
-                            />
-                            <AvatarFallback>C</AvatarFallback>
-                        </Avatar>
+        <Card
+            className="p-lg hover:bg-muted/50 rounded-none block hover:no-underline h-full hover:cursor-pointer"
+            onClick={() => navigate(`/curator/${curator.address}`)}
+        >
+            <div className="flex flex-col gap-lg h-full">
+                <div className="flex w-full items-center justify-center">
+                    <Avatar className="h-24 w-24">
+                        <AvatarImage
+                            src="https://github.com/shadcn.png"
+                            alt="@shadcn"
+                        />
+                        <AvatarFallback>C</AvatarFallback>
+                    </Avatar>
+                </div>
+                <div className="flex flex-col gap-xs justify-center items-center">
+                    <h3>{curator.name}</h3>
+                    <LabelWithEtherscan
+                        label={
+                            <p className="text-muted dark:text-muted-foreground">
+                                Address
+                            </p>
+                        }
+                        address={curator.address}
+                    />
+                </div>
+
+                <div className="flex flex-col justify-between h-full gap-lg">
+                    <div className="flex flex-col gap-sm">
+                        <h5 className="text-muted dark:text-muted-foreground">
+                            Description
+                        </h5>
+                        <p className="">{curator.description}</p>
                     </div>
-                    <div className="flex flex-col gap-xs justify-center items-center">
-                        <h3>{curator.name}</h3>
-                        <LabelWithEtherscan
+                    <div className="flex flex-row justify-between items-center">
+                        <DataLabelBetween
                             label={
                                 <p className="text-muted dark:text-muted-foreground">
-                                    Address
+                                    Avg. Fee
                                 </p>
                             }
-                            address={curator.address}
+                            data={
+                                <p className="">
+                                    {formatPercentage(parseFloat(curator.fees))}
+                                </p>
+                            }
+                        />
+                        <DataLabelBetween
+                            label={
+                                <p className="text-muted dark:text-muted-foreground">
+                                    Pools
+                                </p>
+                            }
+                            data={<p className="">{curator.pools}</p>}
                         />
                     </div>
-
-                    <div className="flex flex-col justify-between h-full gap-lg">
-                        <div className="flex flex-col gap-sm">
-                            <h5 className="text-muted dark:text-muted-foreground">
-                                Description
-                            </h5>
-                            <p className="">{curator.description}</p>
-                        </div>
-                        <div className="flex flex-row justify-between items-center">
-                            <DataLabelBetween
-                                label={
-                                    <p className="text-muted dark:text-muted-foreground">
-                                        Avg. Fee
-                                    </p>
-                                }
-                                data={
-                                    <p className="">
-                                        {formatPercentage(
-                                            parseFloat(curator.fees)
-                                        )}
-                                    </p>
-                                }
-                            />
-                            <DataLabelBetween
-                                label={
-                                    <p className="text-muted dark:text-muted-foreground">
-                                        Pools
-                                    </p>
-                                }
-                                data={<p className="">{curator.pools}</p>}
-                            />
-                        </div>
-                    </div>
                 </div>
-            </Link>
+            </div>
         </Card>
     )
 }
@@ -142,99 +139,95 @@ export const PoolCard = ({
         tokenId: market?.pool?.tokenX?.id,
     })
 
+    const navigate = useNavigate()
+
     return (
-        <Card className="p-lg hover:bg-muted/50 rounded-none">
-            <Link
-                to={`/market/${market?.id}`}
-                className="block hover:no-underline h-full"
-            >
-                <div className="flex flex-col gap-lg h-full justify-between">
-                    <div className="flex w-full items-center justify-center">
-                        <AvatarSkeletonTooltip
-                            src={market?.icon ?? FALLBACK_AVATAR}
-                            alt={market?.name ?? 'Market'}
-                            loading={typeof market === 'undefined'}
-                            size="size-[6rem]"
-                        >
-                            {market?.name ?? 'Market'}
-                        </AvatarSkeletonTooltip>
-                    </div>
-                    <div className="flex flex-col gap-xs justify-center items-center">
-                        {market ? <h3>{market.name}</h3> : <SkeletonText />}
-
-                        <LabelWithEtherscan
-                            label={
-                                <small className="text-muted dark:text-muted-foreground">
-                                    Address
-                                </small>
-                            }
-                            address={market?.id as `0x${string}`}
-                        />
-                    </div>
-
-                    <div className="flex flex-col gap-sm">
-                        <h5 className="text-muted dark:text-muted-foreground">
-                            Holdings
-                        </h5>
-                        <TokenHoldings
-                            tokens={[
-                                market?.pool?.tokenX,
-                                market?.pool?.tokenY,
-                            ]}
-                            reserves={[
-                                market?.pool?.reserveX,
-                                market?.pool?.reserveY,
-                            ]}
-                        />
-                    </div>
-
-                    <div className="flex flex-col h-full gap-sm justify-end">
-                        <div className="flex flex-row gap-sm items-center justify-between">
-                            <p className="text-muted dark:text-muted-foreground">
-                                Rate
-                            </p>
-                            <div>
-                                {sy?.sYTokens?.items?.[0]?.exchangeRate ? (
-                                    <p>
-                                        {formatWad(
-                                            sy?.sYTokens?.items?.[0]
-                                                ?.exchangeRate
-                                        )}
-                                    </p>
-                                ) : (
-                                    <SkeletonText />
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="flex flex-row gap-sm items-center justify-between">
-                            <p className="text-muted dark:text-muted-foreground">
-                                Expiry
-                            </p>
-                            <div>
-                                {market?.expiry ? (
-                                    <p>
-                                        {new Date(
-                                            market.expiry * 1000
-                                        ).toLocaleDateString()}
-                                    </p>
-                                ) : (
-                                    <SkeletonText />
-                                )}
-                            </div>
-                        </div>
-
-                        <LabelWithEtherscan
-                            label={
-                                <p className="text-muted dark:text-muted-foreground">
-                                    Curator
-                                </p>
-                            }
-                            address={market?.pool?.curator?.id as `0x${string}`}
-                        />
-                    </div>
+        <Card
+            className="p-lg hover:bg-muted/50 rounded-none block hover:no-underline h-full hover:cursor-pointer"
+            onClick={() => navigate(`/market/${market?.id}`)}
+        >
+            <div className="flex flex-col gap-lg h-full justify-between">
+                <div className="flex w-full items-center justify-center">
+                    <AvatarSkeletonTooltip
+                        src={market?.icon ?? FALLBACK_AVATAR}
+                        alt={market?.name ?? 'Market'}
+                        loading={typeof market === 'undefined'}
+                        size="size-[6rem]"
+                    >
+                        {market?.name ?? 'Market'}
+                    </AvatarSkeletonTooltip>
                 </div>
-            </Link>
+                <div className="flex flex-col gap-xs justify-center items-center">
+                    {market ? <h3>{market.name}</h3> : <SkeletonText />}
+
+                    <LabelWithEtherscan
+                        label={
+                            <small className="text-muted dark:text-muted-foreground">
+                                Address
+                            </small>
+                        }
+                        address={market?.id as `0x${string}`}
+                    />
+                </div>
+
+                <div className="flex flex-col gap-sm">
+                    <h5 className="text-muted dark:text-muted-foreground">
+                        Holdings
+                    </h5>
+                    <TokenHoldings
+                        tokens={[market?.pool?.tokenX, market?.pool?.tokenY]}
+                        reserves={[
+                            market?.pool?.reserveX,
+                            market?.pool?.reserveY,
+                        ]}
+                    />
+                </div>
+
+                <div className="flex flex-col h-full gap-sm justify-end">
+                    <div className="flex flex-row gap-sm items-center justify-between">
+                        <p className="text-muted dark:text-muted-foreground">
+                            Rate
+                        </p>
+                        <div>
+                            {sy?.sYTokens?.items?.[0]?.exchangeRate ? (
+                                <p>
+                                    {formatWad(
+                                        sy?.sYTokens?.items?.[0]?.exchangeRate
+                                    )}
+                                </p>
+                            ) : (
+                                <SkeletonText />
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-row gap-sm items-center justify-between">
+                        <p className="text-muted dark:text-muted-foreground">
+                            Expiry
+                        </p>
+                        <div>
+                            {market?.expiry ? (
+                                <p>
+                                    {new Date(
+                                        market.expiry * 1000
+                                    ).toLocaleDateString()}
+                                </p>
+                            ) : (
+                                <SkeletonText />
+                            )}
+                        </div>
+                    </div>
+
+                    <LabelWithEtherscan
+                        label={
+                            <p className="text-muted dark:text-muted-foreground">
+                                Curator
+                            </p>
+                        }
+                        address={market?.pool?.curator?.id as `0x${string}`}
+                    />
+                </div>
+            </div>
         </Card>
     )
 }
@@ -276,7 +269,7 @@ function Home(): JSX.Element {
                     </div>
                     <TooltipProvider delayDuration={200}>
                         <Tooltip>
-                            <TooltipTrigger>
+                            <TooltipTrigger asChild>
                                 <Button variant="tx" disabled>
                                     <div className="flex flex-row items-center gap-1">
                                         <svg

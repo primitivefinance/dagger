@@ -26,7 +26,7 @@ const AvatarSkeletonTooltip = ({
     return (
         <TooltipProvider delayDuration={50}>
             <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                     {!loading ? (
                         <Avatar className={`rounded-full ${size}`}>
                             <AvatarImage src={src} alt={alt} />
