@@ -37,10 +37,10 @@ const normalizePrice = (
     const parsed = rawHourly.map((tck) => {
         return {
             time: tck.id,
-            open: isLong ? tck.open : 1 + tck.open,
-            high: isLong ? tck.high : 1 + tck.high,
-            low: isLong ? tck.high : 1 + tck.low,
-            close: isLong ? tck.close : 1 + tck.close,
+            open: isLong ? tck.open : 1 - tck.open,
+            high: isLong ? tck.high : 1 - tck.high,
+            low: isLong ? tck.high : 1 - tck.low,
+            close: isLong ? tck.close : 1 - tck.close,
         }
     })
     return parsed
@@ -49,10 +49,12 @@ const normalizePrice = (
 const normalizeVolume = (
     rawHourly: (typeof MarketPriceFragment)[]
 ): HourlyVolume[] => {
-    const parsed = rawHourly.map((tck) => {
+    const parsed = rawHourly.map((tck, i) => {
+        const isGreen = !rawHourly[i - 1] || tck.open > rawHourly[i - 1].close
         return {
             time: tck.id,
             value: tck.volume,
+            color: isGreen ? 'rgba(0, 150, 136, 0.8)' : 'rgba(255,82,82, 0.8)',
         }
     })
     return parsed
@@ -65,13 +67,13 @@ const normalizeAverage = (
     const parsed = rawHourly.map((tck) => {
         return {
             time: tck.id,
-            value: isLong ? tck.average : 1 + tck.average,
+            value: isLong ? tck.average : 1 - tck.average,
         }
     })
     return parsed
 }
 
-const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
+const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const chartContainerRef = useRef()
 
     // convert query to where: marketId
@@ -91,11 +93,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
 
             const chart = createChart(chartContainerRef.current, {
                 width: chartContainerRef.current.clientWidth,
-                height: 400,
-                background: {
-                    type: ColorType.Solid,
-                    color: 'black',
-                },
+                height: 600,
                 watermark: {
                     visible: true,
                     text: isLong ? 'YT / wstETH' : 'PT / wstETH',
@@ -104,16 +102,28 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
                     horzAlign: 'left',
                     vertAlign: 'bottom',
                 },
-                crosshair: {
-                    mode: CrosshairMode.Normal,
+                grid: {
+                    vertLines: {
+                        color: 'rgba(42, 46, 57, 0.5)',
+                    },
+                    horzLines: {
+                        color: 'rgba(42, 46, 57, 0)',
+                    },
                 },
-                overlayPriceScales: true,
                 rightPriceScale: {
-                    autoScale: true,
+                    scaleMargins: {
+                        top: 0.3,
+                        bottom: 0.5,
+                    },
+                    borderVisible: false,
                 },
-                timeScale: {
-                    secondsVisible: false,
-                    timeVisible: true,
+                layout: {
+                    background: {
+                        type: 'gradient',
+                        topColor: 'gray',
+                        bottomColor: 'black',
+                    },
+                    textColor: '#d1d4dc',
                 },
             })
             const handleResize = () => {
@@ -133,10 +143,16 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
             priceSeries.setData(priceData)
 
             const volSeries = chart.addHistogramSeries({
-                color: 'gray',
-                baseLineWidth: 2,
+                color: '#26a69a',
                 priceFormat: {
                     type: 'volume',
+                },
+                priceScaleId: '',
+            })
+            chart.priceScale('').applyOptions({
+                scaleMargins: {
+                    top: 0.8,
+                    bottom: 0,
                 },
             })
             volSeries.setData(volData)
@@ -144,7 +160,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
             const avgSeries = chart.addLineSeries({
                 color: 'gray',
             })
-
             avgSeries.setData(avgData)
             chart.timeScale().fitContent()
 
@@ -158,7 +173,12 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = true }) => {
     }, [status])
 
     if (status !== 'success') return <></>
-    return <div ref={chartContainerRef} className="chart-container" />
+    return (
+        <div
+            ref={chartContainerRef}
+            className="chart-container bg-color-black"
+        />
+    )
 }
 
 export default TradeChart
