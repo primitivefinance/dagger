@@ -6,7 +6,9 @@ import { useGraphQL } from '../../useGraphQL'
 import {
     MarketPriceQueryDocument,
     MarketPriceFragment,
-} from '../../queries/markets'
+    ImpliedYieldFragment,
+    ImplYieldQueryDocument,
+} from '../../queries/prices'
 
 export type TradeChartProps = {
     marketId: string
@@ -47,10 +49,13 @@ const normalizePrice = (
 }
 
 const normalizeVolume = (
-    rawHourly: (typeof MarketPriceFragment)[]
+    rawHourly: (typeof MarketPriceFragment)[],
+    isLong: boolean
 ): HourlyVolume[] => {
     const parsed = rawHourly.map((tck, i) => {
-        const isGreen = !rawHourly[i - 1] || tck.open > rawHourly[i - 1].close
+        const isGreenLong =
+            !rawHourly[i - 1] || tck.open > rawHourly[i - 1].close
+        const isGreen = isLong ? isGreenLong : !isGreenLong
         return {
             time: tck.id,
             value: tck.volume,
@@ -73,11 +78,24 @@ const normalizeAverage = (
     return parsed
 }
 
+const normalizeYield = (
+    rawTimeSeries: (typeof ImpliedYieldFragment)[]
+): { time: string; value: number }[] => {
+    const parsed = rawTimeSeries.map((tck) => {
+        return {
+            time: tck.id,
+            value: tck.value,
+        }
+    })
+    return parsed
+}
+
 const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const chartContainerRef = useRef()
-
+    const yieldChartContainerRef = useRef()
     // convert query to where: marketId
     const { data, status } = useGraphQL(MarketPriceQueryDocument, { marketId })
+    const resp = useGraphQL(ImplYieldQueryDocument, { marketId })
 
     useEffect(() => {
         if (status === 'success' && data) {
@@ -85,7 +103,10 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 data.marketPricesHourlys.items,
                 isLong
             )
-            const volData = normalizeVolume(data.marketPricesHourlys.items)
+            const volData = normalizeVolume(
+                data.marketPricesHourlys.items,
+                isLong
+            )
             const avgData = normalizeAverage(
                 data.marketPricesHourlys.items,
                 isLong
@@ -93,7 +114,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
 
             const chart = createChart(chartContainerRef.current, {
                 width: chartContainerRef.current.clientWidth,
-                height: 600,
+                height: chartContainerRef.current.clientHeight,
                 watermark: {
                     visible: true,
                     text: isLong ? 'YT / stETH' : 'PT / stETH',
@@ -107,7 +128,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                         color: 'rgba(42, 46, 57, 0.5)',
                     },
                     horzLines: {
-                        color: 'rgba(42, 46, 57, 0)',
+                        color: 'rgba(42, 46, 57, 1)',
                     },
                 },
                 rightPriceScale: {
@@ -120,7 +141,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 layout: {
                     background: {
                         type: 'gradient',
-                        topColor: 'gray',
+                        topColor: 'black',
                         bottomColor: 'black',
                     },
                     textColor: '#d1d4dc',
@@ -131,7 +152,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     width: chartContainerRef.current.clientWidth,
                 })
             }
-
             const priceSeries = chart.addCandlestickSeries({
                 upColor: '#26a69a',
                 downColor: '#ef5350',
@@ -141,7 +161,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 title: isLong ? 'YT / stETH' : 'PT / stETH',
             })
             priceSeries.setData(priceData)
-
             const volSeries = chart.addHistogramSeries({
                 color: '#26a69a',
                 priceFormat: {
@@ -157,11 +176,75 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 },
             })
             volSeries.setData(volData)
-
             const avgSeries = chart.addLineSeries({
                 color: 'white',
             })
             avgSeries.setData(avgData)
+            chart.timeScale().fitContent()
+            window.addEventListener('resize', handleResize)
+            return () => {
+                window.removeEventListener('resize', handleResize)
+                chart.remove()
+            }
+        }
+    }, [status])
+
+    useEffect(() => {
+        if (resp.status === 'success' && resp.data) {
+            const yieldData = normalizeYield(resp.data.impliedYields.items)
+
+            const chart = createChart(yieldChartContainerRef.current, {
+                width: yieldChartContainerRef.current.clientWidth,
+                height: yieldChartContainerRef.current.clientHeight,
+                watermark: {
+                    visible: true,
+                    text: 'wstETH APY',
+                    fontSize: 30,
+                    color: 'gray',
+                    horzAlign: 'left',
+                    vertAlign: 'bottom',
+                },
+                grid: {
+                    vertLines: {
+                        color: 'rgba(42, 46, 57, 0.5)',
+                    },
+                    horzLines: {
+                        color: 'rgba(42, 46, 57, 1)',
+                    },
+                },
+                rightPriceScale: {
+                    scaleMargins: {
+                        top: 0.3,
+                        bottom: 0.5,
+                    },
+                    borderVisible: false,
+                },
+                layout: {
+                    background: {
+                        type: 'gradient',
+                        topColor: 'black',
+                        bottomColor: 'black',
+                    },
+                    textColor: '#d1d4dc',
+                },
+            })
+            const handleResize = () => {
+                chart.applyOptions({
+                    width: yieldChartContainerRef.current.clientWidth,
+                })
+            }
+
+            const implSeries = chart.addLineSeries({
+                color: 'green',
+                title: 'Implied Yield',
+            })
+            implSeries.setData(yieldData)
+
+            const underlyingSeries = chart.addLineSeries({
+                color: 'blue',
+                title: 'Real Yield',
+            })
+            underlyingSeries.setData(yieldData)
             chart.timeScale().fitContent()
 
             window.addEventListener('resize', handleResize)
@@ -171,10 +254,15 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 chart.remove()
             }
         }
-    }, [status])
+    }, [resp.status])
 
     if (status !== 'success') return <></>
-    return <div ref={chartContainerRef} className="chart-container" />
+    return (
+        <div className="grid grid-cols-2 h-screen">
+            <div ref={yieldChartContainerRef} className="chart-container" />
+            <div ref={chartContainerRef} className="chart-container" />
+        </div>
+    )
 }
 
 export default TradeChart
