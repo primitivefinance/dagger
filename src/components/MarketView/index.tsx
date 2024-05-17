@@ -21,12 +21,12 @@ const MarketStatCard = ({
     data,
 }: {
     label: React.ReactNode
-    data: React.ReactNode
+    data?: React.ReactNode
 }): JSX.Element => {
     return (
         <div className="flex flex-col gap-xs border items-center justify-center text-center p-md">
             <h4 className="text-muted-foreground">{label}</h4>
-            <h3>{data}</h3>
+            <h3>{data ?? <SkeletonText />}</h3>
         </div>
     )
 }
