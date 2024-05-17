@@ -65,15 +65,15 @@ const TradeForm: FC<TradeFormProps> = ({
         const _token = listedTokens[chainId].find(
             (tkn) => tkn.address === tokenAddress
         )
-        setTokens([_token, tokens[1]])
-        navigate(`/trade/${_token.symbol}/${tokens[1].symbol}`)
+        setTokens([_token, tokens?.[1]])
+        navigate(`/trade/${_token.symbol}/${tokens?.[1].symbol}`)
     }
     const setTokenOut = (tokenAddress: `0x${string}`): void => {
         const _token = listedTokens[chainId].find(
             (tkn) => tkn.address === tokenAddress
         )
-        setTokens([tokens[0], _token])
-        navigate(`/trade/${tokens[0].symbol}/${_token.symbol}`)
+        setTokens([tokens?.[0], _token])
+        navigate(`/trade/${tokens?.[0].symbol}/${_token.symbol}`)
     }
 
     const calculateAmountOut = (inputAmount: string): void => {
@@ -94,7 +94,7 @@ const TradeForm: FC<TradeFormProps> = ({
         })()
     }, [address, tokens])
 
-    if (tokens === null) return <></>
+    if (typeof tokens === 'undefined') return <></>
     return (
         <>
             <div className="grid items-center gap-1">
@@ -104,8 +104,8 @@ const TradeForm: FC<TradeFormProps> = ({
                         <TableRow>
                             <TableCell>
                                 <TokenSelector
-                                    tokenLogo={tokens[0].logo}
-                                    tokenSymbol={tokens[0].symbol}
+                                    tokenLogo={tokens?.[0].logo}
+                                    tokenSymbol={tokens?.[0].symbol}
                                     setToken={setTokenIn}
                                     disabledTokens={tokens}
                                 />
@@ -113,29 +113,29 @@ const TradeForm: FC<TradeFormProps> = ({
                             <TableCell>
                                 <Input
                                     className={
-                                        !parseFloat(amounts[0]) &&
-                                        amounts[0] !== ''
+                                        !parseFloat(amounts?.[0]) &&
+                                        amounts?.[0] !== ''
                                             ? 'border-red-500'
                                             : ''
                                     }
                                     type="text"
                                     placeholder="0.0"
-                                    value={amounts[0]}
+                                    value={amounts?.[0]}
                                     onChange={(e) => {
                                         calculateAmountOut(e.target.value)
                                     }}
                                 />
                                 <span>
                                     {'Balance: ' + balances[0]}{' '}
-                                    {tokens[0].symbol}
+                                    {tokens?.[0].symbol}
                                 </span>
                             </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>
                                 <TokenSelector
-                                    tokenLogo={tokens[1].logo}
-                                    tokenSymbol={tokens[1].symbol}
+                                    tokenLogo={tokens?.[1].logo}
+                                    tokenSymbol={tokens?.[1].symbol}
                                     setToken={setTokenOut}
                                     disabledTokens={tokens}
                                 />
@@ -143,21 +143,21 @@ const TradeForm: FC<TradeFormProps> = ({
                             <TableCell>
                                 <Input
                                     className={
-                                        !parseFloat(amounts[1]) &&
-                                        amounts[1] !== ''
+                                        !parseFloat(amounts?.[1]) &&
+                                        amounts?.[1] !== ''
                                             ? 'border-red-500'
                                             : ''
                                     }
                                     type="text"
                                     placeholder="0.0"
-                                    value={amounts[1]}
+                                    value={amounts?.[1]}
                                     onChange={(e) => {
                                         calculateAmountOut(e.target.value)
                                     }}
                                 />
                                 <span>
                                     {'Balance: ' + balances[1]}{' '}
-                                    {tokens[1].symbol}
+                                    {tokens?.[1].symbol}
                                 </span>
                             </TableCell>
                         </TableRow>
@@ -166,11 +166,11 @@ const TradeForm: FC<TradeFormProps> = ({
             </div>
             <TradeYieldContext.Provider
                 value={{
-                    tokenIn: tokens[0].address,
-                    tokenOut: tokens[1].address,
+                    tokenIn: tokens?.[0].address,
+                    tokenOut: tokens?.[1].address,
                     txType: txType.buyLPT,
-                    amountIn: amounts[0],
-                    amountOut: amounts[1],
+                    amountIn: amounts?.[0],
+                    amountOut: amounts?.[1],
                 }}
             >
                 {children}

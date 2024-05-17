@@ -1,43 +1,58 @@
-import { useState } from 'react'
-import { useChainId } from 'wagmi'
-import { tokens } from '../../data/tokens'
+import React, { useState } from 'react'
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog'
-import { Button } from '../ui/button'
 import { CaretDownIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons'
+
+import { Button } from '../ui/button'
 import Modal from '../Modal'
 import { Input } from '../ui/input'
+import TokenBadge from '../TokenBadge'
+import SkeletonText from '../SkeletonText'
+import { useTokens } from '@/lib/useTokens'
 
 type TokenSelectorProps = {
-    tokenLogo: string
-    tokenSymbol: string
     setToken: (token: `0x${string}`) => void
+    token?: { id: `0x${string}`; symbol: string; name: string }
     disabledTokens?: `0x${string}`[]
 }
 
-function TokenSelector(props: TokenSelectorProps) {
+const TokenSelector: React.FC<TokenSelectorProps> = ({
+    token,
+    setToken,
+    disabledTokens,
+}): JSX.Element => {
     const [open, setOpen] = useState<boolean>(false)
     const [search, setSearch] = useState<string>('')
-    const chainId = useChainId()
+
+    const {
+        data: { sorted: sortedTokens },
+    } = useTokens({})
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="secondary">
-                    <div className="flex flex-row gap-2 items-center">
-                        <div className="flex flex-row items-center">
-                            <img
-                                src={props.tokenLogo}
-                                alt={props.tokenSymbol}
-                                className="rounded-full h-4 w-4 mr-2"
+                <Button variant="depth" size="full">
+                    <div className="flex flex-col items-start justify-start w-full px-md">
+                        <div className="flex flex-row items-center truncate gap-sm justify-between w-full">
+                            <TokenBadge
+                                address={token?.id as `0x${string}`}
+                                size="size-lg"
+                                symbol={token?.symbol}
                             />
-                            {props.tokenSymbol}
-                            <CaretDownIcon className="h-4 w-4 ml-1" />
+                            {token?.symbol ? (
+                                <p className="truncate max-w-16">
+                                    {token?.symbol}
+                                </p>
+                            ) : (
+                                <SkeletonText />
+                            )}
+                            <CaretDownIcon className="size-md ml-1" />
                         </div>
                     </div>
                 </Button>
             </DialogTrigger>
             <Modal isOpen={open} title="Select a token" toggle={setOpen}>
-                <div className="flex flex-row gap-2 bg-dagger1 border-dagger2 border border-solid p-2 rounded-lg items-center">
-                    <MagnifyingGlassIcon className="h-4 w-4" />
+                <div className="flex flex-row gap-2 bg-dagger1 border-dagger2 border border-solid p-md rounded-lg items-center">
+                    <MagnifyingGlassIcon className="size-lg" />
                     <Input
                         type="text"
                         placeholder="Search by symbol or address"
@@ -47,27 +62,27 @@ function TokenSelector(props: TokenSelectorProps) {
                     />
                 </div>
                 <div className="flex flex-row gap-4 items-center flex-wrap">
-                    {tokens[chainId]?.map((token) => (
+                    {sortedTokens?.map((tkn) => (
                         <div
-                            key={token.address}
+                            key={`${tkn.id}-${tkn.symbol}`}
                             className={
-                                props.disabledTokens?.includes(
-                                    token.address as `0x${string}`
+                                disabledTokens?.includes(
+                                    tkn.id as `0x${string}`
                                 )
                                     ? 'flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3 opacity-50'
-                                    : 'cursor-pointer flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3 hover:opacity-50'
+                                    : 'cursor-pointer flex flex-row gap-1 items-center border-dagger2 border border-solid rounded-full py-1 px-3 hover:bg-accent'
                             }
                             onClick={() => {
-                                props.setToken(token.address as `0x${string}`)
+                                setToken(tkn.id as `0x${string}`)
                                 setOpen(false)
                             }}
                         >
-                            <img
-                                src={token.logo}
-                                alt={token.symbol}
-                                className="rounded-full size-4"
-                            />
-                            <span className="text-sm">{token.symbol}</span>
+                            <TokenBadge address={tkn.id} size="size-lg" />
+                            {tkn?.symbol ? (
+                                <span className="text-sm">{tkn.symbol}</span>
+                            ) : (
+                                <SkeletonText />
+                            )}
                         </div>
                     ))}
                 </div>
@@ -75,44 +90,42 @@ function TokenSelector(props: TokenSelectorProps) {
                     className="flex flex-col justify-center overflow-auto max-h-96"
                     style={{ scrollbarWidth: 'none' }}
                 >
-                    {tokens[chainId]
-                        .filter(
-                            (token) =>
-                                token.name.includes(search) ||
-                                token.symbol.includes(search)
+                    {sortedTokens
+                        ?.filter(
+                            (tkn) =>
+                                tkn.name.includes(search) ||
+                                tkn.symbol.includes(search)
                         )
-                        .map((token) => (
+                        .map((tkn) => (
                             <div
-                                key={token.address}
+                                key={tkn.id}
                                 className={
-                                    props.disabledTokens?.includes(
-                                        token.address as `0x${string}`
+                                    disabledTokens?.includes(
+                                        tkn.id as `0x${string}`
                                     )
                                         ? 'flex flew-row gap-3 items-center border border-transparent hover:border-dagger2 opacity-50 border-solid p-2 rounded-xl'
-                                        : 'flex flew-row gap-3 items-center cursor-pointer border border-transparent hover:border-dagger2 hover:border border-solid p-2 rounded-xl'
+                                        : 'flex flew-row gap-3 items-center cursor-pointer border border-transparent hover:border-dagger2 hover:border hover:bg-accent border-solid p-2 rounded-xl'
                                 }
                                 onClick={() => {
                                     if (
-                                        !props.disabledTokens?.includes(
-                                            token.address as `0x${string}`
+                                        !disabledTokens?.includes(
+                                            tkn.id as `0x${string}`
                                         )
                                     ) {
-                                        props.setToken(
-                                            token.address as `0x${string}`
-                                        )
+                                        setToken(tkn.id as `0x${string}`)
                                         setOpen(false)
                                     }
                                 }}
                             >
-                                <img
-                                    src={token.logo}
-                                    alt={token.symbol}
-                                    className="rounded-full size-10"
+                                <TokenBadge
+                                    address={tkn.id}
+                                    size="size-lg"
+                                    symbol={tkn.symbol}
                                 />
                                 <div className="flex flex-col">
-                                    <p className="text-left">{token.symbol}</p>
+                                    <p className="text-left">{tkn.symbol}</p>
                                     <p className="text-left text-dagger3 text-sm">
-                                        {token.name}
+                                        {tkn.name}
                                     </p>
                                 </div>
                             </div>

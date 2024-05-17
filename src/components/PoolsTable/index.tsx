@@ -8,20 +8,15 @@ import {
 } from '../ui/table'
 
 import { FragmentType, useFragment } from '../../gql'
-import { tokens } from '@/data/tokens'
 
 import { FC } from 'react'
 import { useGraphQL } from '../../useGraphQL'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
-import {
-    InfoCircledIcon,
-    Link2Icon,
-    QuestionMarkIcon,
-} from '@radix-ui/react-icons'
-import { useChainId, useReadContract } from 'wagmi'
-import { erc20Abi, getAddress } from 'viem'
-import { formatNumber, formatWad } from '@/utils/numbers'
+import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { useReadContract } from 'wagmi'
+import { erc20Abi } from 'viem'
+import { formatWad } from '@/utils/numbers'
 import {
     Tooltip,
     TooltipContent,
@@ -29,101 +24,22 @@ import {
     TooltipTrigger,
 } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
-import { FALLBACK_LOGO } from '@/utils/pools'
+
+import {
+    MarketFragment,
+    SYTokenQueryDocument,
+    allMarketsQueryDocument,
+} from '../../queries/markets'
+import TokenHoldings from '../TokenHoldings'
+import SkeletonText from '../SkeletonText'
 
 const tooltipContent = {
     lptOutstanding:
         'Liquidity pool tokens (LPTs) can be redeemed for the proportional amount of pool holdings.',
     curator:
         'Curators have power over pool calibration that can impact the value of deposits.',
+    rate: 'Exchange rate from the underlying yield bearing asset to the standardized yield parent token.',
     autonomous: 'Algorithmic pool calibrated upon creation; cannot be altered.',
-}
-
-export function TokenBadge({
-    address,
-}: {
-    address?: `0x${string}`
-}): JSX.Element {
-    const chainId = useChainId()
-    const token =
-        typeof address !== 'undefined'
-            ? tokens?.[chainId]?.find(
-                  (t) => getAddress(t.address) === getAddress(address)
-              )
-            : undefined
-    const FALLBACK_SYMBOL = 'N/A'
-
-    return (
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger>
-                    <img
-                        src={token?.logo ?? FALLBACK_LOGO}
-                        alt={token?.symbol ?? FALLBACK_SYMBOL}
-                        className="rounded-full size-lg"
-                    />
-                </TooltipTrigger>
-                <TooltipContent>
-                    {token?.symbol ?? FALLBACK_SYMBOL}
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
-    )
-}
-
-type TokenCellProps = {
-    token: FragmentType<typeof TokenFragment>
-    index: number
-    zIndex: number
-}
-
-const TokenCell: FC<TokenCellProps> = ({ token, index, zIndex }) => {
-    const tokenData = useFragment(TokenFragment, token)
-    const chainId = useChainId()
-
-    return (
-        <img
-            key={tokenData.token.id}
-            src={
-                tokens?.[chainId]?.find(
-                    (tkn) =>
-                        tkn.symbol.toLowerCase() ===
-                        tokenData.token.symbol.toLowerCase()
-                )?.logo ?? FALLBACK_LOGO
-            }
-            alt={tokenData.token.symbol}
-            className="rounded-full size-8"
-            style={{
-                marginLeft: index > 0 ? '-8px' : 0,
-                zIndex: zIndex,
-            }}
-        />
-    )
-}
-
-const HoldingsCell = ({ poolTokens, reserves }) => {
-    return (
-        <div className="flex flex-row items-center gap-xs">
-            {poolTokens.map((token, index) => {
-                const reserve = reserves[index]
-
-                return (
-                    <div
-                        key={index}
-                        className="flex flex-row items-center gap-xs"
-                    >
-                        <TokenBadge
-                            address={token?.token?.id as `0x${string}`}
-                        />
-                        <span>{formatNumber(reserve)}</span>
-                        {index === poolTokens.length - 1 ? null : (
-                            <span className="text-dagger4">/</span>
-                        )}
-                    </div>
-                )
-            })}
-        </div>
-    )
 }
 
 type PoolCellProps = {
@@ -133,53 +49,62 @@ type PoolCellProps = {
 const PoolCell: FC<PoolCellProps> = (props: {
     pool: FragmentType<typeof MarketFragment>
 }) => {
-    const poolData = useFragment(PoolFragment, props.pool)
     const navigate = useNavigate()
-
-    const poolTokens = poolData?.poolTokens?.items?.map(
-        (poolToken) => poolToken
+    const poolData = useFragment(MarketFragment, props.pool)
+    const { data: sy, isFetching: isFetchingSY } = useGraphQL(
+        SYTokenQueryDocument,
+        {
+            tokenId: poolData.pool.tokenX.id,
+        }
     )
-    const reserves = poolData?.reserves?.map((reserve) => reserve)
 
     // todo: this should be in the database instead of an onchain call.
-    const { data: lpTokenSupply } = useReadContract({
-        abi: erc20Abi,
-        address: poolData.lpToken as `0x${string}`,
-        functionName: 'totalSupply',
-    })
+    const { data: lpTokenSupply, isFetching: isFetchingLPSupply } =
+        useReadContract({
+            abi: erc20Abi,
+            address: poolData.id as `0x${string}`,
+            functionName: 'totalSupply',
+        })
 
     return (
         <TableRow
             key={poolData.id}
-            onClick={() => navigate(`/pool/${poolData.id}`)}
+            onClick={() => navigate(`/market/${poolData.id}`)}
         >
-            <TableCell>
-                <div className="flex flex-row items-center">
-                    {poolData?.poolTokens?.items?.map((poolToken, index) => (
-                        <TokenCell
-                            key={index}
-                            token={poolToken}
-                            index={index}
-                            zIndex={
-                                (poolData?.poolTokens?.items
-                                    ?.length as number) - index
-                            }
-                        />
-                    ))}
-                </div>
-            </TableCell>
-            <TableCell className="text-left">{poolData.name}</TableCell>
             <TableCell className="text-left">
-                <HoldingsCell poolTokens={poolTokens} reserves={reserves} />
+                {poolData.name ?? <SkeletonText />}
             </TableCell>
             <TableCell className="text-left">
-                <div className="flex flex-row items-center gap-xs">
+                <TokenHoldings
+                    tokens={[poolData?.pool?.tokenX, poolData?.pool?.tokenY]}
+                    reserves={[
+                        poolData?.pool?.reserveX,
+                        poolData?.pool?.reserveY,
+                    ]}
+                />
+            </TableCell>
+            <TableCell className="text-left">
+                {poolData?.expiry ? (
+                    new Date(poolData.expiry * 1000).toLocaleDateString()
+                ) : (
+                    <SkeletonText />
+                )}
+            </TableCell>
+            <TableCell className="text-left">
+                {sy?.sYTokens.items?.[0] && !isFetchingSY ? (
                     <span>
-                        {lpTokenSupply
-                            ? formatWad(lpTokenSupply)
-                            : 'Loading...'}
+                        {formatWad(sy?.sYTokens.items?.[0]?.exchangeRate)}
                     </span>
-                </div>
+                ) : (
+                    <SkeletonText />
+                )}
+            </TableCell>
+            <TableCell className="text-left">
+                {lpTokenSupply && !isFetchingLPSupply ? (
+                    <span>{formatWad(lpTokenSupply)}</span>
+                ) : (
+                    <SkeletonText />
+                )}
             </TableCell>
 
             <TableCell className="text-left">
@@ -190,18 +115,33 @@ const PoolCell: FC<PoolCellProps> = (props: {
 }
 
 const PoolsTable: FC = () => {
-    const { data } = useGraphQL(allPoolsQueryDocument, { limit: 10 })
-    const pools = data?.pools?.items
+    const { data } = useGraphQL(allMarketsQueryDocument, { limit: 10 })
+    const pools = data?.markets?.items
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-left">Name</TableHead>
-                    <TableHead className="text-left">Tokens</TableHead>
-                    <TableHead className="text-left">Total Holdings</TableHead>
-                    <TableHead className="text-left">
-                        <TooltipProvider delayDuration={200}>
+        <TooltipProvider delayDuration={50}>
+            <Table>
+                <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                        <TableHead className="text-left">Name</TableHead>
+                        <TableHead className="text-left">
+                            Total Holdings
+                        </TableHead>
+                        <TableHead className="text-left">Expiry</TableHead>
+                        <TableHead className="text-left">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div className="flex flex-row items-center gap-xs hover:text-primary">
+                                        <InfoCircledIcon />
+                                        Rate
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {tooltipContent.rate}
+                                </TooltipContent>
+                            </Tooltip>
+                        </TableHead>
+                        <TableHead className="text-left">
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <div className="flex flex-row items-center gap-xs hover:text-primary">
@@ -213,30 +153,30 @@ const PoolsTable: FC = () => {
                                     {tooltipContent.lptOutstanding}
                                 </TooltipContent>
                             </Tooltip>
-                        </TooltipProvider>
-                    </TableHead>
+                        </TableHead>
 
-                    <TableHead className="text-left">
-                        <TooltipProvider delayDuration={200}>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="flex flex-row items-center gap-xs hover:text-primary">
-                                        <InfoCircledIcon />
-                                        Curator
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    {tooltipContent.curator}
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody className="cursor-pointer">
-                {pools?.map((pool, i) => <PoolCell key={i} pool={pool} />)}
-            </TableBody>
-        </Table>
+                        <TableHead className="text-left">
+                            <TooltipProvider delayDuration={200}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="flex flex-row items-center gap-xs hover:text-primary">
+                                            <InfoCircledIcon />
+                                            Curator
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        {tooltipContent.curator}
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody className="cursor-pointer">
+                    {pools?.map((pool, i) => <PoolCell key={i} pool={pool} />)}
+                </TableBody>
+            </Table>
+        </TooltipProvider>
     )
 }
 

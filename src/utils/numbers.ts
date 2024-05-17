@@ -40,6 +40,8 @@ export function formatNumber(
 }
 
 export function formatWad(wad: bigint, decimals: number = 18): string {
+    if (wad === 0n) return formatNumber(0)
+
     return formatNumber(Number(formatUnits(wad, decimals)))
 }
 

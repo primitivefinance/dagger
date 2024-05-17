@@ -1,22 +1,30 @@
 import { shortAddress } from '@/utils/address'
 import { etherscanAddressLink, etherscanTxLink } from '@/utils/etherscan'
 import { LinkIcon } from '../link-icon'
+import { Button } from '../ui/button'
+import SkeletonText from '../SkeletonText'
 
 export function EtherscanLink({
     address,
 }: {
-    address: `0x${string}`
+    address?: `0x${string}`
 }): JSX.Element {
     return (
-        <a
-            href={etherscanAddressLink(address)}
-            className="flex flex-row gap-1"
-            target="_blank"
-            rel="noreferrer"
-        >
-            <small>{shortAddress(address)}</small>
-            <LinkIcon />
-        </a>
+        <Button variant="link" size="xs" asChild>
+            {address ? (
+                <a
+                    href={etherscanAddressLink(address)}
+                    className="flex flex-row gap-1 leading-none h-auto"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <small>{shortAddress(address)}</small>
+                    <LinkIcon />
+                </a>
+            ) : (
+                <SkeletonText />
+            )}
+        </Button>
     )
 }
 
@@ -43,12 +51,14 @@ export function LabelWithEtherscan({
     address,
 }: {
     label: React.ReactNode
-    address: `0x${string}`
+    address?: `0x${string}`
 }): JSX.Element {
     return (
-        <div className="flex flex-row gap-1 items-center justify-between">
+        <div className="flex flex-row gap-sm items-center justify-between">
             {label}
-            <EtherscanLink address={address} />
+            <div>
+                <EtherscanLink address={address} />
+            </div>
         </div>
     )
 }
@@ -61,7 +71,7 @@ export function TxLabelEtherscan({
     txHash: `0x${string}`
 }): JSX.Element {
     return (
-        <div className="flex flex-row gap-1 items-center justify-between">
+        <div className="flex flex-row gap-sm items-center justify-between">
             {label}
             <EtherscanTxLink txHash={txHash} />
         </div>
