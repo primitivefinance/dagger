@@ -85,19 +85,20 @@ const MarketView = (): JSX.Element => {
                                 <p className="text-muted dark:text-muted-foreground">
                                     Expiry
                                 </p>
-                                <p>
-                                    {market?.expiry ? (
-                                        new Date(
+
+                                {market?.expiry ? (
+                                    <p>
+                                        {new Date(
                                             market?.expiry * 1000
-                                        ).toLocaleDateString()
-                                    ) : (
-                                        <Skeleton>
-                                            <p className="text-transparent selection:text-transparent dark:text-transparent dark:selection:text-transparent">
-                                                12/12/1999
-                                            </p>
-                                        </Skeleton>
-                                    )}
-                                </p>
+                                        ).toLocaleDateString()}
+                                    </p>
+                                ) : (
+                                    <Skeleton>
+                                        <p className="text-transparent selection:text-transparent dark:text-transparent dark:selection:text-transparent">
+                                            12/12/1999
+                                        </p>
+                                    </Skeleton>
+                                )}
                             </div>
                         </Badge>
                         <Badge variant="secondary" className="p-0">
@@ -105,17 +106,16 @@ const MarketView = (): JSX.Element => {
                                 <p className="text-muted dark:text-muted-foreground">
                                     Rate
                                 </p>
-                                <p>
-                                    {syToken?.exchangeRate ? (
-                                        formatWad(syToken?.exchangeRate)
-                                    ) : (
-                                        <Skeleton>
-                                            <p className="text-transparent selection:text-transparent dark:text-transparent dark:selection:text-transparent">
-                                                1000.000
-                                            </p>
-                                        </Skeleton>
-                                    )}
-                                </p>
+
+                                {syToken?.exchangeRate ? (
+                                    <p>{formatWad(syToken?.exchangeRate)}</p>
+                                ) : (
+                                    <Skeleton>
+                                        <p className="text-transparent selection:text-transparent dark:text-transparent dark:selection:text-transparent">
+                                            1000.000
+                                        </p>
+                                    </Skeleton>
+                                )}
                             </div>
                         </Badge>
                     </div>
