@@ -12,7 +12,6 @@ export const MarketFragment = graphql(`
                 symbol
                 decimals
                 icon
-                exchangeRate
             }
             tokenY {
                 id
@@ -33,31 +32,71 @@ export const MarketFragment = graphql(`
                 name
             }
         }
-        sy {
-            id
-            name
-            symbol
-            decimals
-            exchangeRate
-        }
-        yt {
-            id
-            name
-            symbol
-            decimals
-            redeemableInterest
-            redeemableRewards
-        }
-        pt {
-            id
-            name
-            symbol
-            decimals
+        marketTokens {
+            items {
+                token {
+                    id
+                    name
+                    symbol
+                    decimals
+                    icon
+                }
+            }
         }
         expiry
     }
 `)
 
+export const SYTokenQueryDocument = graphql(`
+    query syToken($tokenId: String!) {
+        sYTokens(where: { id: $tokenId }) {
+            items {
+                token {
+                    id
+                    name
+                    symbol
+                    decimals
+                    icon
+                }
+                exchangeRate
+                tokensIn
+                tokensOut
+            }
+        }
+    }
+`)
+export const PTokenQueryDocument = graphql(`
+    query pToken($tokenId: String!) {
+        pTokens(where: { id: $tokenId }) {
+            items {
+                token {
+                    id
+                    name
+                    symbol
+                    decimals
+                    icon
+                }
+            }
+        }
+    }
+`)
+export const YTokenQueryDocument = graphql(`
+    query yToken($tokenId: String!) {
+        yTokens(where: { id: $tokenId }) {
+            items {
+                token {
+                    id
+                    name
+                    symbol
+                    decimals
+                    icon
+                }
+                redeemableInterest
+                redeemableRewards
+            }
+        }
+    }
+`)
 export const allMarketsQueryDocument = graphql(`
     query allMarkets($limit: Int!) {
         markets(limit: $limit) {
@@ -73,53 +112,6 @@ export const MarketInfoQueryDocument = graphql(`
         markets(where: { id: $id }) {
             items {
                 ...MarketItem
-            }
-        }
-    }
-`)
-
-export const ExchangeRateFragment = graphql(`
-    fragment ExchangeRateItem on ExchangeRateHourly {
-        id
-        marketId
-        open
-        close
-        high
-        low
-        average
-        count
-    }
-`)
-
-// TODO: sort
-export const ExchangeRateQueryDocument = graphql(`
-    query exchangeRate($limit: Int!) {
-        exchangeRateHourlys(limit: $limit) {
-            items {
-                ...ExchangeRateItem
-            }
-        }
-    }
-`)
-
-export const MarketPriceFragment = graphql(`
-    fragment MarketPriceItem on MarketPricesHourly {
-        id
-        marketId
-        open
-        close
-        high
-        low
-        average
-        count
-    }
-`)
-// TODO: add sort
-export const MarketPriceQueryDocument = graphql(`
-    query marketPrice($limit: Int!) {
-        marketPricesHourlys(limit: $limit) {
-            items {
-                ...MarketPriceItem
             }
         }
     }

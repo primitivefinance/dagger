@@ -12,7 +12,6 @@ export const AllocateFragment = graphql(/* GraphQL */ `
                 symbol
                 decimals
                 icon
-                exchangeRate
             }
             tokenY {
                 id
@@ -63,7 +62,6 @@ export const DeallocateFragment = graphql(/* GraphQL */ `
                 symbol
                 decimals
                 icon
-                exchangeRate
             }
             tokenY {
                 id
