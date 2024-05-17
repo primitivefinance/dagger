@@ -96,7 +96,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     // convert query to where: marketId
     const { data, status } = useGraphQL(MarketPriceQueryDocument, { marketId })
     const resp = useGraphQL(ImplYieldQueryDocument, { marketId })
-
     useEffect(() => {
         if (status === 'success' && data) {
             const priceData = normalizePrice(
@@ -113,7 +112,9 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             )
 
             const chart = createChart(chartContainerRef.current, {
-                width: chartContainerRef.current.clientWidth,
+                width: chartContainerRef?.current
+                    ? 0
+                    : chartContainerRef.current.clientWidth,
                 height: chartContainerRef.current.clientHeight,
                 watermark: {
                     visible: true,
@@ -149,7 +150,9 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             })
             const handleResize = () => {
                 chart.applyOptions({
-                    width: chartContainerRef.current.clientWidth,
+                    width: chartContainerRef.current.clientWidth
+                        ? 0
+                        : chartContainerRef.current.clientWidth,
                 })
             }
             const priceSeries = chart.addCandlestickSeries({
@@ -194,7 +197,9 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             const yieldData = normalizeYield(resp.data.impliedYields.items)
 
             const chart = createChart(yieldChartContainerRef.current, {
-                width: yieldChartContainerRef.current.clientWidth,
+                width: yieldChartContainerRef.current.clientWidth
+                    ? 0
+                    : yieldChartContainerRef.current.clientWidth,
                 height: yieldChartContainerRef.current.clientHeight,
                 watermark: {
                     visible: true,
@@ -230,7 +235,9 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             })
             const handleResize = () => {
                 chart.applyOptions({
-                    width: yieldChartContainerRef.current.clientWidth,
+                    width: yieldChartContainerRef.current.clientWidth
+                        ? 0
+                        : yieldChartContainerRef.current,
                 })
             }
 
@@ -258,7 +265,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
 
     if (status !== 'success') return <></>
     return (
-        <div className="grid grid-cols-2 h-screen">
+        <div className="grid grid-cols-2 h-screen w-full">
             <div ref={yieldChartContainerRef} className="chart-container" />
             <div ref={chartContainerRef} className="chart-container" />
         </div>
