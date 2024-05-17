@@ -60,6 +60,7 @@ const SwapWidget: React.FC<{
     tokenInForm: TokenForm
     tokenOutForm: TokenForm
 }> = ({ tokenInForm, tokenOutForm }): JSX.Element => {
+    const { isConnected } = useAccount()
     const { getTokenIn, getTokenOut, setTokenParams } = useTradeRoute()
     const tokenIn = getTokenIn()
     const tokenOut = getTokenOut()
@@ -117,7 +118,7 @@ const SwapWidget: React.FC<{
                         setToken={setTokenIn}
                         amount={tokenInForm.amount}
                         setAmount={tokenInForm.setAmount}
-                        disabled={false}
+                        disabled={!isConnected}
                         disabledTokens={tokens.map((t) => t?.id)}
                         isFetching={tokenInForm.isFetching}
                     />
@@ -137,7 +138,7 @@ const SwapWidget: React.FC<{
 }
 
 const Summary = ({ market }): JSX.Element => {
-    const { address } = useAccount()
+    const { address, isConnected } = useAccount()
     return (
         <div className="flex flex-col gap-0 border-b">
             <div className="flex flex-row gap-sm border-b bg-muted/50 p-md">
@@ -160,10 +161,27 @@ const Summary = ({ market }): JSX.Element => {
                         0.01%
                     </Button>
                 </div>
-                <LabelWithEtherscan
-                    label={<p>Pay from</p>}
-                    address={address as `0x${string}`}
-                />
+                {isConnected && (
+                    <LabelWithEtherscan
+                        label={<p>Pay from</p>}
+                        address={address as `0x${string}`}
+                    />
+                )}
+            </div>
+        </div>
+    )
+}
+
+const ConnectToTrade = (): JSX.Element => {
+    return (
+        <div className="flex flex-col gap-0">
+            <div className="flex flex-row gap-sm border-b bg-muted/50 p-md">
+                <h4>Submit</h4>
+            </div>
+            <div className="flex flex-col items-center justify-center text-center w-full py-lg">
+                <h4 className="text-muted dark:text-muted-foreground/50">
+                    Connect to Trade
+                </h4>
             </div>
         </div>
     )
@@ -189,6 +207,7 @@ function useTokenFormState(initialAmount = ''): TokenForm {
 }
 
 const TradeView = (): JSX.Element => {
+    const { isConnected } = useAccount()
     const { id } = useParams()
     const { data } = useGraphQL(MarketInfoQueryDocument, {
         id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
@@ -201,12 +220,18 @@ const TradeView = (): JSX.Element => {
     return (
         <div className="flex flex-col gap-0 border flex-grow">
             <SwapWidget tokenInForm={tokenInForm} tokenOutForm={tokenOutForm} />
-            <Summary market={market} />
-            <SwapAction
-                amountIn={tokenInForm.amount}
-                setAmountOut={tokenOutForm.setAmount}
-                setTokenOutFetching={tokenOutForm.setFetchStatus}
-            />
+            {isConnected ? (
+                <>
+                    <Summary market={market} />
+                    <SwapAction
+                        amountIn={tokenInForm.amount}
+                        setAmountOut={tokenOutForm.setAmount}
+                        setTokenOutFetching={tokenOutForm.setFetchStatus}
+                    />
+                </>
+            ) : (
+                <ConnectToTrade />
+            )}
         </div>
     )
 }
