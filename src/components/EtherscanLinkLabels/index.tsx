@@ -56,7 +56,9 @@ export function LabelWithEtherscan({
     return (
         <div className="flex flex-row gap-sm items-center justify-between">
             {label}
-            <EtherscanLink address={address} />
+            <div>
+                <EtherscanLink address={address} />
+            </div>
         </div>
     )
 }

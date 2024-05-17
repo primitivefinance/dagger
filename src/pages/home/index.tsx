@@ -34,6 +34,7 @@ type CuratorInfo = {
     fees: string
     pools: number
     address: `0x${string}`
+    icon?: string
 }
 
 const curators: { [key: string]: CuratorInfo } = {
@@ -44,6 +45,7 @@ const curators: { [key: string]: CuratorInfo } = {
         fees: '0.000',
         pools: 5,
         address: zeroAddress,
+        icon: undefined,
     },
 }
 
@@ -65,33 +67,34 @@ const DataLabelBetween = ({
 export const CuratorCard = ({
     curator,
 }: {
-    curator: CuratorInfo
+    curator?: CuratorInfo
 }): JSX.Element => {
     const navigate = useNavigate()
     return (
         <Card
             className="p-lg hover:bg-muted/50 rounded-none block hover:no-underline h-full hover:cursor-pointer"
-            onClick={() => navigate(`/curator/${curator.address}`)}
+            onClick={() => navigate(`/curator/${curator?.address}`)}
         >
             <div className="flex flex-col gap-lg h-full">
                 <div className="flex w-full items-center justify-center">
-                    <Avatar className="h-24 w-24">
-                        <AvatarImage
-                            src="https://github.com/shadcn.png"
-                            alt="@shadcn"
-                        />
-                        <AvatarFallback>C</AvatarFallback>
-                    </Avatar>
+                    <AvatarSkeletonTooltip
+                        src={curator?.icon ?? FALLBACK_AVATAR}
+                        alt={curator?.name ?? 'Curator'}
+                        loading={typeof curator === 'undefined'}
+                        size="size-[6rem]"
+                    >
+                        {curator?.name ?? 'Curator'}
+                    </AvatarSkeletonTooltip>
                 </div>
                 <div className="flex flex-col gap-xs justify-center items-center">
-                    <h3>{curator.name}</h3>
+                    <h3>{curator?.name ?? <SkeletonText />}</h3>
                     <LabelWithEtherscan
                         label={
                             <p className="text-muted dark:text-muted-foreground">
                                 Address
                             </p>
                         }
-                        address={curator.address}
+                        address={curator?.address}
                     />
                 </div>
 
@@ -100,7 +103,9 @@ export const CuratorCard = ({
                         <h5 className="text-muted dark:text-muted-foreground">
                             Description
                         </h5>
-                        <p className="">{curator.description}</p>
+                        <p className="">
+                            {curator?.description ?? <SkeletonText />}
+                        </p>
                     </div>
                     <div className="flex flex-row justify-between items-center">
                         <DataLabelBetween
@@ -110,9 +115,15 @@ export const CuratorCard = ({
                                 </p>
                             }
                             data={
-                                <p className="">
-                                    {formatPercentage(parseFloat(curator.fees))}
-                                </p>
+                                curator?.fees ? (
+                                    <p className="">
+                                        {formatPercentage(
+                                            parseFloat(curator.fees)
+                                        )}
+                                    </p>
+                                ) : (
+                                    <SkeletonText />
+                                )
                             }
                         />
                         <DataLabelBetween
@@ -121,7 +132,11 @@ export const CuratorCard = ({
                                     Pools
                                 </p>
                             }
-                            data={<p className="">{curator.pools}</p>}
+                            data={
+                                <p className="">
+                                    {curator?.pools ?? <SkeletonText />}
+                                </p>
+                            }
                         />
                     </div>
                 </div>
@@ -237,8 +252,6 @@ function Home(): JSX.Element {
 
     const [displayCards, setDisplayCards] = React.useState<boolean>(true)
 
-    if (!data?.markets?.items) return <></>
-
     return (
         <div className="flex flex-col gap-2xl p-xl">
             <div className="gap-sm flex flex-col">
@@ -250,8 +263,13 @@ function Home(): JSX.Element {
             <div className="flex flex-col gap-md">
                 <div className="flex flex-row items-center w-full justify-between">
                     <div className="flex flex-row gap-md items-center">
-                        <h4 className="scroll-m-20">
-                            Yield Markets ({data?.markets?.items?.length ?? 0})
+                        <h4 className="scroll-m-20">Yield Markets</h4>
+                        <h4 className="flex flex-row gap-xs items-center">
+                            (
+                            {data?.markets?.items?.length ?? (
+                                <Skeleton className="h-4 w-12" />
+                            )}
+                            )
                         </h4>
                         <div className="flex flex-row gap-sm items-center">
                             <Switch
@@ -298,9 +316,14 @@ function Home(): JSX.Element {
 
                 {displayCards ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                        {data?.markets.items.map((market, i) => (
+                        {data?.markets?.items?.map((market, i) => (
                             <PoolCard key={i} market={market} />
-                        ))}
+                        )) ??
+                            new Array(3).fill(0).map((_, i) => (
+                                <Skeleton key={i}>
+                                    <PoolCard />
+                                </Skeleton>
+                            ))}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-md">
@@ -311,9 +334,14 @@ function Home(): JSX.Element {
             <div className="flex flex-col gap-md">
                 <h4 className="scroll-m-20 ">Highlighted Curators</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                    {Object.keys(curators).map((key) => (
+                    {Object.keys(curators)?.map((key) => (
                         <CuratorCard key={key} curator={curators?.[key]} />
-                    ))}
+                    )) ??
+                        new Array(3).fill(0).map((_, i) => (
+                            <Skeleton key={i}>
+                                <CuratorCard />
+                            </Skeleton>
+                        ))}
                 </div>
             </div>
         </div>
