@@ -148,11 +148,12 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 },
             })
             const handleResize = () => {
-                chart.applyOptions({
-                    width: chartContainerRef.current.clientWidth
-                        ? 0
-                        : chartContainerRef.current.clientWidth,
-                })
+                if (chartContainerRef.current) {
+                    chart.applyOptions({
+                        width: chartContainerRef.current.clientWidth,
+                        height: chartContainerRef.current.clientHeight,
+                    })
+                }
             }
             const priceSeries = chart.addCandlestickSeries({
                 upColor: '#26a69a',
@@ -231,14 +232,12 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 },
             })
             const handleResize = () => {
-                chart.applyOptions({
-                    width: yieldChartContainerRef.current.clientWidth
-                        ? 0
-                        : yieldChartContainerRef.current,
-                    height: yieldChartContainerRef.current.clientHeight
-                        ? 0
-                        : yieldChartContainerRef.clientHeight,
-                })
+                if (yieldChartContainerRef.current) {
+                    chart.applyOptions({
+                        width: yieldChartContainerRef.current.clientWidth,
+                        height: yieldChartContainerRef.current.clientHeight,
+                    })
+                }
             }
 
             const implSeries = chart.addLineSeries({
