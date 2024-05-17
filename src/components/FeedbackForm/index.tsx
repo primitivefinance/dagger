@@ -48,7 +48,9 @@ function FeedbackForm(): JSX.Element {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    content: `New product feedback: ${formData}`,
+                    content: `New product feedback ${formData.feedback} from ${
+                        formData.contact || 'anonymous'
+                    }`,
                 }),
             })
 
