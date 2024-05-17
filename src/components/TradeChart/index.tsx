@@ -96,7 +96,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 height: 600,
                 watermark: {
                     visible: true,
-                    text: isLong ? 'YT / wstETH' : 'PT / wstETH',
+                    text: isLong ? 'YT / stETH' : 'PT / stETH',
                     fontSize: 30,
                     color: 'gray',
                     horzAlign: 'left',
@@ -138,7 +138,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 borderVisible: true,
                 wickUpColor: '#26a69a',
                 wickDownColor: '#ef5350',
-                title: isLong ? 'YT / wstETH' : 'PT / wstETH',
+                title: isLong ? 'YT / stETH' : 'PT / stETH',
             })
             priceSeries.setData(priceData)
 
@@ -148,6 +148,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     type: 'volume',
                 },
                 priceScaleId: '',
+                title: 'Volume (stETH)',
             })
             chart.priceScale('').applyOptions({
                 scaleMargins: {
@@ -158,7 +159,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             volSeries.setData(volData)
 
             const avgSeries = chart.addLineSeries({
-                color: 'gray',
+                color: 'white',
             })
             avgSeries.setData(avgData)
             chart.timeScale().fitContent()
@@ -173,12 +174,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     }, [status])
 
     if (status !== 'success') return <></>
-    return (
-        <div
-            ref={chartContainerRef}
-            className="chart-container bg-color-black"
-        />
-    )
+    return <div ref={chartContainerRef} className="chart-container" />
 }
 
 export default TradeChart

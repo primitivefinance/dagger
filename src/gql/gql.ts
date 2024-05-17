@@ -27,6 +27,10 @@ const documents = {
     "\n    query exchangeRate($limit: Int!) {\n        exchangeRateHourlys(limit: $limit) {\n            items {\n                ...ExchangeRateItem\n            }\n        }\n    }\n": types.ExchangeRateDocument,
     "\n    fragment MarketPriceItem on MarketPricesHourly {\n        id\n        marketId\n        open\n        close\n        high\n        low\n        average\n        volume\n        count\n    }\n": types.MarketPriceItemFragmentDoc,
     "\n    query marketPrice($marketId: String!) {\n        marketPricesHourlys(where: { marketId: $marketId }) {\n            items {\n                ...MarketPriceItem\n            }\n        }\n    }\n": types.MarketPriceDocument,
+    "\n    fragment ImpliedYieldItem on ImpliedYield {\n        id\n        marketId\n        value\n    }\n": types.ImpliedYieldItemFragmentDoc,
+    "\n    query implYield($marketId: String!) {\n        impliedYields(where: { marketId: $marketId }) {\n            items {\n                ...ImpliedYieldItem\n            }\n        }\n    }\n": types.ImplYieldDocument,
+    "\n    fragment UnderlyingYieldItem on UnderlyingYield {\n        id\n        marketId\n        value\n    }\n": types.UnderlyingYieldItemFragmentDoc,
+    "\n    query underlyingYield($marketId: String!) {\n        underlyingYields(where: { marketId: $marketId }) {\n            items {\n                ...UnderlyingYieldItem\n            }\n        }\n    }\n": types.UnderlyingYieldDocument,
     "\n    fragment SwapItem on Swap {\n        id\n        sender\n        tokenIn\n        tokenOut\n        amountIn\n        amountOut\n        timestamp\n        block\n    }\n": types.SwapItemFragmentDoc,
     "\n    query allSwaps($poolId: String!) {\n        swaps(where: { poolId: $poolId }) {\n            items {\n                ...SwapItem\n            }\n        }\n    }\n": types.AllSwapsDocument,
 };
@@ -101,6 +105,22 @@ export function graphql(source: "\n    fragment MarketPriceItem on MarketPricesH
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query marketPrice($marketId: String!) {\n        marketPricesHourlys(where: { marketId: $marketId }) {\n            items {\n                ...MarketPriceItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query marketPrice($marketId: String!) {\n        marketPricesHourlys(where: { marketId: $marketId }) {\n            items {\n                ...MarketPriceItem\n            }\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    fragment ImpliedYieldItem on ImpliedYield {\n        id\n        marketId\n        value\n    }\n"): (typeof documents)["\n    fragment ImpliedYieldItem on ImpliedYield {\n        id\n        marketId\n        value\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query implYield($marketId: String!) {\n        impliedYields(where: { marketId: $marketId }) {\n            items {\n                ...ImpliedYieldItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query implYield($marketId: String!) {\n        impliedYields(where: { marketId: $marketId }) {\n            items {\n                ...ImpliedYieldItem\n            }\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    fragment UnderlyingYieldItem on UnderlyingYield {\n        id\n        marketId\n        value\n    }\n"): (typeof documents)["\n    fragment UnderlyingYieldItem on UnderlyingYield {\n        id\n        marketId\n        value\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query underlyingYield($marketId: String!) {\n        underlyingYields(where: { marketId: $marketId }) {\n            items {\n                ...UnderlyingYieldItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query underlyingYield($marketId: String!) {\n        underlyingYields(where: { marketId: $marketId }) {\n            items {\n                ...UnderlyingYieldItem\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
