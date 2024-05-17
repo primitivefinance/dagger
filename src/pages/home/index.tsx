@@ -107,38 +107,6 @@ export const CuratorCard = ({
                             {curator?.description ?? <SkeletonText />}
                         </p>
                     </div>
-                    <div className="flex flex-row justify-between items-center">
-                        <DataLabelBetween
-                            label={
-                                <p className="text-muted dark:text-muted-foreground">
-                                    Avg. Fee
-                                </p>
-                            }
-                            data={
-                                curator?.fees ? (
-                                    <p className="">
-                                        {formatPercentage(
-                                            parseFloat(curator.fees)
-                                        )}
-                                    </p>
-                                ) : (
-                                    <SkeletonText />
-                                )
-                            }
-                        />
-                        <DataLabelBetween
-                            label={
-                                <p className="text-muted dark:text-muted-foreground">
-                                    Pools
-                                </p>
-                            }
-                            data={
-                                <p className="">
-                                    {curator?.pools ?? <SkeletonText />}
-                                </p>
-                            }
-                        />
-                    </div>
                 </div>
             </div>
         </Card>
