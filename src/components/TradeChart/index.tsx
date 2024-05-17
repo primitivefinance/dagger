@@ -113,6 +113,8 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             )
 
             const chart = createChart(chartContainerRef.current, {
+                width: 0,
+                height: 0,
                 watermark: {
                     visible: true,
                     text: isLong ? 'YT / stETH' : 'PT / stETH',
@@ -194,6 +196,8 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             const yieldData = normalizeYield(resp.data.impliedYields.items)
 
             const chart = createChart(yieldChartContainerRef.current, {
+                width: 0,
+                height: 0,
                 watermark: {
                     visible: true,
                     text: 'wstETH APY',
@@ -261,7 +265,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
 
     if (status !== 'success') return <></>
     return (
-        <div className="grid grid-cols-2 h-screen w-full">
+        <div className="grid grid-cols-2 h-full w-full">
             <div ref={yieldChartContainerRef} className="chart-container" />
             <div ref={chartContainerRef} className="chart-container" />
         </div>

@@ -15,6 +15,7 @@ import { useTradeRoute } from '@/lib/useTradeRoute'
 import AvatarSkeletonTooltip from '../AvatarSkeletonTooltip'
 import { FALLBACK_ALT, FALLBACK_AVATAR } from '@/utils/address'
 import { Skeleton } from '../ui/skeleton'
+import TradeChart from '../TradeChart'
 
 const MarketStatCard = ({
     label,
@@ -34,7 +35,7 @@ const MarketStatCard = ({
 const MarketView = (): JSX.Element => {
     const { id } = useParams()
     const { data } = useGraphQL(MarketInfoQueryDocument, {
-        id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
+        id: id ? id : '0x59d26a4e574e8c3c7be83697acbfed57d1793045',
     })
     const market = data?.markets?.items?.[0]
     const { data: sy } = useGraphQL(SYTokenQueryDocument, {
@@ -150,7 +151,12 @@ const MarketView = (): JSX.Element => {
             </div>
 
             <div className="flex h-96 w-full items-center justify-center text-center border">
-                <h1 className="text-muted-foreground/25">Chart</h1>
+                <TradeChart
+                    marketId={
+                        id ? id : '0x59d26a4e574e8c3c7be83697acbfed57d1793045'
+                    }
+                    isLong={false}
+                />
             </div>
             <div className="grid grid-cols-3 gap-lg">
                 <MarketStatCard label="Volume" data="$10,000" />
