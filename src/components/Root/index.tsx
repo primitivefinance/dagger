@@ -9,6 +9,20 @@ import { cn } from '@/lib/utils'
 import AccountHoldings from '../AccountHoldings'
 import TradeView from '../TradeView'
 import Layout from '../Layout'
+import Modal from '../Modal'
+import { Input } from '../ui/input'
+import { Dialog, DialogTrigger } from '../ui/dialog'
+import { useForm } from 'react-hook-form'
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '../ui/form'
+import FeedbackForm from '../FeedbackForm'
 
 const VERSION = 'v0.3.0'
 
@@ -61,6 +75,9 @@ function Root(): JSX.Element {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [scrolling])
 
+    const [feedbackOpen, setFeedbackOpen] = React.useState(false)
+    const form = useForm()
+
     return (
         <div className={`font-primary min-h-screen relative`}>
             <header
@@ -104,6 +121,24 @@ function Root(): JSX.Element {
                         </ul>
                     </Container>
                     <div className="w-1/4 flex-row flex gap-4 items-center justify-end">
+                        <Dialog
+                            open={feedbackOpen}
+                            onOpenChange={setFeedbackOpen}
+                        >
+                            <DialogTrigger asChild>
+                                <Button variant="secondary">
+                                    <p>Feedback</p>
+                                </Button>
+                            </DialogTrigger>
+
+                            <Modal
+                                title="Feedback"
+                                isOpen={feedbackOpen}
+                                toggle={setFeedbackOpen}
+                            >
+                                <FeedbackForm />
+                            </Modal>
+                        </Dialog>
                         <ConnectButton />
                     </div>
                 </div>

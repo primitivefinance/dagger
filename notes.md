@@ -28,4 +28,4 @@
 - market spot price is greater than or equal to 1, because we get more principals out for 1 ASSET.
 - market gives us price discovery on PT, which implies a YT rate/price.
 - at maturity, the market price should be constant at a strike price of 1 at maturity. we target constant price of 1 at maturity, which means you get one PT per asset and one asset per PT. Handing in one PT and getting 1 stETH.
-
+- map the appropriate decay onto the strike price, trying to map the strike price on the expected return of YT at time t.

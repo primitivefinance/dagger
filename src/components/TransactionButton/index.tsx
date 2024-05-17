@@ -22,7 +22,7 @@ export interface TransactionButtonProps extends ButtonProps {
     value?: bigint
 }
 
-const LoadingDots = () => {
+export const LoadingDots = () => {
     return (
         <div className="loading-dots">
             <div className="dot"></div>
