@@ -93,9 +93,10 @@ const normalizeYield = (
 const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const chartContainerRef = useRef()
     const yieldChartContainerRef = useRef()
-    // convert query to where: marketId
+
     const { data, status } = useGraphQL(MarketPriceQueryDocument, { marketId })
     const resp = useGraphQL(ImplYieldQueryDocument, { marketId })
+
     useEffect(() => {
         if (status === 'success' && data) {
             const priceData = normalizePrice(
@@ -112,10 +113,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             )
 
             const chart = createChart(chartContainerRef.current, {
-                width: chartContainerRef?.current
-                    ? 0
-                    : chartContainerRef.current.clientWidth,
-                height: chartContainerRef.current.clientHeight,
                 watermark: {
                     visible: true,
                     text: isLong ? 'YT / stETH' : 'PT / stETH',
@@ -134,8 +131,8 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 },
                 rightPriceScale: {
                     scaleMargins: {
-                        top: 0.3,
-                        bottom: 0.5,
+                        top: 0.1,
+                        bottom: 0.3,
                     },
                     borderVisible: false,
                 },
@@ -197,10 +194,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             const yieldData = normalizeYield(resp.data.impliedYields.items)
 
             const chart = createChart(yieldChartContainerRef.current, {
-                width: yieldChartContainerRef.current.clientWidth
-                    ? 0
-                    : yieldChartContainerRef.current.clientWidth,
-                height: yieldChartContainerRef.current.clientHeight,
                 watermark: {
                     visible: true,
                     text: 'wstETH APY',
@@ -220,7 +213,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 rightPriceScale: {
                     scaleMargins: {
                         top: 0.3,
-                        bottom: 0.5,
+                        bottom: 0,
                     },
                     borderVisible: false,
                 },
@@ -238,6 +231,9 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     width: yieldChartContainerRef.current.clientWidth
                         ? 0
                         : yieldChartContainerRef.current,
+                    height: yieldChartContainerRef.current.clientHeight
+                        ? 0
+                        : yieldChartContainerRef.clientHeight,
                 })
             }
 
