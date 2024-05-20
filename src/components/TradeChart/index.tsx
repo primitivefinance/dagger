@@ -247,6 +247,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     secondsVisible={true}
                     timeVisible={true}
                     barSpacing={20}
+                    rightOffset={10}
                 />
             </Chart>
             <Chart {...pOptions} autoSize>
@@ -268,6 +269,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     secondsVisible={true}
                     timeVisible={true}
                     barSpacing={20}
+                    rightOffset={10}
                 />
                 <LineSeries data={aData} color="#d1d4dc" lineWidth={2} />
             </Chart>
