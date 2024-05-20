@@ -16,6 +16,7 @@ import {
     MarketPriceFragment,
     ImpliedYieldFragment,
     ImplYieldQueryDocument,
+    UnderlyingYieldQueryDocument,
 } from '../../queries/prices'
 
 export type TradeChartProps = {
@@ -100,9 +101,13 @@ const normalizeYield = (
 
 const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const { data, status } = useGraphQL(MarketPriceQueryDocument, { marketId })
-    const resp = useGraphQL(ImplYieldQueryDocument, { marketId })
+    const implied = useGraphQL(ImplYieldQueryDocument, { marketId })
+    const underlying = useGraphQL(UnderlyingYieldQueryDocument, { marketId })
 
     const [yData, setYData] = useState<
+        { time: string; value: number }[] | null | any
+    >(null)
+    const [uData, setUData] = useState<
         { time: string; value: number }[] | null | any
     >(null)
 
@@ -210,11 +215,15 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     }, [status])
 
     useEffect(() => {
-        if (resp.status === 'success') {
-            const yieldData = normalizeYield(resp.data.impliedYields.items)
+        if (implied.status === 'success' && underlying.status === 'success') {
+            const yieldData = normalizeYield(implied.data.impliedYields.items)
+            const underlyingData = normalizeYield(
+                underlying.data.underlyingYields.items
+            )
             setYData(yieldData)
+            setUData(underlyingData)
         }
-    }, [resp.status])
+    }, [implied.status, underlying.status])
 
     if (!cData || !yData) return <></>
     return (
@@ -225,6 +234,13 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     color="rgba(33, 150, 243, 1)"
                     lineWidth={2}
                     title="Implied Rate"
+                    priceFormat={{ type: 'percent' }}
+                />
+                <LineSeries
+                    data={uData}
+                    color="green"
+                    lineWidth={2}
+                    title="Underlying Rate"
                     priceFormat={{ type: 'percent' }}
                 />
                 <TimeScale
