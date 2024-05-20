@@ -1,29 +1,5 @@
 import { graphql } from '../gql'
 
-export const ExchangeRateFragment = graphql(`
-    fragment ExchangeRateItem on ExchangeRateHourly {
-        id
-        marketId
-        open
-        close
-        high
-        low
-        average
-        count
-    }
-`)
-
-// TODO: sort
-export const ExchangeRateQueryDocument = graphql(`
-    query exchangeRate($limit: Int!) {
-        exchangeRateHourlys(limit: $limit) {
-            items {
-                ...ExchangeRateItem
-            }
-        }
-    }
-`)
-
 export const MarketPriceFragment = graphql(`
     fragment MarketPriceItem on MarketPricesHourly {
         id
