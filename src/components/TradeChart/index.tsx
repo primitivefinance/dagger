@@ -1,7 +1,15 @@
 import type { FC } from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { createChart, CrosshairMode, ColorType } from 'lightweight-charts'
+import {
+    Chart,
+    LineSeries,
+    HistogramSeries,
+    CandlestickSeries,
+    PriceScale,
+    TimeScale,
+} from 'lightweight-charts-react-wrapper'
+
 import { useGraphQL } from '../../useGraphQL'
 import {
     MarketPriceQueryDocument,
@@ -84,21 +92,104 @@ const normalizeYield = (
     const parsed = rawTimeSeries.map((tck) => {
         return {
             time: tck.id,
-            value: tck.value,
+            value: tck.value * 100,
         }
     })
     return parsed
 }
 
 const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
-    const chartContainerRef = useRef()
-    const yieldChartContainerRef = useRef()
-
     const { data, status } = useGraphQL(MarketPriceQueryDocument, { marketId })
     const resp = useGraphQL(ImplYieldQueryDocument, { marketId })
 
+    const [yData, setYData] = useState<
+        { time: string; value: number }[] | null | any
+    >(null)
+
+    const [cData, setCData] = useState<HourlyPrice[] | null | any>(null)
+    const [vData, setVData] = useState<HourlyVolume[] | null | any>(null)
+    const [aData, setAData] = useState<HourlyAverage[] | null | any>(null)
+
+    const yOptions = {
+        container: {
+            style: {
+                width: '100%',
+                height: '100%',
+            },
+        },
+        watermark: {
+            visible: true,
+            text: 'wstETH APY',
+            fontSize: 30,
+            color: 'gray',
+            horzAlign: 'left',
+            vertAlign: 'bottom',
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(42, 46, 57, 0.5)',
+            },
+            horzLines: {
+                color: 'rgba(42, 46, 57, 1)',
+            },
+        },
+        rightPriceScale: {
+            scaleMargins: {
+                top: 0.2,
+                bottom: 0.2,
+            },
+            borderVisible: false,
+        },
+        layout: {
+            background: {
+                type: 'gradient',
+                topColor: 'black',
+                bottomColor: 'black',
+            },
+            textColor: '#d1d4dc',
+        },
+    }
+    const pOptions = {
+        container: {
+            style: {
+                width: '100%',
+                height: '100%',
+            },
+        },
+        watermark: {
+            visible: true,
+            text: isLong ? 'YT / stETH' : 'PT / stETH',
+            fontSize: 30,
+            color: 'gray',
+            horzAlign: 'left',
+            vertAlign: 'bottom',
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(42, 46, 57, 0.5)',
+            },
+            horzLines: {
+                color: 'rgba(42, 46, 57, 1)',
+            },
+        },
+        rightPriceScale: {
+            scaleMargins: {
+                top: 0.2,
+                bottom: 0.3,
+            },
+            borderVisible: false,
+        },
+        layout: {
+            background: {
+                type: 'gradient',
+                topColor: 'black',
+                bottomColor: 'black',
+            },
+            textColor: '#d1d4dc',
+        },
+    }
     useEffect(() => {
-        if (status === 'success' && data) {
+        if (status === 'success') {
             const priceData = normalizePrice(
                 data.marketPricesHourlys.items,
                 isLong
@@ -111,162 +202,59 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 data.marketPricesHourlys.items,
                 isLong
             )
-
-            const chart = createChart(chartContainerRef.current, {
-                width: 0,
-                height: 0,
-                watermark: {
-                    visible: true,
-                    text: isLong ? 'YT / stETH' : 'PT / stETH',
-                    fontSize: 30,
-                    color: 'gray',
-                    horzAlign: 'left',
-                    vertAlign: 'bottom',
-                },
-                grid: {
-                    vertLines: {
-                        color: 'rgba(42, 46, 57, 0.5)',
-                    },
-                    horzLines: {
-                        color: 'rgba(42, 46, 57, 1)',
-                    },
-                },
-                rightPriceScale: {
-                    scaleMargins: {
-                        top: 0.1,
-                        bottom: 0.3,
-                    },
-                    borderVisible: false,
-                },
-                layout: {
-                    background: {
-                        type: 'gradient',
-                        topColor: 'black',
-                        bottomColor: 'black',
-                    },
-                    textColor: '#d1d4dc',
-                },
-            })
-            const handleResize = () => {
-                if (chartContainerRef.current) {
-                    chart.applyOptions({
-                        width: chartContainerRef.current.clientWidth,
-                        height: chartContainerRef.current.clientHeight,
-                    })
-                }
-            }
-            const priceSeries = chart.addCandlestickSeries({
-                upColor: '#26a69a',
-                downColor: '#ef5350',
-                borderVisible: true,
-                wickUpColor: '#26a69a',
-                wickDownColor: '#ef5350',
-                title: isLong ? 'YT / stETH' : 'PT / stETH',
-            })
-            priceSeries.setData(priceData)
-            const volSeries = chart.addHistogramSeries({
-                color: '#26a69a',
-                priceFormat: {
-                    type: 'volume',
-                },
-                priceScaleId: '',
-                title: 'Volume (stETH)',
-            })
-            chart.priceScale('').applyOptions({
-                scaleMargins: {
-                    top: 0.8,
-                    bottom: 0,
-                },
-            })
-            volSeries.setData(volData)
-            const avgSeries = chart.addLineSeries({
-                color: 'white',
-            })
-            avgSeries.setData(avgData)
-            chart.timeScale().fitContent()
-            window.addEventListener('resize', handleResize)
-            return () => {
-                window.removeEventListener('resize', handleResize)
-                chart.remove()
-            }
+            setCData(priceData)
+            setVData(volData)
+            setAData(avgData)
         }
+        console.log(status)
     }, [status])
 
     useEffect(() => {
-        if (resp.status === 'success' && resp.data) {
+        if (resp.status === 'success') {
             const yieldData = normalizeYield(resp.data.impliedYields.items)
-
-            const chart = createChart(yieldChartContainerRef.current, {
-                width: 0,
-                height: 0,
-                watermark: {
-                    visible: true,
-                    text: 'wstETH APY',
-                    fontSize: 30,
-                    color: 'gray',
-                    horzAlign: 'left',
-                    vertAlign: 'bottom',
-                },
-                grid: {
-                    vertLines: {
-                        color: 'rgba(42, 46, 57, 0.5)',
-                    },
-                    horzLines: {
-                        color: 'rgba(42, 46, 57, 1)',
-                    },
-                },
-                rightPriceScale: {
-                    scaleMargins: {
-                        top: 0.3,
-                        bottom: 0,
-                    },
-                    borderVisible: false,
-                },
-                layout: {
-                    background: {
-                        type: 'gradient',
-                        topColor: 'black',
-                        bottomColor: 'black',
-                    },
-                    textColor: '#d1d4dc',
-                },
-            })
-            const handleResize = () => {
-                if (yieldChartContainerRef.current) {
-                    chart.applyOptions({
-                        width: yieldChartContainerRef.current.clientWidth,
-                        height: yieldChartContainerRef.current.clientHeight,
-                    })
-                }
-            }
-
-            const implSeries = chart.addLineSeries({
-                color: 'green',
-                title: 'Implied Yield',
-            })
-            implSeries.setData(yieldData)
-
-            const underlyingSeries = chart.addLineSeries({
-                color: 'blue',
-                title: 'Real Yield',
-            })
-            underlyingSeries.setData(yieldData)
-            chart.timeScale().fitContent()
-
-            window.addEventListener('resize', handleResize)
-
-            return () => {
-                window.removeEventListener('resize', handleResize)
-                chart.remove()
-            }
+            setYData(yieldData)
         }
     }, [resp.status])
 
-    if (status !== 'success') return <></>
+    if (!cData || !yData) return <></>
     return (
         <div className="grid grid-cols-2 h-full w-full">
-            <div ref={yieldChartContainerRef} className="chart-container" />
-            <div ref={chartContainerRef} className="chart-container" />
+            <Chart {...yOptions} autoSize>
+                <LineSeries
+                    data={yData}
+                    color="rgba(33, 150, 243, 1)"
+                    lineWidth={2}
+                    title="Implied Rate"
+                    priceFormat={{ type: 'percent' }}
+                />
+                <TimeScale
+                    secondsVisible={true}
+                    timeVisible={true}
+                    barSpacing={20}
+                />
+            </Chart>
+            <Chart {...pOptions} autoSize>
+                <CandlestickSeries
+                    data={cData}
+                    title={isLong ? 'YT / stETH' : 'PT / stETH'}
+                />
+                <HistogramSeries
+                    data={vData}
+                    priceFormat={{ type: 'volume' }}
+                    priceScaleId="overlay"
+                    title="Volume (stETH)"
+                />
+                <PriceScale
+                    id="overlay"
+                    scaleMargins={{ top: 0.8, bottom: 0 }}
+                />
+                <TimeScale
+                    secondsVisible={true}
+                    timeVisible={true}
+                    barSpacing={20}
+                />
+                <LineSeries data={aData} color="#d1d4dc" lineWidth={2} />
+            </Chart>
         </div>
     )
 }

@@ -38,6 +38,7 @@
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
     "lightweight-charts": "^4.1.3",
+    "lightweight-charts-react-wrapper": "^2.1.1",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.3",
     "moralis": "^2.26.2",
