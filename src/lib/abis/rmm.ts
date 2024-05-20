@@ -209,6 +209,18 @@ export const rmmABI = [
     },
     {
         type: 'function',
+        name: 'computeSYToYT',
+        inputs: [
+            { name: 'index', type: 'uint256', internalType: 'PYIndex' },
+            { name: 'exactSYIn', type: 'uint256', internalType: 'uint256' },
+            { name: 'blockTime', type: 'uint256', internalType: 'uint256' },
+            { name: 'initialGuess', type: 'uint256', internalType: 'uint256' },
+        ],
+        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
         name: 'computeSpotPrice',
         inputs: [
             { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
@@ -458,6 +470,24 @@ export const rmmABI = [
     },
     {
         type: 'function',
+        name: 'mintSY',
+        inputs: [
+            { name: 'receiver', type: 'address', internalType: 'address' },
+            { name: 'tokenIn', type: 'address', internalType: 'address' },
+            {
+                name: 'amountTokenToDeposit',
+                type: 'uint256',
+                internalType: 'uint256',
+            },
+            { name: 'minSharesOut', type: 'uint256', internalType: 'uint256' },
+        ],
+        outputs: [
+            { name: 'amountOut', type: 'uint256', internalType: 'uint256' },
+        ],
+        stateMutability: 'payable',
+    },
+    {
+        type: 'function',
         name: 'name',
         inputs: [],
         outputs: [{ name: '', type: 'string', internalType: 'string' }],
@@ -539,6 +569,35 @@ export const rmmABI = [
                 internalType: 'uint256',
             },
             { name: 'amountY', type: 'uint256', internalType: 'uint256' },
+        ],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
+        name: 'preparePoolPreCompute',
+        inputs: [
+            { name: 'index', type: 'uint256', internalType: 'PYIndex' },
+            { name: 'blockTime', type: 'uint256', internalType: 'uint256' },
+        ],
+        outputs: [
+            {
+                name: '',
+                type: 'tuple',
+                internalType: 'struct PoolPreCompute',
+                components: [
+                    {
+                        name: 'reserveInAsset',
+                        type: 'uint256',
+                        internalType: 'uint256',
+                    },
+                    {
+                        name: 'strike_',
+                        type: 'uint256',
+                        internalType: 'uint256',
+                    },
+                    { name: 'tau_', type: 'uint256', internalType: 'uint256' },
+                ],
+            },
         ],
         stateMutability: 'view',
     },

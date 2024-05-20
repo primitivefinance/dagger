@@ -29,3 +29,9 @@
 - market gives us price discovery on PT, which implies a YT rate/price.
 - at maturity, the market price should be constant at a strike price of 1 at maturity. we target constant price of 1 at maturity, which means you get one PT per asset and one asset per PT. Handing in one PT and getting 1 stETH.
 - map the appropriate decay onto the strike price, trying to map the strike price on the expected return of YT at time t.
+
+
+# yt swapping
+- yt swapping will pull PTs in debit, requiring an allowance from the user. this is another extra step that would need a lot of additional work in the frontend, but it should probably be addressed in the smart contract. when YT/PT is minted, it should be minted to RMM. RMM should then only transfer out YTs in credit, and explicitly check if the PT minted to RMM was enough to cover the debit.
+- first call to swap failed in the contract, but the second one worked.
+- contract fails break the transaction button state/flow. need to gracefully handle when the contract reverts. it does show an error toast but it doesnt show the right state in the button.

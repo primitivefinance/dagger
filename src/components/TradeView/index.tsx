@@ -210,7 +210,7 @@ const TradeView = (): JSX.Element => {
     const { isConnected } = useAccount()
     const { id } = useParams()
     const { data } = useGraphQL(MarketInfoQueryDocument, {
-        id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
+        id: id ? id : '0xD68Feeab5719c652D6d6D654a9fe3632584192B8',
     })
     const market = data?.markets?.items?.[0]
 
