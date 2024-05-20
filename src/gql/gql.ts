@@ -23,8 +23,6 @@ const documents = {
     "\n    query yToken($tokenId: String!) {\n        yTokens(where: { id: $tokenId }) {\n            items {\n                token {\n                    id\n                    name\n                    symbol\n                    decimals\n                    icon\n                }\n                redeemableInterest\n                redeemableRewards\n            }\n        }\n    }\n": types.YTokenDocument,
     "\n    query allMarkets($limit: Int!) {\n        markets(limit: $limit) {\n            items {\n                ...MarketItem\n            }\n        }\n    }\n": types.AllMarketsDocument,
     "\n    query market($id: String!) {\n        markets(where: { id: $id }) {\n            items {\n                ...MarketItem\n            }\n        }\n    }\n": types.MarketDocument,
-    "\n    fragment ExchangeRateItem on ExchangeRateHourly {\n        id\n        marketId\n        open\n        close\n        high\n        low\n        average\n        count\n    }\n": types.ExchangeRateItemFragmentDoc,
-    "\n    query exchangeRate($limit: Int!) {\n        exchangeRateHourlys(limit: $limit) {\n            items {\n                ...ExchangeRateItem\n            }\n        }\n    }\n": types.ExchangeRateDocument,
     "\n    fragment MarketPriceItem on MarketPricesHourly {\n        id\n        marketId\n        open\n        close\n        high\n        low\n        average\n        volume\n        count\n    }\n": types.MarketPriceItemFragmentDoc,
     "\n    query marketPrice($marketId: String!) {\n        marketPricesHourlys(where: { marketId: $marketId }) {\n            items {\n                ...MarketPriceItem\n            }\n        }\n    }\n": types.MarketPriceDocument,
     "\n    fragment ImpliedYieldItem on ImpliedYield {\n        id\n        marketId\n        value\n    }\n": types.ImpliedYieldItemFragmentDoc,
@@ -89,14 +87,6 @@ export function graphql(source: "\n    query allMarkets($limit: Int!) {\n       
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query market($id: String!) {\n        markets(where: { id: $id }) {\n            items {\n                ...MarketItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query market($id: String!) {\n        markets(where: { id: $id }) {\n            items {\n                ...MarketItem\n            }\n        }\n    }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n    fragment ExchangeRateItem on ExchangeRateHourly {\n        id\n        marketId\n        open\n        close\n        high\n        low\n        average\n        count\n    }\n"): (typeof documents)["\n    fragment ExchangeRateItem on ExchangeRateHourly {\n        id\n        marketId\n        open\n        close\n        high\n        low\n        average\n        count\n    }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n    query exchangeRate($limit: Int!) {\n        exchangeRateHourlys(limit: $limit) {\n            items {\n                ...ExchangeRateItem\n            }\n        }\n    }\n"): (typeof documents)["\n    query exchangeRate($limit: Int!) {\n        exchangeRateHourlys(limit: $limit) {\n            items {\n                ...ExchangeRateItem\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
