@@ -8,7 +8,7 @@ import {
 } from 'wagmi'
 import { normalize } from 'viem/ens'
 import { erc20Abi, getAddress } from 'viem'
-import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { InfoCircledIcon, ReloadIcon } from '@radix-ui/react-icons'
 
 import { FALLBACK_ALT, FALLBACK_AVATAR, shortAddress } from '@/utils/address'
 import { Skeleton } from '../ui/skeleton'
@@ -23,6 +23,7 @@ import {
     TooltipTrigger,
 } from '../ui/tooltip'
 import SkeletonText from '../SkeletonText'
+import { Button } from '../ui/button'
 
 const DataItem = ({
     label,
@@ -251,14 +252,22 @@ const Holdings = (): JSX.Element => {
         args: [address],
     }
 
-    const { data: balances, isFetching } = useReadContracts({
+    const {
+        data: balances,
+        isFetching,
+        refetch: refetchTokenBalances,
+    } = useReadContracts({
         contracts: filteredSortedTokens?.map((token: { id: string }) => ({
             ...balanceCall,
             address: token.id as `0x${string}`,
         })),
     })
 
-    const { data: ethBalance, isFetching: isEthBalanceFetching } = useBalance({
+    const {
+        data: ethBalance,
+        isFetching: isEthBalanceFetching,
+        refetch: refetchEthBalance,
+    } = useBalance({
         address: address,
     })
 
@@ -283,6 +292,18 @@ const Holdings = (): JSX.Element => {
                         Your tokens held filtered by the markets&apos; tokens.
                     </TooltipContent>
                 </Tooltip>
+
+                <Button
+                    variant="transparent"
+                    size="icon"
+                    onClick={() => {
+                        refetchTokenBalances()
+                        refetchEthBalance()
+                    }}
+                    disabled={isFetching || isConnecting || isReconnecting}
+                >
+                    <ReloadIcon />
+                </Button>
             </div>
 
             <div className="grid grid-cols-3 gap-sm items-center py-lg px-md">

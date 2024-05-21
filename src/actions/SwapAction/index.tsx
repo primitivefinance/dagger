@@ -31,6 +31,8 @@ enum TradeRoutes {
     SY_TO_ETH = 'SY_TO_ETH',
     SY_TO_PT = 'SY_TO_PT',
     PT_TO_SY = 'PT_TO_SY',
+    SY_TO_YT = 'SY_TO_YT',
+    YT_TO_SY = 'YT_TO_SY',
 }
 
 function getTradeRoute(
@@ -38,6 +40,7 @@ function getTradeRoute(
     tokenIn: string,
     tokenOut: string
 ): TradeRoutes {
+    console.log({ tokenIn, tokenOut })
     if (tokenIn === universe.native && tokenOut === universe.sy) {
         return TradeRoutes.ETH_TO_SY
     } else if (tokenIn === universe.sy && tokenOut === universe.native) {
@@ -46,6 +49,15 @@ function getTradeRoute(
         return TradeRoutes.SY_TO_PT
     } else if (tokenIn === universe.pt && tokenOut === universe.sy) {
         return TradeRoutes.PT_TO_SY
+    } else if (
+        tokenOut &&
+        universe.yt &&
+        getAddress(tokenOut) === getAddress(universe.yt)
+    ) {
+        console.log('SY_TO_YT')
+        return TradeRoutes.SY_TO_YT
+    } else if (tokenIn === universe.yt) {
+        return TradeRoutes.YT_TO_SY
     } else {
         return TradeRoutes.INVALID
     }
@@ -81,7 +93,7 @@ const SwapAction: React.FC<{
     // Get the market data.
     const { id } = useParams()
     const { data: marketData } = useGraphQL(MarketInfoQueryDocument, {
-        id: id ? id : '0x02afecb37fe22c4f9181c19b9e933cae6c57b0ee',
+        id: id ? id : '0xD68Feeab5719c652D6d6D654a9fe3632584192B8',
     })
     const market = marketData?.markets?.items?.[0]
 
@@ -234,6 +246,28 @@ const SwapAction: React.FC<{
         },
     })
 
+    const {
+        data: preparedSwapToYT,
+        status: prepareSwapToYTStatus,
+        error: errorToYT,
+        fetchStatus: fetchAmountOutToYTStatus,
+    } = useReadContract({
+        abi: rmmABI,
+        address: universe.market,
+        account: address as `0x${string}`,
+        functionName: 'computeSYToYT',
+        args: [storedIndex, preparedIn as bigint, timestamp, toWad(100)],
+        query: {
+            enabled:
+                !!id &&
+                !!tokenIn &&
+                !!tokenOut &&
+                !!preparedIn &&
+                !!storedIndex &&
+                tradeRoute === TradeRoutes.SY_TO_YT,
+        },
+    })
+
     useEffect(() => {
         setTokenOutFetching(fetchAmountOutStatus)
     }, [fetchAmountOutStatus, setTokenOutFetching])
@@ -241,18 +275,30 @@ const SwapAction: React.FC<{
     const [amountInWad, amountOutWad, amountOut, deltaLiquidity, strikePrice] =
         preparedSwap || []
 
-    const estimatedAmountOut = amountOutWad
-        ? amountOutWad
-        : stSharesOutRoundDown
-          ? stSharesOutRoundDown
-          : 0
+    const amountYTOut = preparedSwapToYT ? preparedSwapToYT : 0
+    console.log({ preparedSwapToYT })
+
+    const estimatedAmountOut =
+        tradeRoute === TradeRoutes.SY_TO_YT
+            ? amountYTOut
+            : amountOutWad
+              ? amountOutWad
+              : stSharesOutRoundDown
+                ? stSharesOutRoundDown
+                : 0
+
+    const triggerFlashSwap =
+        tradeRoute === TradeRoutes.SY_TO_YT ||
+        tradeRoute === TradeRoutes.YT_TO_SY
 
     // For swapping on RMM.
     const swapProps = {
         ...globalProps,
         key: universe.market,
         to: universe.market,
-        args: [preparedIn as bigint, amountOut as bigint, globalProps.from, ''],
+        args: triggerFlashSwap
+            ? [amountYTOut as bigint, 1n, globalProps.from, '0x1111']
+            : [preparedIn as bigint, amountOut as bigint, globalProps.from, ''],
         contractName: 'rmm' as const,
     }
 
@@ -260,7 +306,18 @@ const SwapAction: React.FC<{
         if (amountOutWad && prepareSwapStatus === 'success') {
             setAmountOut(fromWad(amountOutWad).toString())
         }
-    }, [amountOut, amountOutWad, prepareSwapStatus, setAmountOut])
+
+        if (amountYTOut && prepareSwapToYTStatus === 'success') {
+            setAmountOut(fromWad(amountYTOut as bigint).toString())
+        }
+    }, [
+        amountOut,
+        amountOutWad,
+        prepareSwapStatus,
+        setAmountOut,
+        amountYTOut,
+        prepareSwapToYTStatus,
+    ])
 
     // Use effect to update the amount out with the deposit estimated sy shares out
     useEffect(() => {
@@ -280,6 +337,7 @@ const SwapAction: React.FC<{
                 token={tokenIn as `0x${string}`}
                 spender={universe.market}
                 amount={amountIn}
+                txHash={txHash}
                 setTxHash={setTxHash}
                 txReceipt={txReceipt}
             />
@@ -300,6 +358,11 @@ const SwapAction: React.FC<{
                 )
                 break
             case TradeRoutes.PT_TO_SY:
+                action = (
+                    <TransactionButton {...swapProps} functionName={'swapY'} />
+                )
+                break
+            case TradeRoutes.SY_TO_YT:
                 action = (
                     <TransactionButton {...swapProps} functionName={'swapY'} />
                 )

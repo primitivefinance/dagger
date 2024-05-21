@@ -1,32 +1,33 @@
-import { title, subtitle } from '@/data/copy/home'
-import { Link, useNavigate } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
+import { useNavigate } from 'react-router-dom'
+import { zeroAddress } from 'viem'
+
 import { useGraphQL } from '../../useGraphQL'
 import {
     SYTokenQueryDocument,
     allMarketsQueryDocument,
 } from '../../queries/markets'
-import { zeroAddress } from 'viem'
+import { Button } from '@/components/ui/button'
 import { LabelWithEtherscan } from '@/components/EtherscanLinkLabels'
 import { Card } from '@/components/ui/card'
-import { formatNumber, formatPercentage, formatWad } from '@/utils/numbers'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
-import PoolsTable, { TokenBadge } from '@/components/PoolsTable'
+import PoolsTable from '@/components/PoolsTable'
 import React from 'react'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { MarketItemFragment } from 'gql/graphql'
 import { Skeleton } from '@/components/ui/skeleton'
 import AvatarSkeletonTooltip from '@/components/AvatarSkeletonTooltip'
-import { FALLBACK_AVATAR } from '@/utils/address'
 import SkeletonText from '@/components/SkeletonText'
 import TokenHoldings from '@/components/TokenHoldings'
+import { title, subtitle } from '@/data/copy/home'
+import { FALLBACK_AVATAR } from '@/utils/address'
+import { fromExpiry } from '@/utils/dates'
+import { formatWad } from '@/utils/numbers'
 
 type CuratorInfo = {
     name: string
@@ -49,20 +50,9 @@ const curators: { [key: string]: CuratorInfo } = {
     },
 }
 
-const DataLabelBetween = ({
-    label,
-    data,
-}: {
-    label: React.ReactNode
-    data: React.ReactNode
-}): JSX.Element => {
-    return (
-        <div className="flex flex-row gap-sm items-center justify-between">
-            {label}
-            {data}
-        </div>
-    )
-}
+export const CURATOR_TITLE = 'Curator'
+export const MARKET_TITLE = 'Market'
+export const AVATAR_SIZE = 'size-[3rem] md:size-[6rem]' as const
 
 export const CuratorCard = ({
     curator,
@@ -72,18 +62,20 @@ export const CuratorCard = ({
     const navigate = useNavigate()
     return (
         <Card
-            className="p-lg hover:bg-muted/50 rounded-none block hover:no-underline h-full hover:cursor-pointer"
+            className={`
+            p-lg rounded-none block h-full 
+            hover:bg-muted/50 hover:cursor-pointer hover:no-underline`}
             onClick={() => navigate(`/curator/${curator?.address}`)}
         >
             <div className="flex flex-col gap-lg h-full">
                 <div className="flex w-full items-center justify-center">
                     <AvatarSkeletonTooltip
                         src={curator?.icon ?? FALLBACK_AVATAR}
-                        alt={curator?.name ?? 'Curator'}
+                        alt={curator?.name ?? CURATOR_TITLE}
                         loading={typeof curator === 'undefined'}
-                        size="size-[6rem]"
+                        size={AVATAR_SIZE}
                     >
-                        {curator?.name ?? 'Curator'}
+                        {curator?.name ?? CURATOR_TITLE}
                     </AvatarSkeletonTooltip>
                 </div>
                 <div className="flex flex-col gap-xs justify-center items-center">
@@ -126,18 +118,20 @@ export const PoolCard = ({
 
     return (
         <Card
-            className="p-lg hover:bg-muted/50 rounded-none block hover:no-underline h-full hover:cursor-pointer"
+            className={`
+            p-lg rounded-none block h-full 
+            hover:bg-muted/50 hover:cursor-pointer hover:no-underline`}
             onClick={() => navigate(`/market/${market?.id}`)}
         >
             <div className="flex flex-col gap-lg h-full justify-between">
                 <div className="flex w-full items-center justify-center">
                     <AvatarSkeletonTooltip
                         src={market?.icon ?? FALLBACK_AVATAR}
-                        alt={market?.name ?? 'Market'}
+                        alt={market?.name ?? MARKET_TITLE}
                         loading={typeof market === 'undefined'}
-                        size="size-[6rem]"
+                        size={AVATAR_SIZE}
                     >
-                        {market?.name ?? 'Market'}
+                        {market?.name ?? MARKET_TITLE}
                     </AvatarSkeletonTooltip>
                 </div>
                 <div className="flex flex-col gap-xs justify-center items-center">
@@ -190,11 +184,7 @@ export const PoolCard = ({
                         </p>
                         <div>
                             {market?.expiry ? (
-                                <p>
-                                    {new Date(
-                                        market.expiry * 1000
-                                    ).toLocaleDateString()}
-                                </p>
+                                <p>{fromExpiry(market?.expiry as number)}</p>
                             ) : (
                                 <SkeletonText />
                             )}
@@ -253,7 +243,7 @@ function Home(): JSX.Element {
                             </Label>
                         </div>
                     </div>
-                    <TooltipProvider delayDuration={200}>
+                    <TooltipProvider delayDuration={50}>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button variant="tx" disabled>

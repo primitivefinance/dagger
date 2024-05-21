@@ -1,21 +1,21 @@
 import React from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
+import { useParams } from 'react-router-dom'
+
 import { useGraphQL } from '../../useGraphQL'
 import {
     MarketInfoQueryDocument,
     SYTokenQueryDocument,
 } from '../../queries/markets'
-import SkeletonText from '../SkeletonText'
-import { formatWad } from '@/utils/numbers'
-import { MarketItemFragment, MarketQuery } from 'gql/graphql'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useTradeRoute } from '@/lib/useTradeRoute'
-import AvatarSkeletonTooltip from '../AvatarSkeletonTooltip'
-import { FALLBACK_ALT, FALLBACK_AVATAR } from '@/utils/address'
-import { Skeleton } from '../ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import SkeletonText from '@/components/SkeletonText'
+import AvatarSkeletonTooltip from '@/components/AvatarSkeletonTooltip'
+import { Skeleton } from '@/components/ui/skeleton'
 import TradeChart from '../TradeChart'
+import { useTradeRoute } from '@/lib/useTradeRoute'
+import { FALLBACK_ALT, FALLBACK_AVATAR } from '@/utils/address'
+import { formatWad } from '@/utils/numbers'
+import { fromExpiry } from '@/utils/dates'
 
 const MarketStatCard = ({
     label,
@@ -26,11 +26,13 @@ const MarketStatCard = ({
 }): JSX.Element => {
     return (
         <div className="flex flex-col gap-xs border items-center justify-center text-center p-md">
-            <h4 className="text-muted-foreground">{label}</h4>
+            <h4 className="text-muted dark:text-muted-foreground">{label}</h4>
             <h3>{data ?? <SkeletonText />}</h3>
         </div>
     )
 }
+
+export const MARKET_AVATAR_SIZE = 'size-24 md:size-48' as const
 
 const MarketView = (): JSX.Element => {
     const { id } = useParams()
@@ -42,18 +44,6 @@ const MarketView = (): JSX.Element => {
         tokenId: market?.pool?.tokenX?.id,
     })
     const syToken = sy?.sYTokens?.items?.[0]
-
-    const loc = useLocation()
-    const navigate = useNavigate()
-
-    const addTradeParams = (tokenIn: string, tokenOut: string) => {
-        const queryParams = new URLSearchParams(loc.search)
-        queryParams.set('tokenIn', tokenIn)
-        queryParams.set('tokenOut', tokenOut)
-
-        return `?${queryParams.toString()}`
-    }
-
     const { setTokenParams } = useTradeRoute()
 
     return (
@@ -64,7 +54,7 @@ const MarketView = (): JSX.Element => {
                         src={market?.icon ?? FALLBACK_AVATAR}
                         alt={market?.name ?? FALLBACK_ALT}
                         loading={typeof market === 'undefined'}
-                        size="size-48"
+                        size={MARKET_AVATAR_SIZE}
                     >
                         {market?.name ?? <SkeletonText />}
                     </AvatarSkeletonTooltip>
@@ -88,11 +78,7 @@ const MarketView = (): JSX.Element => {
                                 </p>
 
                                 {market?.expiry ? (
-                                    <p>
-                                        {new Date(
-                                            market?.expiry * 1000
-                                        ).toLocaleDateString()}
-                                    </p>
+                                    <p>{fromExpiry(market?.expiry)}</p>
                                 ) : (
                                     <Skeleton>
                                         <p className="text-transparent selection:text-transparent dark:text-transparent dark:selection:text-transparent">
