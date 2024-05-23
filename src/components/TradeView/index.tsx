@@ -5,7 +5,7 @@ import { useGraphQL } from '../../useGraphQL'
 import { MarketInfoQueryDocument } from '../../queries/markets'
 import { Input } from '../ui/input'
 
-import { LabelWithEtherscan } from '../EtherscanLinkLabels'
+import { EtherscanLink, LabelWithEtherscan } from '../EtherscanLinkLabels'
 import TokenSelector from '../TokenSelector'
 import { getAddress } from 'viem'
 import { Button } from '../ui/button'
@@ -15,6 +15,26 @@ import { useParams } from 'react-router-dom'
 import SwapAction from '@/actions/SwapAction'
 import { Skeleton } from '../ui/skeleton'
 import { FetchStatus } from '@tanstack/react-query'
+import { FALLBACK_MARKET_ADDRESS, shortAddress } from '@/utils/address'
+import { useMarketRoute } from '@/lib/useMarketRoute'
+import useSlippagePreference from '@/lib/useSlippagePreference'
+import { formatNumber, formatPercentage } from '@/utils/numbers'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '../ui/dropdown-menu'
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '../ui/accordion'
+import { ArrowRightIcon } from '@radix-ui/react-icons'
 
 const TokenInput = ({
     token,
@@ -137,37 +157,93 @@ const SwapWidget: React.FC<{
     )
 }
 
-const Summary = ({ market }): JSX.Element => {
+const Summary = ({
+    marketRoute,
+}: {
+    marketRoute: `0x${string}`
+}): JSX.Element => {
     const { address, isConnected } = useAccount()
+    const [slippage, _setSlipage] = useSlippagePreference()
+    const { getTokenIn, getTokenOut } = useTradeRoute()
+    const tokenIn = getTokenIn()
+    const tokenOut = getTokenOut()
+
+    const totalCost = tokenIn === null && tokenOut === null ? 0 : 100
     return (
-        <div className="flex flex-col gap-0 border-b">
-            <div className="flex flex-row gap-sm border-b bg-muted/50 p-md">
-                <h4>Summary</h4>
-            </div>
-            <div className="flex flex-col gap-xs p-md">
-                <div className="flex flex-row gap-1 items-center justify-between">
-                    <p>Total cost</p>
-                    <p className="px-2">$100.00</p>
-                </div>
-                <div className="flex flex-row gap-1 items-center justify-between">
-                    <p>Route Bonus</p>
-                    <Button variant="link" size="xs">
-                        -0.01%
-                    </Button>
-                </div>
-                <div className="flex flex-row gap-1 items-center justify-between">
-                    <p>Max Slippage</p>
-                    <Button variant="link" size="xs">
-                        0.01%
-                    </Button>
-                </div>
-                {isConnected && (
-                    <LabelWithEtherscan
-                        label={<p>Pay from</p>}
-                        address={address as `0x${string}`}
-                    />
-                )}
-            </div>
+        <div className="flex flex-col gap-0">
+            <Accordion type="single" collapsible>
+                <AccordionItem value="item-1">
+                    <AccordionTrigger className="flex flex-row gap-sm data-[state=open]:border-b bg-muted/50 p-md">
+                        <div className="flex flex-row items-center gap-sm p-0 w-full justify-between">
+                            <h4>Summary</h4>
+                            <div className="flex flex-row items-center gap-sm p-0 w-full justify-end">
+                                <p className="text-muted dark:text-muted-foreground">
+                                    {formatNumber(100, 'USD')}
+                                </p>
+                                <ArrowRightIcon className="text-muted dark:text-muted-foreground" />
+                                <p className="text-muted dark:text-muted-foreground">
+                                    {formatNumber(100, 'USD')}
+                                </p>
+                            </div>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <div className="flex flex-col gap-xs p-md">
+                            <div className="flex flex-row gap-1 items-center justify-between">
+                                <p>Total cost</p>
+                                <p
+                                    className={`px-2 ${totalCost == 0 ? 'text-muted dark:text-muted-foreground' : ''}`}
+                                >
+                                    {formatNumber(totalCost, 'USD')}
+                                </p>
+                            </div>
+
+                            <div className="flex flex-row gap-1 items-center justify-between">
+                                <p>Max Slippage</p>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="link" size="xs">
+                                            {formatPercentage(slippage)}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>
+                                            Slippage
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuRadioGroup
+                                            value={slippage}
+                                            onValueChange={_setSlipage}
+                                        >
+                                            <DropdownMenuRadioItem value={0.01}>
+                                                {formatPercentage(0.01)}
+                                            </DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value={0.02}>
+                                                {formatPercentage(0.02)}
+                                            </DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value={0.03}>
+                                                {formatPercentage(0.03)}
+                                            </DropdownMenuRadioItem>
+                                        </DropdownMenuRadioGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+
+                            <LabelWithEtherscan
+                                label={<p>Route through</p>}
+                                address={marketRoute}
+                            />
+
+                            {isConnected && (
+                                <LabelWithEtherscan
+                                    label={<p>Pay from</p>}
+                                    address={address as `0x${string}`}
+                                />
+                            )}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </div>
     )
 }
@@ -208,12 +284,8 @@ function useTokenFormState(initialAmount = ''): TokenForm {
 
 const TradeView = (): JSX.Element => {
     const { isConnected } = useAccount()
-    const { id } = useParams()
-    const { data } = useGraphQL(MarketInfoQueryDocument, {
-        id: id ? id : '0x1791d400741E9168fF678bdeE36DB448E2D9ea28',
-    })
-    const market = data?.markets?.items?.[0]
 
+    const { id } = useMarketRoute()
     const tokenInForm = useTokenFormState()
     const tokenOutForm = useTokenFormState()
 
@@ -222,8 +294,9 @@ const TradeView = (): JSX.Element => {
             <SwapWidget tokenInForm={tokenInForm} tokenOutForm={tokenOutForm} />
             {isConnected ? (
                 <>
-                    <Summary market={market} />
+                    <Summary marketRoute={id} />
                     <SwapAction
+                        marketRoute={id}
                         amountIn={tokenInForm.amount}
                         setAmountOut={tokenOutForm.setAmount}
                         setTokenOutFetching={tokenOutForm.setFetchStatus}
