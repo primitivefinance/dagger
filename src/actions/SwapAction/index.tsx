@@ -82,10 +82,11 @@ const SY_stETHABI = parseAbi([
  * If there is an invalid state, we will return a disabled transaction button.
  */
 const SwapAction: React.FC<{
+    marketRoute: `0x${string}`
     amountIn: string
     setAmountOut: (amount: string) => void
     setTokenOutFetching: (status: FetchStatus) => void
-}> = ({ amountIn, setAmountOut, setTokenOutFetching }) => {
+}> = ({ marketRoute, amountIn, setAmountOut, setTokenOutFetching }) => {
     // Transaction related info.
     const { address } = useAccount()
     const { txHash, setTxHash, txReceipt } = useTransactionStatus({})
@@ -93,7 +94,7 @@ const SwapAction: React.FC<{
     // Get the market data.
     const { id } = useParams()
     const { data: marketData } = useGraphQL(MarketInfoQueryDocument, {
-        id: id ? id : '0xD68Feeab5719c652D6d6D654a9fe3632584192B8',
+        id: marketRoute,
     })
     const market = marketData?.markets?.items?.[0]
 

@@ -17,17 +17,16 @@ import {
 } from '@/components/ui/tooltip'
 import PoolsTable from '@/components/PoolsTable'
 import React from 'react'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
 import { MarketItemFragment } from 'gql/graphql'
 import { Skeleton } from '@/components/ui/skeleton'
 import AvatarSkeletonTooltip from '@/components/AvatarSkeletonTooltip'
 import SkeletonText from '@/components/SkeletonText'
 import TokenHoldings from '@/components/TokenHoldings'
-import { title, subtitle } from '@/data/copy/home'
 import { FALLBACK_AVATAR } from '@/utils/address'
 import { fromExpiry } from '@/utils/dates'
 import { formatWad } from '@/utils/numbers'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { LoadingDots } from '@/components/TransactionButton'
 
 type CuratorInfo = {
     name: string
@@ -205,43 +204,38 @@ export const PoolCard = ({
     )
 }
 
-function Home(): JSX.Element {
-    const { data } = useGraphQL(allMarketsQueryDocument, { limit: 10 })
+interface HomeProps {
+    children?: React.ReactNode
+}
 
-    const [displayCards, setDisplayCards] = React.useState<boolean>(true)
+const Home: React.FC<HomeProps> = ({ children }) => {
+    const { data, refetch, isFetching, isLoading } = useGraphQL(
+        allMarketsQueryDocument,
+        { limit: 10 }
+    )
+
+    const [displayCards, setDisplayCards] = React.useState<boolean>(false)
+    const amountMarkets = data?.markets?.items?.length
 
     return (
-        <div className="flex flex-col gap-2xl p-xl">
-            <div className="gap-sm flex flex-col">
-                <h2 className="scroll-m-20 ">{title}</h2>
-                <h4 className="scroll-m-20 text-muted-foreground">
-                    {subtitle}
-                </h4>
-            </div>
-            <div className="flex flex-col gap-md">
-                <div className="flex flex-row items-center w-full justify-between">
+        <div className="flex flex-col gap-2xl p-xl pt-0">
+            <div className="flex flex-col gap-0 border">
+                <div className="flex flex-row items-center w-full justify-between border-b bg-muted/50 p-md">
                     <div className="flex flex-row gap-md items-center">
                         <h4 className="scroll-m-20">Yield Markets</h4>
                         <h4 className="flex flex-row gap-xs items-center">
                             (
-                            {data?.markets?.items?.length ?? (
-                                <Skeleton className="h-4 w-12" />
-                            )}
+                            {amountMarkets ?? <Skeleton className="h-4 w-12" />}
                             )
                         </h4>
-                        <div className="flex flex-row gap-sm items-center">
-                            <Switch
-                                id="card-mode"
-                                onClick={() => setDisplayCards(!displayCards)}
-                                checked={displayCards}
-                            />
-                            <Label
-                                htmlFor="card-mode"
-                                className="text-muted dark:text-muted-foreground"
-                            >
-                                Cards
-                            </Label>
-                        </div>
+                        <Button
+                            variant="transparent"
+                            size="icon"
+                            onClick={() => refetch()}
+                            disabled={isFetching || isLoading}
+                        >
+                            {isFetching ? <LoadingDots /> : <ReloadIcon />}
+                        </Button>
                     </div>
                     <TooltipProvider delayDuration={50}>
                         <Tooltip>
@@ -285,23 +279,22 @@ function Home(): JSX.Element {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-md">
-                        <PoolsTable />
+                        <PoolsTable
+                            data={data}
+                            isFetching={isFetching}
+                            amount={amountMarkets}
+                        />
                     </div>
                 )}
             </div>
-            <div className="flex flex-col gap-md">
-                <h4 className="scroll-m-20 ">Highlighted Curators</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                    {Object.keys(curators)?.map((key) => (
-                        <CuratorCard key={key} curator={curators?.[key]} />
-                    )) ??
-                        new Array(3).fill(0).map((_, i) => (
-                            <Skeleton key={i}>
-                                <CuratorCard />
-                            </Skeleton>
-                        ))}
+
+            {children ?? (
+                <div className="border flex flex-col gap-0 p-xl items-center justify-center h-96">
+                    <h2 className="text-muted/35 dark:text-muted-foreground/35">
+                        Select a market
+                    </h2>
                 </div>
-            </div>
+            )}
         </div>
     )
 }

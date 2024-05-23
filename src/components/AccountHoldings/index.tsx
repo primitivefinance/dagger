@@ -24,6 +24,7 @@ import {
 } from '../ui/tooltip'
 import SkeletonText from '../SkeletonText'
 import { Button } from '../ui/button'
+import { LoadingDots } from '../TransactionButton'
 
 const DataItem = ({
     label,
@@ -186,22 +187,24 @@ type BalanceReturnType =
 /**
  * Dumb component that renders the token ticker, icon, and balance.
  */
-const TokenBalance = ({
+export const TokenBalance = ({
     ticker,
     token,
     balance,
     decimals = 18,
     isFetching,
+    disableTicker,
 }: {
     ticker?: string
     token?: `0x${string}`
     balance?: BalanceReturnType
     decimals?: number
     isFetching?: boolean
+    disableTicker?: boolean
 }): JSX.Element => {
     return (
         <div className="flex flex-col gap-sm items-center justify-center">
-            {ticker ? (
+            {disableTicker ? null : ticker ? (
                 <h5 className="w-2xl text-muted-foreground truncate">
                     {ticker}
                 </h5>
@@ -279,7 +282,7 @@ const Holdings = (): JSX.Element => {
 
     return (
         <div className="flex flex-col gap-0 border-b">
-            <div className="flex flex-row gap-sm border-b bg-muted/50 p-md items-center">
+            <div className="flex flex-row gap-md border-b bg-muted/50 p-md items-center">
                 <h4>Holdings</h4>
 
                 <Tooltip>
@@ -302,7 +305,11 @@ const Holdings = (): JSX.Element => {
                     }}
                     disabled={isFetching || isConnecting || isReconnecting}
                 >
-                    <ReloadIcon />
+                    {isFetching || isConnecting || isReconnecting ? (
+                        <LoadingDots />
+                    ) : (
+                        <ReloadIcon />
+                    )}
                 </Button>
             </div>
 

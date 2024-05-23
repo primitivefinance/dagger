@@ -227,7 +227,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
 
     if (!cData || !yData) return <></>
     return (
-        <div className="grid grid-cols-2 h-full w-full">
+        <div className="grid grid-cols-2 h-full w-full divide-x">
             <Chart {...yOptions} autoSize>
                 <LineSeries
                     data={yData}

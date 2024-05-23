@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { http, WagmiProvider } from 'wagmi'
-import {  mainnet } from 'wagmi/chains'
+import { mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
     RainbowKitProvider,
@@ -16,6 +16,7 @@ import Faucet from './pages/faucet'
 import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from './components/ui/toaster'
 import Curator from './pages/curator'
+import { TooltipProvider } from './components/ui/tooltip'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
@@ -41,7 +42,11 @@ const router = createBrowserRouter([
             },
             {
                 path: '/market/:id',
-                element: <Market />,
+                element: (
+                    <Home>
+                        <Market />
+                    </Home>
+                ),
             },
             {
                 path: '/faucet',
@@ -82,8 +87,10 @@ function App(): JSX.Element {
                         defaultTheme="dark"
                         storageKey="vite-ui-theme"
                     >
-                        <RouterProvider router={router} />
-                        <Toaster />
+                        <TooltipProvider delayDuration={50}>
+                            <RouterProvider router={router} />
+                            <Toaster />
+                        </TooltipProvider>
                     </ThemeProvider>
                 </RainbowKitProvider>
             </QueryClientProvider>
