@@ -93,7 +93,7 @@ const SwapAction: React.FC<{
     // Get the market data.
     const { id } = useParams()
     const { data: marketData } = useGraphQL(MarketInfoQueryDocument, {
-        id: id ? id : '0xD68Feeab5719c652D6d6D654a9fe3632584192B8',
+        id: id ? id : '0x1791d400741E9168fF678bdeE36DB448E2D9ea28',
     })
     const market = marketData?.markets?.items?.[0]
 
