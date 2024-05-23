@@ -16,6 +16,11 @@ import { useTradeRoute } from '@/lib/useTradeRoute'
 import { FALLBACK_ALT, FALLBACK_AVATAR } from '@/utils/address'
 import { formatWad } from '@/utils/numbers'
 import { fromExpiry } from '@/utils/dates'
+import TokenHoldings from '../TokenHoldings'
+import { useMarketRoute } from '@/lib/useMarketRoute'
+import { TokenBalance } from '../AccountHoldings'
+import { erc20Abi } from 'viem'
+import { useAccount, useReadContracts } from 'wagmi'
 
 const MarketStatCard = ({
     label,
@@ -25,19 +30,25 @@ const MarketStatCard = ({
     data?: React.ReactNode
 }): JSX.Element => {
     return (
-        <div className="flex flex-col gap-xs border items-center justify-center text-center p-md">
-            <h4 className="text-muted dark:text-muted-foreground">{label}</h4>
-            <h3>{data ?? <SkeletonText />}</h3>
+        <div className="flex flex-col gap-0 border">
+            <div className="border-b p-sm bg-muted/50 items-center justify-center text-center">
+                <h4 className="text-muted dark:text-muted-foreground">
+                    {label}
+                </h4>
+            </div>
+            <div className="flex flex-col gap-xs items-center justify-center text-center p-lg">
+                <h3>{data ?? <SkeletonText />}</h3>
+            </div>
         </div>
     )
 }
 
-export const MARKET_AVATAR_SIZE = 'size-24 md:size-48' as const
+export const MARKET_AVATAR_SIZE = 'size-24 md:size-36' as const
 
 const MarketView = (): JSX.Element => {
-    const { id } = useParams()
+    const { id } = useMarketRoute()
     const { data } = useGraphQL(MarketInfoQueryDocument, {
-        id: id ? id : '0x59d26a4e574e8c3c7be83697acbfed57d1793045',
+        id: id,
     })
     const market = data?.markets?.items?.[0]
     const { data: sy } = useGraphQL(SYTokenQueryDocument, {
@@ -45,109 +56,165 @@ const MarketView = (): JSX.Element => {
     })
     const syToken = sy?.sYTokens?.items?.[0]
     const { setTokenParams } = useTradeRoute()
+    const { address } = useAccount()
+
+    const balanceCall = {
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address],
+    }
+
+    const tokens = [{ id }]
+
+    const {
+        data: balances,
+        isFetching,
+        refetch: refetchTokenBalances,
+    } = useReadContracts({
+        contracts: tokens?.map((token: { id: string }) => ({
+            ...balanceCall,
+            address: token.id as `0x${string}`,
+        })),
+        query: {
+            enabled: !!address,
+        },
+    })
 
     return (
-        <div className="flex flex-col gap-2xl p-xl">
-            <div className="flex flex-row gap-sm justify-between items-center">
-                <div className="flex flex-row gap-lg items-center w-1/2">
-                    <AvatarSkeletonTooltip
-                        src={market?.icon ?? FALLBACK_AVATAR}
-                        alt={market?.name ?? FALLBACK_ALT}
-                        loading={typeof market === 'undefined'}
-                        size={MARKET_AVATAR_SIZE}
-                    >
-                        {market?.name ?? <SkeletonText />}
-                    </AvatarSkeletonTooltip>
-                    <div className="flex flex-col gap-xs truncate w-full">
-                        <h2>{market?.name ?? <SkeletonText />}</h2>
-                        <h4 className="text-muted-foreground">
-                            {market?.name ? (
-                                <>This is a description of the market.</>
-                            ) : (
-                                <SkeletonText />
-                            )}
+        <div className="flex flex-col gap-2xl">
+            <div className="flex flex-row items-start gap-lg ">
+                <div className="flex flex-col gap-0 border w-full">
+                    <div className="flex flex-row  w-full justify-between border-b bg-muted/50 p-md">
+                        <h4 className="text-muted dark:text-muted-foreground">
+                            Market
+                        </h4>
+                        <h4>{market?.name ?? <SkeletonText />}</h4>
+                    </div>
+                    <div className="flex flex-row gap-2xl p-md w-full">
+                        <div className="flex flex-row gap-lg items-center w-full">
+                            <AvatarSkeletonTooltip
+                                src={market?.icon ?? FALLBACK_AVATAR}
+                                alt={market?.name ?? FALLBACK_ALT}
+                                loading={typeof market === 'undefined'}
+                                size={MARKET_AVATAR_SIZE}
+                            >
+                                {market?.name ?? <SkeletonText />}
+                            </AvatarSkeletonTooltip>
+                            <div className="flex flex-col gap-xs justify-center size-full">
+                                <h4 className="text-muted dark:text-muted-foreground">
+                                    Description
+                                </h4>
+
+                                <p className="w-4xl flex-1">
+                                    {market?.name ? (
+                                        <>
+                                            This is a description of the market.
+                                            Lorem ipsum delorum. Lorem ipsum
+                                            delorum. Thats as much as I remember
+                                            about the latin placeholder.
+                                        </>
+                                    ) : (
+                                        <SkeletonText />
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-0 border w-full">
+                    <div className="flex flex-row  w-full justify-between border-b bg-muted/50 p-md">
+                        <h4 className="text-muted dark:text-muted-foreground">
+                            Actions
                         </h4>
                     </div>
-                </div>
-                <div className="flex flex-row gap-2xl items-start w-1/2 justify-end">
-                    <div className="flex flex-col gap-md">
-                        <Badge variant="secondary" className="p-0">
-                            <div className="p-sm flex flex-row gap-lg items-center justify-between w-full">
-                                <p className="text-muted dark:text-muted-foreground">
-                                    Expiry
-                                </p>
+                    <div className="flex flex-row gap-2xl p-md">
+                        <div className="flex flex-row gap-md items-start">
+                            <Button
+                                size="lg"
+                                variant="tx"
+                                onClick={() =>
+                                    setTokenParams(
+                                        market?.pool?.tokenX?.id,
+                                        market?.pool?.tokenY?.id
+                                    )
+                                }
+                            >
+                                Long Yield
+                            </Button>
 
-                                {market?.expiry ? (
-                                    <p>{fromExpiry(market?.expiry)}</p>
-                                ) : (
-                                    <Skeleton>
-                                        <p className="text-transparent selection:text-transparent dark:text-transparent dark:selection:text-transparent">
-                                            12/12/1999
-                                        </p>
-                                    </Skeleton>
+                            <Button
+                                size="lg"
+                                variant="info"
+                                onClick={() =>
+                                    setTokenParams(
+                                        market?.pool?.tokenY?.id,
+                                        market?.pool?.tokenX?.id
+                                    )
+                                }
+                            >
+                                Short Yield
+                            </Button>
+
+                            {address &&
+                                (balances?.[0]?.result as bigint) > 0 && (
+                                    <Button
+                                        size="lg"
+                                        variant="destructive"
+                                        onClick={() =>
+                                            setTokenParams(
+                                                market?.pool?.tokenX?.id,
+                                                market?.pool?.tokenY?.id
+                                            )
+                                        }
+                                    >
+                                        Close position
+                                    </Button>
                                 )}
-                            </div>
-                        </Badge>
-                        <Badge variant="secondary" className="p-0">
-                            <div className="p-sm flex flex-row gap-lg items-center justify-between w-full">
-                                <p className="text-muted dark:text-muted-foreground">
-                                    Rate
-                                </p>
-
-                                {syToken?.exchangeRate ? (
-                                    <p>{formatWad(syToken?.exchangeRate)}</p>
-                                ) : (
-                                    <Skeleton>
-                                        <p className="text-transparent selection:text-transparent dark:text-transparent dark:selection:text-transparent">
-                                            1000.000
-                                        </p>
-                                    </Skeleton>
-                                )}
-                            </div>
-                        </Badge>
-                    </div>
-                    <div className="flex flex-col gap-sm w-1/4">
-                        <Button
-                            size="lg"
-                            variant="tx"
-                            onClick={() =>
-                                setTokenParams(
-                                    market?.pool?.tokenX?.id,
-                                    market?.pool?.tokenY?.id
-                                )
-                            }
-                        >
-                            Buy Yield
-                        </Button>
-
-                        <Button
-                            size="lg"
-                            variant="info"
-                            onClick={() =>
-                                setTokenParams(
-                                    market?.pool?.tokenY?.id,
-                                    market?.pool?.tokenX?.id
-                                )
-                            }
-                        >
-                            Sell Yield
-                        </Button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="flex h-96 w-full items-center justify-center text-center border">
-                <TradeChart
-                    marketId={
-                        id ? id : '0x59d26a4e574e8c3c7be83697acbfed57d1793045'
-                    }
-                    isLong={false}
-                />
+            <div className="border flex flex-col gap-0">
+                <div className="flex flex-row items-center w-full justify-between border-b bg-muted/50 p-md">
+                    <h4 className="w-1/2">Implied Yield Rates</h4>
+                    <h4 className="w-1/2">Implied Prices</h4>
+                </div>
+                <div className="flex h-96 w-full items-center justify-center text-center">
+                    <TradeChart
+                        marketId={
+                            id
+                                ? id
+                                : '0x59d26a4e574e8c3c7be83697acbfed57d1793045'
+                        }
+                        isLong={false}
+                    />
+                </div>
             </div>
-            <div className="grid grid-cols-3 gap-lg">
-                <MarketStatCard label="Volume" data="$10,000" />
-                <MarketStatCard label="Liquidity" data="$10,000" />
-                <MarketStatCard label="Price" data="$10,000" />
+            <div className="flex flex-col gap-lg">
+                <div className="grid grid-cols-3 gap-lg">
+                    <MarketStatCard label="Volume" data="$10,000" />
+                    <MarketStatCard label="Liquidity" data="$10,000" />
+                    <MarketStatCard label="Price" data="$10,000" />
+                </div>
+                <div className="grid grid-cols-3 gap-lg">
+                    {address && (
+                        <MarketStatCard
+                            label="Your Liquidity Position"
+                            data={
+                                <div className="flex flex-row gap-md items-start justify-start">
+                                    <TokenBalance
+                                        token={id}
+                                        balance={balances?.[0]}
+                                        disableTicker
+                                        ticker={'LP'}
+                                    />
+                                </div>
+                            }
+                        />
+                    )}
+                </div>
             </div>
         </div>
     )

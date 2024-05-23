@@ -11,11 +11,11 @@ import { FragmentType, useFragment } from '../../gql'
 
 import { FC } from 'react'
 import { useGraphQL } from '../../useGraphQL'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { InfoCircledIcon } from '@radix-ui/react-icons'
 import { useReadContract } from 'wagmi'
-import { erc20Abi } from 'viem'
+import { erc20Abi, getAddress } from 'viem'
 import { formatWad } from '@/utils/numbers'
 import {
     Tooltip,
@@ -25,13 +25,11 @@ import {
 } from '../ui/tooltip'
 import { Badge } from '../ui/badge'
 
-import {
-    MarketFragment,
-    SYTokenQueryDocument,
-    allMarketsQueryDocument,
-} from '../../queries/markets'
+import { MarketFragment, SYTokenQueryDocument } from '../../queries/markets'
 import TokenHoldings from '../TokenHoldings'
 import SkeletonText from '../SkeletonText'
+import { AllMarketsQuery } from 'gql/graphql'
+import { useMarketRoute } from '@/lib/useMarketRoute'
 
 const tooltipContent = {
     lptOutstanding:
@@ -42,6 +40,33 @@ const tooltipContent = {
     autonomous: 'Algorithmic pool calibrated upon creation; cannot be altered.',
 }
 
+const EmptyPoolDataRow = ({ rows = 1 }: { rows?: number }): JSX.Element => {
+    const row = (
+        <TableRow key="loading">
+            <TableCell className="text-left">
+                <SkeletonText />
+            </TableCell>
+            <TableCell className="text-left">
+                <SkeletonText />
+            </TableCell>
+            <TableCell className="text-left">
+                <SkeletonText />
+            </TableCell>
+            <TableCell className="text-left">
+                <SkeletonText />
+            </TableCell>
+            <TableCell className="text-left">
+                <SkeletonText />
+            </TableCell>
+            <TableCell className="text-left">
+                <SkeletonText />
+            </TableCell>
+        </TableRow>
+    )
+
+    return <>{Array.from({ length: rows }).map(() => row)}</>
+}
+
 type PoolCellProps = {
     pool: FragmentType<typeof MarketFragment>
 }
@@ -49,6 +74,10 @@ type PoolCellProps = {
 const PoolCell: FC<PoolCellProps> = (props: {
     pool: FragmentType<typeof MarketFragment>
 }) => {
+    const { id } = useParams()
+    const isMarketSelected = id
+        ? getAddress(id) === getAddress(props.pool.id)
+        : false
     const navigate = useNavigate()
     const poolData = useFragment(MarketFragment, props.pool)
     const { data: sy, isFetching: isFetchingSY } = useGraphQL(
@@ -69,7 +98,12 @@ const PoolCell: FC<PoolCellProps> = (props: {
     return (
         <TableRow
             key={poolData.id}
-            onClick={() => navigate(`/market/${poolData.id}`)}
+            onClick={() =>
+                isMarketSelected
+                    ? navigate(`/`)
+                    : navigate(`/market/${poolData.id}`)
+            }
+            className={`${isMarketSelected ? 'bg-blue/15 hover:bg-blue/15' : ''}`}
         >
             <TableCell className="text-left">
                 {poolData.name ?? <SkeletonText />}
@@ -114,8 +148,11 @@ const PoolCell: FC<PoolCellProps> = (props: {
     )
 }
 
-const PoolsTable: FC = () => {
-    const { data } = useGraphQL(allMarketsQueryDocument, { limit: 10 })
+const PoolsTable: FC<{
+    data: AllMarketsQuery
+    isFetching: boolean
+    amount?: number
+}> = ({ data, isFetching, amount }) => {
     const pools = data?.markets?.items
 
     return (
@@ -156,24 +193,28 @@ const PoolsTable: FC = () => {
                         </TableHead>
 
                         <TableHead className="text-left">
-                            <TooltipProvider delayDuration={200}>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <div className="flex flex-row items-center gap-xs hover:text-primary">
-                                            <InfoCircledIcon />
-                                            Curator
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        {tooltipContent.curator}
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div className="flex flex-row items-center gap-xs hover:text-primary">
+                                        <InfoCircledIcon />
+                                        Curator
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {tooltipContent.curator}
+                                </TooltipContent>
+                            </Tooltip>
                         </TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody className="cursor-pointer">
-                    {pools?.map((pool, i) => <PoolCell key={i} pool={pool} />)}
+                    {isFetching ? (
+                        <EmptyPoolDataRow rows={amount} />
+                    ) : (
+                        pools?.map((pool, i) => (
+                            <PoolCell key={i} pool={pool} />
+                        )) ?? <EmptyPoolDataRow rows={amount} />
+                    )}
                 </TableBody>
             </Table>
         </TooltipProvider>

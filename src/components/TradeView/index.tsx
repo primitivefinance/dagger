@@ -11,7 +11,7 @@ import { getAddress } from 'viem'
 import { Button } from '../ui/button'
 import { useTokens } from '@/lib/useTokens'
 import { useTradeRoute } from '@/lib/useTradeRoute'
-import { useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import SwapAction from '@/actions/SwapAction'
 import { Skeleton } from '../ui/skeleton'
 import { FetchStatus } from '@tanstack/react-query'
@@ -34,7 +34,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '../ui/accordion'
-import { ArrowRightIcon } from '@radix-ui/react-icons'
+import { ArrowRightIcon, CheckIcon } from '@radix-ui/react-icons'
 
 const TokenInput = ({
     token,
@@ -80,6 +80,7 @@ const SwapWidget: React.FC<{
     tokenInForm: TokenForm
     tokenOutForm: TokenForm
 }> = ({ tokenInForm, tokenOutForm }): JSX.Element => {
+    const loc = useLocation()
     const { isConnected } = useAccount()
     const { getTokenIn, getTokenOut, setTokenParams } = useTradeRoute()
     const tokenIn = getTokenIn()
@@ -126,10 +127,44 @@ const SwapWidget: React.FC<{
         setTokenParams(tokenIn, tokenAddress)
     }
 
+    const [clickedShare, setClickedShare] = React.useState(false)
+
+    useEffect(() => {
+        if (clickedShare) {
+            const timer = setTimeout(() => {
+                setClickedShare(false)
+            }, 2000)
+
+            return () => clearTimeout(timer)
+        }
+    }, [clickedShare])
+
     return (
         <div className="flex flex-col gap-0">
-            <div className="flex flex-row gap-sm border-b bg-muted/50 p-md">
+            <div className="flex flex-row gap-sm border-b bg-muted/50 p-md items-center justify-between">
                 <h4>Trade</h4>
+
+                <Button
+                    onClick={() => {
+                        navigator.clipboard
+                            .writeText(window.location.href)
+                            .then(() => setClickedShare(true))
+                            .catch((err) =>
+                                console.error('Failed to copy URL: ', err)
+                            )
+                    }}
+                    variant="link"
+                    size="xs"
+                    disabled={clickedShare || loc.pathname === '/'}
+                >
+                    {clickedShare ? (
+                        <p className="flex flex-row gap-sm items-center text-green-500">
+                            <CheckIcon /> Copied
+                        </p>
+                    ) : (
+                        <p>Share Trade</p>
+                    )}
+                </Button>
             </div>
             {tokens && (
                 <>
@@ -248,7 +283,7 @@ const Summary = ({
     )
 }
 
-const ConnectToTrade = (): JSX.Element => {
+export const ConnectToTrade = (): JSX.Element => {
     return (
         <div className="flex flex-col gap-0">
             <div className="flex flex-row gap-sm border-b bg-muted/50 p-md">
