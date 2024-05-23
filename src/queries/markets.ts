@@ -5,7 +5,9 @@ export const MarketFragment = graphql(`
         id
         name
         pool {
+            aggregateVolumeInUnderlying
             id
+            liquidityInUnderlying
             tokenX {
                 id
                 name
@@ -44,6 +46,13 @@ export const MarketFragment = graphql(`
             }
         }
         expiry
+        ibAssetId
+        nativeAssetId
+        ptId
+        syId
+        underlyingToUsd
+        wrappedNativeAssetId
+        ytId
     }
 `)
 

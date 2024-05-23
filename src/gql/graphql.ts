@@ -250,93 +250,6 @@ export type DeallocatePage = {
   pageInfo: PageInfo;
 };
 
-export type ExchangeRateHourly = {
-  __typename?: 'ExchangeRateHourly';
-  average: Scalars['Float']['output'];
-  close: Scalars['Float']['output'];
-  count: Scalars['Int']['output'];
-  high: Scalars['Float']['output'];
-  id: Scalars['Int']['output'];
-  low: Scalars['Float']['output'];
-  marketId: Scalars['String']['output'];
-  open: Scalars['Float']['output'];
-};
-
-export type ExchangeRateHourlyFilter = {
-  AND?: InputMaybe<Array<InputMaybe<ExchangeRateHourlyFilter>>>;
-  OR?: InputMaybe<Array<InputMaybe<ExchangeRateHourlyFilter>>>;
-  average?: InputMaybe<Scalars['Float']['input']>;
-  average_gt?: InputMaybe<Scalars['Float']['input']>;
-  average_gte?: InputMaybe<Scalars['Float']['input']>;
-  average_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  average_lt?: InputMaybe<Scalars['Float']['input']>;
-  average_lte?: InputMaybe<Scalars['Float']['input']>;
-  average_not?: InputMaybe<Scalars['Float']['input']>;
-  average_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  close?: InputMaybe<Scalars['Float']['input']>;
-  close_gt?: InputMaybe<Scalars['Float']['input']>;
-  close_gte?: InputMaybe<Scalars['Float']['input']>;
-  close_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  close_lt?: InputMaybe<Scalars['Float']['input']>;
-  close_lte?: InputMaybe<Scalars['Float']['input']>;
-  close_not?: InputMaybe<Scalars['Float']['input']>;
-  close_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  count?: InputMaybe<Scalars['Int']['input']>;
-  count_gt?: InputMaybe<Scalars['Int']['input']>;
-  count_gte?: InputMaybe<Scalars['Int']['input']>;
-  count_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  count_lt?: InputMaybe<Scalars['Int']['input']>;
-  count_lte?: InputMaybe<Scalars['Int']['input']>;
-  count_not?: InputMaybe<Scalars['Int']['input']>;
-  count_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  high?: InputMaybe<Scalars['Float']['input']>;
-  high_gt?: InputMaybe<Scalars['Float']['input']>;
-  high_gte?: InputMaybe<Scalars['Float']['input']>;
-  high_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  high_lt?: InputMaybe<Scalars['Float']['input']>;
-  high_lte?: InputMaybe<Scalars['Float']['input']>;
-  high_not?: InputMaybe<Scalars['Float']['input']>;
-  high_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  id?: InputMaybe<Scalars['Int']['input']>;
-  id_gt?: InputMaybe<Scalars['Int']['input']>;
-  id_gte?: InputMaybe<Scalars['Int']['input']>;
-  id_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  id_lt?: InputMaybe<Scalars['Int']['input']>;
-  id_lte?: InputMaybe<Scalars['Int']['input']>;
-  id_not?: InputMaybe<Scalars['Int']['input']>;
-  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  low?: InputMaybe<Scalars['Float']['input']>;
-  low_gt?: InputMaybe<Scalars['Float']['input']>;
-  low_gte?: InputMaybe<Scalars['Float']['input']>;
-  low_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  low_lt?: InputMaybe<Scalars['Float']['input']>;
-  low_lte?: InputMaybe<Scalars['Float']['input']>;
-  low_not?: InputMaybe<Scalars['Float']['input']>;
-  low_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  marketId?: InputMaybe<Scalars['String']['input']>;
-  marketId_gt?: InputMaybe<Scalars['String']['input']>;
-  marketId_gte?: InputMaybe<Scalars['String']['input']>;
-  marketId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  marketId_lt?: InputMaybe<Scalars['String']['input']>;
-  marketId_lte?: InputMaybe<Scalars['String']['input']>;
-  marketId_not?: InputMaybe<Scalars['String']['input']>;
-  marketId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  open?: InputMaybe<Scalars['Float']['input']>;
-  open_gt?: InputMaybe<Scalars['Float']['input']>;
-  open_gte?: InputMaybe<Scalars['Float']['input']>;
-  open_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  open_lt?: InputMaybe<Scalars['Float']['input']>;
-  open_lte?: InputMaybe<Scalars['Float']['input']>;
-  open_not?: InputMaybe<Scalars['Float']['input']>;
-  open_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-};
-
-export type ExchangeRateHourlyPage = {
-  __typename?: 'ExchangeRateHourlyPage';
-  items: Array<ExchangeRateHourly>;
-  pageInfo: PageInfo;
-};
-
 export type ImpliedYield = {
   __typename?: 'ImpliedYield';
   id: Scalars['Int']['output'];
@@ -393,6 +306,9 @@ export type Market = {
   poolId: Scalars['String']['output'];
   pt: PToken;
   ptId: Scalars['String']['output'];
+  sy: SyToken;
+  syId: Scalars['String']['output'];
+  underlyingToUsd: Scalars['Float']['output'];
   wrappedIbAsset: Token;
   wrappedIbAssetId: Scalars['String']['output'];
   wrappedNativeAsset: Token;
@@ -472,6 +388,22 @@ export type MarketFilter = {
   ptId_lte?: InputMaybe<Scalars['String']['input']>;
   ptId_not?: InputMaybe<Scalars['String']['input']>;
   ptId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  syId?: InputMaybe<Scalars['String']['input']>;
+  syId_gt?: InputMaybe<Scalars['String']['input']>;
+  syId_gte?: InputMaybe<Scalars['String']['input']>;
+  syId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  syId_lt?: InputMaybe<Scalars['String']['input']>;
+  syId_lte?: InputMaybe<Scalars['String']['input']>;
+  syId_not?: InputMaybe<Scalars['String']['input']>;
+  syId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  underlyingToUsd?: InputMaybe<Scalars['Float']['input']>;
+  underlyingToUsd_gt?: InputMaybe<Scalars['Float']['input']>;
+  underlyingToUsd_gte?: InputMaybe<Scalars['Float']['input']>;
+  underlyingToUsd_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  underlyingToUsd_lt?: InputMaybe<Scalars['Float']['input']>;
+  underlyingToUsd_lte?: InputMaybe<Scalars['Float']['input']>;
+  underlyingToUsd_not?: InputMaybe<Scalars['Float']['input']>;
+  underlyingToUsd_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
   wrappedIbAssetId?: InputMaybe<Scalars['String']['input']>;
   wrappedIbAssetId_gt?: InputMaybe<Scalars['String']['input']>;
   wrappedIbAssetId_gte?: InputMaybe<Scalars['String']['input']>;
@@ -501,102 +433,6 @@ export type MarketFilter = {
 export type MarketPage = {
   __typename?: 'MarketPage';
   items: Array<Market>;
-  pageInfo: PageInfo;
-};
-
-export type MarketPricesHourly = {
-  __typename?: 'MarketPricesHourly';
-  average: Scalars['Float']['output'];
-  close: Scalars['Float']['output'];
-  count: Scalars['Int']['output'];
-  high: Scalars['Float']['output'];
-  id: Scalars['Int']['output'];
-  low: Scalars['Float']['output'];
-  marketId: Scalars['String']['output'];
-  open: Scalars['Float']['output'];
-  volume: Scalars['Float']['output'];
-};
-
-export type MarketPricesHourlyFilter = {
-  AND?: InputMaybe<Array<InputMaybe<MarketPricesHourlyFilter>>>;
-  OR?: InputMaybe<Array<InputMaybe<MarketPricesHourlyFilter>>>;
-  average?: InputMaybe<Scalars['Float']['input']>;
-  average_gt?: InputMaybe<Scalars['Float']['input']>;
-  average_gte?: InputMaybe<Scalars['Float']['input']>;
-  average_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  average_lt?: InputMaybe<Scalars['Float']['input']>;
-  average_lte?: InputMaybe<Scalars['Float']['input']>;
-  average_not?: InputMaybe<Scalars['Float']['input']>;
-  average_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  close?: InputMaybe<Scalars['Float']['input']>;
-  close_gt?: InputMaybe<Scalars['Float']['input']>;
-  close_gte?: InputMaybe<Scalars['Float']['input']>;
-  close_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  close_lt?: InputMaybe<Scalars['Float']['input']>;
-  close_lte?: InputMaybe<Scalars['Float']['input']>;
-  close_not?: InputMaybe<Scalars['Float']['input']>;
-  close_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  count?: InputMaybe<Scalars['Int']['input']>;
-  count_gt?: InputMaybe<Scalars['Int']['input']>;
-  count_gte?: InputMaybe<Scalars['Int']['input']>;
-  count_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  count_lt?: InputMaybe<Scalars['Int']['input']>;
-  count_lte?: InputMaybe<Scalars['Int']['input']>;
-  count_not?: InputMaybe<Scalars['Int']['input']>;
-  count_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  high?: InputMaybe<Scalars['Float']['input']>;
-  high_gt?: InputMaybe<Scalars['Float']['input']>;
-  high_gte?: InputMaybe<Scalars['Float']['input']>;
-  high_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  high_lt?: InputMaybe<Scalars['Float']['input']>;
-  high_lte?: InputMaybe<Scalars['Float']['input']>;
-  high_not?: InputMaybe<Scalars['Float']['input']>;
-  high_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  id?: InputMaybe<Scalars['Int']['input']>;
-  id_gt?: InputMaybe<Scalars['Int']['input']>;
-  id_gte?: InputMaybe<Scalars['Int']['input']>;
-  id_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  id_lt?: InputMaybe<Scalars['Int']['input']>;
-  id_lte?: InputMaybe<Scalars['Int']['input']>;
-  id_not?: InputMaybe<Scalars['Int']['input']>;
-  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  low?: InputMaybe<Scalars['Float']['input']>;
-  low_gt?: InputMaybe<Scalars['Float']['input']>;
-  low_gte?: InputMaybe<Scalars['Float']['input']>;
-  low_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  low_lt?: InputMaybe<Scalars['Float']['input']>;
-  low_lte?: InputMaybe<Scalars['Float']['input']>;
-  low_not?: InputMaybe<Scalars['Float']['input']>;
-  low_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  marketId?: InputMaybe<Scalars['String']['input']>;
-  marketId_gt?: InputMaybe<Scalars['String']['input']>;
-  marketId_gte?: InputMaybe<Scalars['String']['input']>;
-  marketId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  marketId_lt?: InputMaybe<Scalars['String']['input']>;
-  marketId_lte?: InputMaybe<Scalars['String']['input']>;
-  marketId_not?: InputMaybe<Scalars['String']['input']>;
-  marketId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  open?: InputMaybe<Scalars['Float']['input']>;
-  open_gt?: InputMaybe<Scalars['Float']['input']>;
-  open_gte?: InputMaybe<Scalars['Float']['input']>;
-  open_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  open_lt?: InputMaybe<Scalars['Float']['input']>;
-  open_lte?: InputMaybe<Scalars['Float']['input']>;
-  open_not?: InputMaybe<Scalars['Float']['input']>;
-  open_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  volume?: InputMaybe<Scalars['Float']['input']>;
-  volume_gt?: InputMaybe<Scalars['Float']['input']>;
-  volume_gte?: InputMaybe<Scalars['Float']['input']>;
-  volume_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  volume_lt?: InputMaybe<Scalars['Float']['input']>;
-  volume_lte?: InputMaybe<Scalars['Float']['input']>;
-  volume_not?: InputMaybe<Scalars['Float']['input']>;
-  volume_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-};
-
-export type MarketPricesHourlyPage = {
-  __typename?: 'MarketPricesHourlyPage';
-  items: Array<MarketPricesHourly>;
   pageInfo: PageInfo;
 };
 
@@ -688,10 +524,12 @@ export type PageInfo = {
 
 export type Pool = {
   __typename?: 'Pool';
+  aggregateVolumeInUnderlying: Scalars['Float']['output'];
   curator: Curator;
   curatorId: Scalars['String']['output'];
   fee: Scalars['BigInt']['output'];
   id: Scalars['String']['output'];
+  liquidityInUnderlying: Scalars['Float']['output'];
   maturity: Scalars['BigInt']['output'];
   reserveX: Scalars['BigInt']['output'];
   reserveY: Scalars['BigInt']['output'];
@@ -707,6 +545,14 @@ export type Pool = {
 export type PoolFilter = {
   AND?: InputMaybe<Array<InputMaybe<PoolFilter>>>;
   OR?: InputMaybe<Array<InputMaybe<PoolFilter>>>;
+  aggregateVolumeInUnderlying?: InputMaybe<Scalars['Float']['input']>;
+  aggregateVolumeInUnderlying_gt?: InputMaybe<Scalars['Float']['input']>;
+  aggregateVolumeInUnderlying_gte?: InputMaybe<Scalars['Float']['input']>;
+  aggregateVolumeInUnderlying_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  aggregateVolumeInUnderlying_lt?: InputMaybe<Scalars['Float']['input']>;
+  aggregateVolumeInUnderlying_lte?: InputMaybe<Scalars['Float']['input']>;
+  aggregateVolumeInUnderlying_not?: InputMaybe<Scalars['Float']['input']>;
+  aggregateVolumeInUnderlying_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
   curatorId?: InputMaybe<Scalars['String']['input']>;
   curatorId_gt?: InputMaybe<Scalars['String']['input']>;
   curatorId_gte?: InputMaybe<Scalars['String']['input']>;
@@ -731,6 +577,14 @@ export type PoolFilter = {
   id_lte?: InputMaybe<Scalars['String']['input']>;
   id_not?: InputMaybe<Scalars['String']['input']>;
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  liquidityInUnderlying?: InputMaybe<Scalars['Float']['input']>;
+  liquidityInUnderlying_gt?: InputMaybe<Scalars['Float']['input']>;
+  liquidityInUnderlying_gte?: InputMaybe<Scalars['Float']['input']>;
+  liquidityInUnderlying_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  liquidityInUnderlying_lt?: InputMaybe<Scalars['Float']['input']>;
+  liquidityInUnderlying_lte?: InputMaybe<Scalars['Float']['input']>;
+  liquidityInUnderlying_not?: InputMaybe<Scalars['Float']['input']>;
+  liquidityInUnderlying_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
   maturity?: InputMaybe<Scalars['BigInt']['input']>;
   maturity_gt?: InputMaybe<Scalars['BigInt']['input']>;
   maturity_gte?: InputMaybe<Scalars['BigInt']['input']>;
@@ -803,6 +657,144 @@ export type PoolPage = {
   pageInfo: PageInfo;
 };
 
+export type Position = {
+  __typename?: 'Position';
+  avgEntryImpliedRate: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  netYieldDelta: Scalars['Float']['output'];
+};
+
+export type PositionFilter = {
+  AND?: InputMaybe<Array<InputMaybe<PositionFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<PositionFilter>>>;
+  avgEntryImpliedRate?: InputMaybe<Scalars['Float']['input']>;
+  avgEntryImpliedRate_gt?: InputMaybe<Scalars['Float']['input']>;
+  avgEntryImpliedRate_gte?: InputMaybe<Scalars['Float']['input']>;
+  avgEntryImpliedRate_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  avgEntryImpliedRate_lt?: InputMaybe<Scalars['Float']['input']>;
+  avgEntryImpliedRate_lte?: InputMaybe<Scalars['Float']['input']>;
+  avgEntryImpliedRate_not?: InputMaybe<Scalars['Float']['input']>;
+  avgEntryImpliedRate_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  netYieldDelta?: InputMaybe<Scalars['Float']['input']>;
+  netYieldDelta_gt?: InputMaybe<Scalars['Float']['input']>;
+  netYieldDelta_gte?: InputMaybe<Scalars['Float']['input']>;
+  netYieldDelta_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  netYieldDelta_lt?: InputMaybe<Scalars['Float']['input']>;
+  netYieldDelta_lte?: InputMaybe<Scalars['Float']['input']>;
+  netYieldDelta_not?: InputMaybe<Scalars['Float']['input']>;
+  netYieldDelta_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+};
+
+export type PositionPage = {
+  __typename?: 'PositionPage';
+  items: Array<Position>;
+  pageInfo: PageInfo;
+};
+
+export type PrincipalPricesHourly = {
+  __typename?: 'PrincipalPricesHourly';
+  average: Scalars['Float']['output'];
+  close: Scalars['Float']['output'];
+  count: Scalars['Int']['output'];
+  high: Scalars['Float']['output'];
+  id: Scalars['Int']['output'];
+  low: Scalars['Float']['output'];
+  marketId: Scalars['String']['output'];
+  open: Scalars['Float']['output'];
+  volume: Scalars['Float']['output'];
+};
+
+export type PrincipalPricesHourlyFilter = {
+  AND?: InputMaybe<Array<InputMaybe<PrincipalPricesHourlyFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<PrincipalPricesHourlyFilter>>>;
+  average?: InputMaybe<Scalars['Float']['input']>;
+  average_gt?: InputMaybe<Scalars['Float']['input']>;
+  average_gte?: InputMaybe<Scalars['Float']['input']>;
+  average_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  average_lt?: InputMaybe<Scalars['Float']['input']>;
+  average_lte?: InputMaybe<Scalars['Float']['input']>;
+  average_not?: InputMaybe<Scalars['Float']['input']>;
+  average_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  close?: InputMaybe<Scalars['Float']['input']>;
+  close_gt?: InputMaybe<Scalars['Float']['input']>;
+  close_gte?: InputMaybe<Scalars['Float']['input']>;
+  close_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  close_lt?: InputMaybe<Scalars['Float']['input']>;
+  close_lte?: InputMaybe<Scalars['Float']['input']>;
+  close_not?: InputMaybe<Scalars['Float']['input']>;
+  close_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  count?: InputMaybe<Scalars['Int']['input']>;
+  count_gt?: InputMaybe<Scalars['Int']['input']>;
+  count_gte?: InputMaybe<Scalars['Int']['input']>;
+  count_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  count_lt?: InputMaybe<Scalars['Int']['input']>;
+  count_lte?: InputMaybe<Scalars['Int']['input']>;
+  count_not?: InputMaybe<Scalars['Int']['input']>;
+  count_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  high?: InputMaybe<Scalars['Float']['input']>;
+  high_gt?: InputMaybe<Scalars['Float']['input']>;
+  high_gte?: InputMaybe<Scalars['Float']['input']>;
+  high_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  high_lt?: InputMaybe<Scalars['Float']['input']>;
+  high_lte?: InputMaybe<Scalars['Float']['input']>;
+  high_not?: InputMaybe<Scalars['Float']['input']>;
+  high_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  id_gt?: InputMaybe<Scalars['Int']['input']>;
+  id_gte?: InputMaybe<Scalars['Int']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  id_lt?: InputMaybe<Scalars['Int']['input']>;
+  id_lte?: InputMaybe<Scalars['Int']['input']>;
+  id_not?: InputMaybe<Scalars['Int']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  low?: InputMaybe<Scalars['Float']['input']>;
+  low_gt?: InputMaybe<Scalars['Float']['input']>;
+  low_gte?: InputMaybe<Scalars['Float']['input']>;
+  low_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  low_lt?: InputMaybe<Scalars['Float']['input']>;
+  low_lte?: InputMaybe<Scalars['Float']['input']>;
+  low_not?: InputMaybe<Scalars['Float']['input']>;
+  low_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  marketId?: InputMaybe<Scalars['String']['input']>;
+  marketId_gt?: InputMaybe<Scalars['String']['input']>;
+  marketId_gte?: InputMaybe<Scalars['String']['input']>;
+  marketId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  marketId_lt?: InputMaybe<Scalars['String']['input']>;
+  marketId_lte?: InputMaybe<Scalars['String']['input']>;
+  marketId_not?: InputMaybe<Scalars['String']['input']>;
+  marketId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  open?: InputMaybe<Scalars['Float']['input']>;
+  open_gt?: InputMaybe<Scalars['Float']['input']>;
+  open_gte?: InputMaybe<Scalars['Float']['input']>;
+  open_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  open_lt?: InputMaybe<Scalars['Float']['input']>;
+  open_lte?: InputMaybe<Scalars['Float']['input']>;
+  open_not?: InputMaybe<Scalars['Float']['input']>;
+  open_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  volume?: InputMaybe<Scalars['Float']['input']>;
+  volume_gt?: InputMaybe<Scalars['Float']['input']>;
+  volume_gte?: InputMaybe<Scalars['Float']['input']>;
+  volume_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  volume_lt?: InputMaybe<Scalars['Float']['input']>;
+  volume_lte?: InputMaybe<Scalars['Float']['input']>;
+  volume_not?: InputMaybe<Scalars['Float']['input']>;
+  volume_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+};
+
+export type PrincipalPricesHourlyPage = {
+  __typename?: 'PrincipalPricesHourlyPage';
+  items: Array<PrincipalPricesHourly>;
+  pageInfo: PageInfo;
+};
+
 export type Query = {
   __typename?: 'Query';
   allocate?: Maybe<Allocate>;
@@ -811,13 +803,9 @@ export type Query = {
   curators: CuratorPage;
   deallocate?: Maybe<Deallocate>;
   deallocates: DeallocatePage;
-  exchangeRateHourly?: Maybe<ExchangeRateHourly>;
-  exchangeRateHourlys: ExchangeRateHourlyPage;
   impliedYield?: Maybe<ImpliedYield>;
   impliedYields: ImpliedYieldPage;
   market?: Maybe<Market>;
-  marketPricesHourly?: Maybe<MarketPricesHourly>;
-  marketPricesHourlys: MarketPricesHourlyPage;
   marketToken?: Maybe<MarketToken>;
   marketTokens: MarketTokenPage;
   markets: MarketPage;
@@ -825,6 +813,10 @@ export type Query = {
   pTokens: PTokenPage;
   pool?: Maybe<Pool>;
   pools: PoolPage;
+  position?: Maybe<Position>;
+  positions: PositionPage;
+  principalPricesHourly?: Maybe<PrincipalPricesHourly>;
+  principalPricesHourlys: PrincipalPricesHourlyPage;
   sYToken?: Maybe<SyToken>;
   sYTokens: SyTokenPage;
   swap?: Maybe<Swap>;
@@ -835,6 +827,8 @@ export type Query = {
   underlyingYields: UnderlyingYieldPage;
   yToken?: Maybe<YToken>;
   yTokens: YTokenPage;
+  yieldPricesHourly?: Maybe<YieldPricesHourly>;
+  yieldPricesHourlys: YieldPricesHourlyPage;
 };
 
 
@@ -883,21 +877,6 @@ export type QueryDeallocatesArgs = {
 };
 
 
-export type QueryExchangeRateHourlyArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type QueryExchangeRateHourlysArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  orderDirection?: InputMaybe<Scalars['String']['input']>;
-  where?: InputMaybe<ExchangeRateHourlyFilter>;
-};
-
-
 export type QueryImpliedYieldArgs = {
   id: Scalars['Int']['input'];
 };
@@ -915,21 +894,6 @@ export type QueryImpliedYieldsArgs = {
 
 export type QueryMarketArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type QueryMarketPricesHourlyArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type QueryMarketPricesHourlysArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  orderDirection?: InputMaybe<Scalars['String']['input']>;
-  where?: InputMaybe<MarketPricesHourlyFilter>;
 };
 
 
@@ -985,6 +949,36 @@ export type QueryPoolsArgs = {
   orderBy?: InputMaybe<Scalars['String']['input']>;
   orderDirection?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<PoolFilter>;
+};
+
+
+export type QueryPositionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryPositionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<PositionFilter>;
+};
+
+
+export type QueryPrincipalPricesHourlyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryPrincipalPricesHourlysArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<PrincipalPricesHourlyFilter>;
 };
 
 
@@ -1060,6 +1054,21 @@ export type QueryYTokensArgs = {
   orderBy?: InputMaybe<Scalars['String']['input']>;
   orderDirection?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<YTokenFilter>;
+};
+
+
+export type QueryYieldPricesHourlyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryYieldPricesHourlysArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<YieldPricesHourlyFilter>;
 };
 
 export type SyToken = {
@@ -1392,6 +1401,102 @@ export type YTokenPage = {
   pageInfo: PageInfo;
 };
 
+export type YieldPricesHourly = {
+  __typename?: 'YieldPricesHourly';
+  average: Scalars['Float']['output'];
+  close: Scalars['Float']['output'];
+  count: Scalars['Int']['output'];
+  high: Scalars['Float']['output'];
+  id: Scalars['Int']['output'];
+  low: Scalars['Float']['output'];
+  marketId: Scalars['String']['output'];
+  open: Scalars['Float']['output'];
+  volume: Scalars['Float']['output'];
+};
+
+export type YieldPricesHourlyFilter = {
+  AND?: InputMaybe<Array<InputMaybe<YieldPricesHourlyFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<YieldPricesHourlyFilter>>>;
+  average?: InputMaybe<Scalars['Float']['input']>;
+  average_gt?: InputMaybe<Scalars['Float']['input']>;
+  average_gte?: InputMaybe<Scalars['Float']['input']>;
+  average_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  average_lt?: InputMaybe<Scalars['Float']['input']>;
+  average_lte?: InputMaybe<Scalars['Float']['input']>;
+  average_not?: InputMaybe<Scalars['Float']['input']>;
+  average_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  close?: InputMaybe<Scalars['Float']['input']>;
+  close_gt?: InputMaybe<Scalars['Float']['input']>;
+  close_gte?: InputMaybe<Scalars['Float']['input']>;
+  close_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  close_lt?: InputMaybe<Scalars['Float']['input']>;
+  close_lte?: InputMaybe<Scalars['Float']['input']>;
+  close_not?: InputMaybe<Scalars['Float']['input']>;
+  close_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  count?: InputMaybe<Scalars['Int']['input']>;
+  count_gt?: InputMaybe<Scalars['Int']['input']>;
+  count_gte?: InputMaybe<Scalars['Int']['input']>;
+  count_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  count_lt?: InputMaybe<Scalars['Int']['input']>;
+  count_lte?: InputMaybe<Scalars['Int']['input']>;
+  count_not?: InputMaybe<Scalars['Int']['input']>;
+  count_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  high?: InputMaybe<Scalars['Float']['input']>;
+  high_gt?: InputMaybe<Scalars['Float']['input']>;
+  high_gte?: InputMaybe<Scalars['Float']['input']>;
+  high_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  high_lt?: InputMaybe<Scalars['Float']['input']>;
+  high_lte?: InputMaybe<Scalars['Float']['input']>;
+  high_not?: InputMaybe<Scalars['Float']['input']>;
+  high_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  id_gt?: InputMaybe<Scalars['Int']['input']>;
+  id_gte?: InputMaybe<Scalars['Int']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  id_lt?: InputMaybe<Scalars['Int']['input']>;
+  id_lte?: InputMaybe<Scalars['Int']['input']>;
+  id_not?: InputMaybe<Scalars['Int']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  low?: InputMaybe<Scalars['Float']['input']>;
+  low_gt?: InputMaybe<Scalars['Float']['input']>;
+  low_gte?: InputMaybe<Scalars['Float']['input']>;
+  low_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  low_lt?: InputMaybe<Scalars['Float']['input']>;
+  low_lte?: InputMaybe<Scalars['Float']['input']>;
+  low_not?: InputMaybe<Scalars['Float']['input']>;
+  low_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  marketId?: InputMaybe<Scalars['String']['input']>;
+  marketId_gt?: InputMaybe<Scalars['String']['input']>;
+  marketId_gte?: InputMaybe<Scalars['String']['input']>;
+  marketId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  marketId_lt?: InputMaybe<Scalars['String']['input']>;
+  marketId_lte?: InputMaybe<Scalars['String']['input']>;
+  marketId_not?: InputMaybe<Scalars['String']['input']>;
+  marketId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  open?: InputMaybe<Scalars['Float']['input']>;
+  open_gt?: InputMaybe<Scalars['Float']['input']>;
+  open_gte?: InputMaybe<Scalars['Float']['input']>;
+  open_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  open_lt?: InputMaybe<Scalars['Float']['input']>;
+  open_lte?: InputMaybe<Scalars['Float']['input']>;
+  open_not?: InputMaybe<Scalars['Float']['input']>;
+  open_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  volume?: InputMaybe<Scalars['Float']['input']>;
+  volume_gt?: InputMaybe<Scalars['Float']['input']>;
+  volume_gte?: InputMaybe<Scalars['Float']['input']>;
+  volume_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  volume_lt?: InputMaybe<Scalars['Float']['input']>;
+  volume_lte?: InputMaybe<Scalars['Float']['input']>;
+  volume_not?: InputMaybe<Scalars['Float']['input']>;
+  volume_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+};
+
+export type YieldPricesHourlyPage = {
+  __typename?: 'YieldPricesHourlyPage';
+  items: Array<YieldPricesHourly>;
+  pageInfo: PageInfo;
+};
+
 export type AllocateItemFragment = { __typename?: 'Allocate', id: string, sender: string, debitX: any, debitY: any, deltaLiquidity: any, timestamp: any, block: any, pool: { __typename?: 'Pool', id: string, reserveX: any, reserveY: any, totalLiquidity: any, strike: any, sigma: any, fee: any, maturity: any, tokenX: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, tokenY: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, curator: { __typename?: 'Curator', id: string, name: string } } } & { ' $fragmentName'?: 'AllocateItemFragment' };
 
 export type AllAllocatesQueryVariables = Exact<{
@@ -1416,7 +1521,7 @@ export type AllDeallocatesQuery = { __typename?: 'Query', deallocates: { __typen
       & { ' $fragmentRefs'?: { 'DeallocateItemFragment': DeallocateItemFragment } }
     )> } };
 
-export type MarketItemFragment = { __typename?: 'Market', id: string, name: string, expiry: any, pool: { __typename?: 'Pool', id: string, reserveX: any, reserveY: any, totalLiquidity: any, strike: any, sigma: any, fee: any, maturity: any, tokenX: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, tokenY: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, curator: { __typename?: 'Curator', id: string, name: string } }, marketTokens?: { __typename?: 'MarketTokenPage', items: Array<{ __typename?: 'MarketToken', token: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number, icon?: string | null } }> } | null } & { ' $fragmentName'?: 'MarketItemFragment' };
+export type MarketItemFragment = { __typename?: 'Market', id: string, name: string, expiry: any, ibAssetId: string, nativeAssetId: string, ptId: string, syId: string, underlyingToUsd: number, wrappedNativeAssetId: string, ytId: string, pool: { __typename?: 'Pool', aggregateVolumeInUnderlying: number, id: string, liquidityInUnderlying: number, reserveX: any, reserveY: any, totalLiquidity: any, strike: any, sigma: any, fee: any, maturity: any, tokenX: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, tokenY: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number, icon?: string | null }, curator: { __typename?: 'Curator', id: string, name: string } }, marketTokens?: { __typename?: 'MarketTokenPage', items: Array<{ __typename?: 'MarketToken', token: { __typename?: 'Token', id: string, name: string, symbol: string, decimals: number, icon?: string | null } }> } | null } & { ' $fragmentName'?: 'MarketItemFragment' };
 
 export type SyTokenQueryVariables = Exact<{
   tokenId: Scalars['String']['input'];
@@ -1459,15 +1564,22 @@ export type MarketQuery = { __typename?: 'Query', markets: { __typename?: 'Marke
       & { ' $fragmentRefs'?: { 'MarketItemFragment': MarketItemFragment } }
     )> } };
 
-export type MarketPriceItemFragment = { __typename?: 'MarketPricesHourly', id: number, marketId: string, open: number, close: number, high: number, low: number, average: number, volume: number, count: number } & { ' $fragmentName'?: 'MarketPriceItemFragment' };
+export type PositionQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type PositionQuery = { __typename?: 'Query', positions: { __typename?: 'PositionPage', items: Array<{ __typename?: 'Position', avgEntryImpliedRate: number, netYieldDelta: number }> } };
+
+export type MarketPriceItemFragment = { __typename?: 'YieldPricesHourly', id: number, marketId: string, open: number, close: number, high: number, low: number, average: number, volume: number, count: number } & { ' $fragmentName'?: 'MarketPriceItemFragment' };
 
 export type MarketPriceQueryVariables = Exact<{
   marketId: Scalars['String']['input'];
 }>;
 
 
-export type MarketPriceQuery = { __typename?: 'Query', marketPricesHourlys: { __typename?: 'MarketPricesHourlyPage', items: Array<(
-      { __typename?: 'MarketPricesHourly' }
+export type MarketPriceQuery = { __typename?: 'Query', yieldPricesHourlys: { __typename?: 'YieldPricesHourlyPage', items: Array<(
+      { __typename?: 'YieldPricesHourly' }
       & { ' $fragmentRefs'?: { 'MarketPriceItemFragment': MarketPriceItemFragment } }
     )> } };
 
@@ -1509,8 +1621,8 @@ export type AllSwapsQuery = { __typename?: 'Query', swaps: { __typename?: 'SwapP
 
 export const AllocateItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AllocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Allocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"debitX"}},{"kind":"Field","name":{"kind":"Name","value":"debitY"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllocateItemFragment, unknown>;
 export const DeallocateItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DeallocateItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Deallocate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"creditX"}},{"kind":"Field","name":{"kind":"Name","value":"creditY"}},{"kind":"Field","name":{"kind":"Name","value":"deltaLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<DeallocateItemFragment, unknown>;
-export const MarketItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"marketTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}}]}}]} as unknown as DocumentNode<MarketItemFragment, unknown>;
-export const MarketPriceItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketPriceItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MarketPricesHourly"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"open"}},{"kind":"Field","name":{"kind":"Name","value":"close"}},{"kind":"Field","name":{"kind":"Name","value":"high"}},{"kind":"Field","name":{"kind":"Name","value":"low"}},{"kind":"Field","name":{"kind":"Name","value":"average"}},{"kind":"Field","name":{"kind":"Name","value":"volume"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]} as unknown as DocumentNode<MarketPriceItemFragment, unknown>;
+export const MarketItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregateVolumeInUnderlying"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"liquidityInUnderlying"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"marketTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}},{"kind":"Field","name":{"kind":"Name","value":"ibAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"nativeAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"ptId"}},{"kind":"Field","name":{"kind":"Name","value":"syId"}},{"kind":"Field","name":{"kind":"Name","value":"underlyingToUsd"}},{"kind":"Field","name":{"kind":"Name","value":"wrappedNativeAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"ytId"}}]}}]} as unknown as DocumentNode<MarketItemFragment, unknown>;
+export const MarketPriceItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketPriceItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"YieldPricesHourly"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"open"}},{"kind":"Field","name":{"kind":"Name","value":"close"}},{"kind":"Field","name":{"kind":"Name","value":"high"}},{"kind":"Field","name":{"kind":"Name","value":"low"}},{"kind":"Field","name":{"kind":"Name","value":"average"}},{"kind":"Field","name":{"kind":"Name","value":"volume"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]} as unknown as DocumentNode<MarketPriceItemFragment, unknown>;
 export const ImpliedYieldItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ImpliedYieldItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImpliedYield"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<ImpliedYieldItemFragment, unknown>;
 export const UnderlyingYieldItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UnderlyingYieldItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UnderlyingYield"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<UnderlyingYieldItemFragment, unknown>;
 export const SwapItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SwapItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Swap"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"tokenIn"}},{"kind":"Field","name":{"kind":"Name","value":"tokenOut"}},{"kind":"Field","name":{"kind":"Name","value":"amountIn"}},{"kind":"Field","name":{"kind":"Name","value":"amountOut"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<SwapItemFragment, unknown>;
@@ -1519,9 +1631,10 @@ export const AllDeallocatesDocument = {"kind":"Document","definitions":[{"kind":
 export const SyTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"syToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sYTokens"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRate"}},{"kind":"Field","name":{"kind":"Name","value":"tokensIn"}},{"kind":"Field","name":{"kind":"Name","value":"tokensOut"}}]}}]}}]}}]} as unknown as DocumentNode<SyTokenQuery, SyTokenQueryVariables>;
 export const PTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"pToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pTokens"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]}}]}}]} as unknown as DocumentNode<PTokenQuery, PTokenQueryVariables>;
 export const YTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"yToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yTokens"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"redeemableInterest"}},{"kind":"Field","name":{"kind":"Name","value":"redeemableRewards"}}]}}]}}]}}]} as unknown as DocumentNode<YTokenQuery, YTokenQueryVariables>;
-export const AllMarketsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allMarkets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"marketTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}}]}}]} as unknown as DocumentNode<AllMarketsQuery, AllMarketsQueryVariables>;
-export const MarketDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"market"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"marketTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}}]}}]} as unknown as DocumentNode<MarketQuery, MarketQueryVariables>;
-export const MarketPriceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"marketPrice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marketId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"marketPricesHourlys"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"marketId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"marketId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketPriceItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketPriceItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MarketPricesHourly"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"open"}},{"kind":"Field","name":{"kind":"Name","value":"close"}},{"kind":"Field","name":{"kind":"Name","value":"high"}},{"kind":"Field","name":{"kind":"Name","value":"low"}},{"kind":"Field","name":{"kind":"Name","value":"average"}},{"kind":"Field","name":{"kind":"Name","value":"volume"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]} as unknown as DocumentNode<MarketPriceQuery, MarketPriceQueryVariables>;
+export const AllMarketsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allMarkets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregateVolumeInUnderlying"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"liquidityInUnderlying"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"marketTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}},{"kind":"Field","name":{"kind":"Name","value":"ibAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"nativeAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"ptId"}},{"kind":"Field","name":{"kind":"Name","value":"syId"}},{"kind":"Field","name":{"kind":"Name","value":"underlyingToUsd"}},{"kind":"Field","name":{"kind":"Name","value":"wrappedNativeAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"ytId"}}]}}]} as unknown as DocumentNode<AllMarketsQuery, AllMarketsQueryVariables>;
+export const MarketDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"market"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Market"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregateVolumeInUnderlying"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"liquidityInUnderlying"}},{"kind":"Field","name":{"kind":"Name","value":"tokenX"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokenY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reserveX"}},{"kind":"Field","name":{"kind":"Name","value":"reserveY"}},{"kind":"Field","name":{"kind":"Name","value":"totalLiquidity"}},{"kind":"Field","name":{"kind":"Name","value":"strike"}},{"kind":"Field","name":{"kind":"Name","value":"sigma"}},{"kind":"Field","name":{"kind":"Name","value":"fee"}},{"kind":"Field","name":{"kind":"Name","value":"maturity"}},{"kind":"Field","name":{"kind":"Name","value":"curator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"marketTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"expiry"}},{"kind":"Field","name":{"kind":"Name","value":"ibAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"nativeAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"ptId"}},{"kind":"Field","name":{"kind":"Name","value":"syId"}},{"kind":"Field","name":{"kind":"Name","value":"underlyingToUsd"}},{"kind":"Field","name":{"kind":"Name","value":"wrappedNativeAssetId"}},{"kind":"Field","name":{"kind":"Name","value":"ytId"}}]}}]} as unknown as DocumentNode<MarketQuery, MarketQueryVariables>;
+export const PositionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"position"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"positions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avgEntryImpliedRate"}},{"kind":"Field","name":{"kind":"Name","value":"netYieldDelta"}}]}}]}}]}}]} as unknown as DocumentNode<PositionQuery, PositionQueryVariables>;
+export const MarketPriceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"marketPrice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marketId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yieldPricesHourlys"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"marketId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"marketId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MarketPriceItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarketPriceItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"YieldPricesHourly"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"open"}},{"kind":"Field","name":{"kind":"Name","value":"close"}},{"kind":"Field","name":{"kind":"Name","value":"high"}},{"kind":"Field","name":{"kind":"Name","value":"low"}},{"kind":"Field","name":{"kind":"Name","value":"average"}},{"kind":"Field","name":{"kind":"Name","value":"volume"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]} as unknown as DocumentNode<MarketPriceQuery, MarketPriceQueryVariables>;
 export const ImplYieldDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"implYield"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marketId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"impliedYields"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"marketId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"marketId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ImpliedYieldItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ImpliedYieldItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImpliedYield"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<ImplYieldQuery, ImplYieldQueryVariables>;
 export const UnderlyingYieldDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"underlyingYield"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marketId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"underlyingYields"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"marketId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"marketId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UnderlyingYieldItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UnderlyingYieldItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UnderlyingYield"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marketId"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<UnderlyingYieldQuery, UnderlyingYieldQueryVariables>;
 export const AllSwapsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allSwaps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swaps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"poolId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SwapItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SwapItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Swap"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"tokenIn"}},{"kind":"Field","name":{"kind":"Name","value":"tokenOut"}},{"kind":"Field","name":{"kind":"Name","value":"amountIn"}},{"kind":"Field","name":{"kind":"Name","value":"amountOut"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"block"}}]}}]} as unknown as DocumentNode<AllSwapsQuery, AllSwapsQueryVariables>;
