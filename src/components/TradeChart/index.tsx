@@ -196,15 +196,15 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     useEffect(() => {
         if (status === 'success') {
             const priceData = normalizePrice(
-                data.marketPricesHourlys.items,
+                data.yieldPricesHourlys.items,
                 isLong
             )
             const volData = normalizeVolume(
-                data.marketPricesHourlys.items,
+                data.yieldPricesHourlys.items,
                 isLong
             )
             const avgData = normalizeAverage(
-                data.marketPricesHourlys.items,
+                data.yieldPricesHourlys.items,
                 isLong
             )
             setCData(priceData)

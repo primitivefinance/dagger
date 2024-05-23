@@ -1,7 +1,7 @@
 import { graphql } from '../gql'
 
 export const MarketPriceFragment = graphql(`
-    fragment MarketPriceItem on MarketPricesHourly {
+    fragment MarketPriceItem on YieldPricesHourly {
         id
         marketId
         open
@@ -16,7 +16,7 @@ export const MarketPriceFragment = graphql(`
 // TODO: add sort
 export const MarketPriceQueryDocument = graphql(`
     query marketPrice($marketId: String!) {
-        marketPricesHourlys(where: { marketId: $marketId }) {
+        yieldPricesHourlys(where: { marketId: $marketId }) {
             items {
                 ...MarketPriceItem
             }
