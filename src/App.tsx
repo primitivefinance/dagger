@@ -26,7 +26,7 @@ export const config = getDefaultConfig({
     projectId,
     transports: {
         [mainnet.id]: http(
-            'https://virtual.mainnet.rpc.tenderly.co/3d94d062-ece1-4942-9ca2-f0876a728970'
+            'https://virtual.mainnet.rpc.tenderly.co/59ca971a-3818-4ad8-bded-14bdfc71739f'
         ),
     },
 })

@@ -25,6 +25,13 @@ export const rmmABI = [
     },
     {
         type: 'function',
+        name: 'IMPLIED_RATE_TIME',
+        inputs: [],
+        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
         name: 'INIT_UPPER_BOUND',
         inputs: [],
         outputs: [{ name: '', type: 'int256', internalType: 'int256' }],
@@ -75,17 +82,6 @@ export const rmmABI = [
             },
         ],
         stateMutability: 'view',
-    },
-    {
-        type: 'function',
-        name: 'adjust',
-        inputs: [
-            { name: 'deltaX', type: 'int256', internalType: 'int256' },
-            { name: 'deltaY', type: 'int256', internalType: 'int256' },
-            { name: 'deltaLiquidity', type: 'int256', internalType: 'int256' },
-        ],
-        outputs: [],
-        stateMutability: 'nonpayable',
     },
     {
         type: 'function',
@@ -159,56 +155,6 @@ export const rmmABI = [
     },
     {
         type: 'function',
-        name: 'computeL',
-        inputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-            { name: 'liquidity', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'prevTau', type: 'uint256', internalType: 'uint256' },
-            { name: 'newTau', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeLGivenX',
-        inputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-            { name: 'S', type: 'uint256', internalType: 'uint256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'tau_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeLGivenYK',
-        inputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-            { name: 'reserveY_', type: 'uint256', internalType: 'uint256' },
-            { name: 'liquidity', type: 'uint256', internalType: 'uint256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'newTau', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeLnSDivK',
-        inputs: [
-            { name: 'S', type: 'uint256', internalType: 'uint256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'int256', internalType: 'int256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
         name: 'computeSYToYT',
         inputs: [
             { name: 'index', type: 'uint256', internalType: 'PYIndex' },
@@ -218,102 +164,6 @@ export const rmmABI = [
         ],
         outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
         stateMutability: 'view',
-    },
-    {
-        type: 'function',
-        name: 'computeSpotPrice',
-        inputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-            {
-                name: 'totalLiquidity_',
-                type: 'uint256',
-                internalType: 'uint256',
-            },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'tau_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeTauWadYears',
-        inputs: [
-            { name: 'tauSeconds', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeTfDL',
-        inputs: [
-            { name: 'args', type: 'bytes', internalType: 'bytes' },
-            { name: 'L', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'int256', internalType: 'int256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeTfDReserveX',
-        inputs: [
-            { name: 'args', type: 'bytes', internalType: 'bytes' },
-            { name: 'rX', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'int256', internalType: 'int256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeTfDReserveY',
-        inputs: [
-            { name: 'args', type: 'bytes', internalType: 'bytes' },
-            { name: 'rY', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'int256', internalType: 'int256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeTradingFunction',
-        inputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-            { name: 'reserveY_', type: 'uint256', internalType: 'uint256' },
-            { name: 'liquidity', type: 'uint256', internalType: 'uint256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'tau_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'int256', internalType: 'int256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeX',
-        inputs: [
-            { name: 'reserveY_', type: 'uint256', internalType: 'uint256' },
-            { name: 'liquidity', type: 'uint256', internalType: 'uint256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'tau_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'computeY',
-        inputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-            { name: 'liquidity', type: 'uint256', internalType: 'uint256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'tau_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
-        stateMutability: 'pure',
     },
     {
         type: 'function',
@@ -361,46 +211,6 @@ export const rmmABI = [
         inputs: [],
         outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
         stateMutability: 'view',
-    },
-    {
-        type: 'function',
-        name: 'findRootNewLiquidity',
-        inputs: [
-            { name: 'args', type: 'bytes', internalType: 'bytes' },
-            { name: 'initialGuess', type: 'uint256', internalType: 'uint256' },
-            { name: 'maxIterations', type: 'uint256', internalType: 'uint256' },
-            { name: 'tolerance', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [{ name: 'L', type: 'uint256', internalType: 'uint256' }],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'findRootNewX',
-        inputs: [
-            { name: 'args', type: 'bytes', internalType: 'bytes' },
-            { name: 'initialGuess', type: 'uint256', internalType: 'uint256' },
-            { name: 'maxIterations', type: 'uint256', internalType: 'uint256' },
-            { name: 'tolerance', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-        ],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'findRootNewY',
-        inputs: [
-            { name: 'args', type: 'bytes', internalType: 'bytes' },
-            { name: 'initialGuess', type: 'uint256', internalType: 'uint256' },
-            { name: 'maxIterations', type: 'uint256', internalType: 'uint256' },
-            { name: 'tolerance', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [
-            { name: 'reserveY_', type: 'uint256', internalType: 'uint256' },
-        ],
-        stateMutability: 'pure',
     },
     {
         type: 'function',
@@ -603,10 +413,25 @@ export const rmmABI = [
     },
     {
         type: 'function',
-        name: 'prepareSwap',
+        name: 'prepareSwapX',
         inputs: [
-            { name: 'tokenIn', type: 'address', internalType: 'address' },
-            { name: 'tokenOut', type: 'address', internalType: 'address' },
+            { name: 'amountIn', type: 'uint256', internalType: 'uint256' },
+            { name: 'timestamp', type: 'uint256', internalType: 'uint256' },
+            { name: 'index', type: 'uint256', internalType: 'PYIndex' },
+        ],
+        outputs: [
+            { name: 'amountInWad', type: 'uint256', internalType: 'uint256' },
+            { name: 'amountOutWad', type: 'uint256', internalType: 'uint256' },
+            { name: 'amountOut', type: 'uint256', internalType: 'uint256' },
+            { name: 'deltaLiquidity', type: 'int256', internalType: 'int256' },
+            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
+        ],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
+        name: 'prepareSwapY',
+        inputs: [
             { name: 'amountIn', type: 'uint256', internalType: 'uint256' },
             { name: 'timestamp', type: 'uint256', internalType: 'uint256' },
             { name: 'index', type: 'uint256', internalType: 'PYIndex' },
@@ -640,71 +465,6 @@ export const rmmABI = [
         inputs: [],
         outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
         stateMutability: 'view',
-    },
-    {
-        type: 'function',
-        name: 'solveL',
-        inputs: [
-            {
-                name: 'comp',
-                type: 'tuple',
-                internalType: 'struct PoolPreCompute',
-                components: [
-                    {
-                        name: 'reserveInAsset',
-                        type: 'uint256',
-                        internalType: 'uint256',
-                    },
-                    {
-                        name: 'strike_',
-                        type: 'uint256',
-                        internalType: 'uint256',
-                    },
-                    { name: 'tau_', type: 'uint256', internalType: 'uint256' },
-                ],
-            },
-            {
-                name: 'initialLiquidity',
-                type: 'uint256',
-                internalType: 'uint256',
-            },
-            { name: 'reserveY_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [
-            { name: 'liquidity_', type: 'uint256', internalType: 'uint256' },
-        ],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'solveX',
-        inputs: [
-            { name: 'reserveY_', type: 'uint256', internalType: 'uint256' },
-            { name: 'liquidity', type: 'uint256', internalType: 'uint256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'tau_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-        ],
-        stateMutability: 'pure',
-    },
-    {
-        type: 'function',
-        name: 'solveY',
-        inputs: [
-            { name: 'reserveX_', type: 'uint256', internalType: 'uint256' },
-            { name: 'liquidity', type: 'uint256', internalType: 'uint256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-            { name: 'sigma_', type: 'uint256', internalType: 'uint256' },
-            { name: 'tau_', type: 'uint256', internalType: 'uint256' },
-        ],
-        outputs: [
-            { name: 'reserveY_', type: 'uint256', internalType: 'uint256' },
-        ],
-        stateMutability: 'pure',
     },
     {
         type: 'function',
@@ -791,6 +551,13 @@ export const rmmABI = [
         ],
         outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
         stateMutability: 'nonpayable',
+    },
+    {
+        type: 'function',
+        name: 'version',
+        inputs: [],
+        outputs: [{ name: '', type: 'string', internalType: 'string' }],
+        stateMutability: 'pure',
     },
     {
         type: 'event',
@@ -1079,14 +846,7 @@ export const rmmABI = [
             { name: 'nextLiquidity', type: 'uint256', internalType: 'uint256' },
         ],
     },
-    {
-        type: 'error',
-        name: 'InvalidDecimals',
-        inputs: [
-            { name: 'token', type: 'address', internalType: 'address' },
-            { name: 'decimals', type: 'uint256', internalType: 'uint256' },
-        ],
-    },
+    { type: 'error', name: 'InvalidStrike', inputs: [] },
     { type: 'error', name: 'Min', inputs: [] },
     { type: 'error', name: 'NegativeInfinity', inputs: [] },
     { type: 'error', name: 'OutOfBounds', inputs: [] },

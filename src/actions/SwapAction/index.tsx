@@ -14,6 +14,7 @@ import { formatNumber, fromWad, toWad } from '@/utils/numbers'
 import { ETH_ADDRESS, useTokens } from '@/lib/useTokens'
 import { Skeleton } from '@/components/ui/skeleton'
 import ApproveAction from '../ApproveAction'
+import { useMarketRoute } from '@/lib/useMarketRoute'
 
 type TokenUniverse = {
     native: `0x${string}`
@@ -40,7 +41,6 @@ function getTradeRoute(
     tokenIn: string,
     tokenOut: string
 ): TradeRoutes {
-    console.log({ tokenIn, tokenOut })
     if (tokenIn === universe.native && tokenOut === universe.sy) {
         return TradeRoutes.ETH_TO_SY
     } else if (tokenIn === universe.sy && tokenOut === universe.native) {
@@ -92,7 +92,6 @@ const SwapAction: React.FC<{
     const { txHash, setTxHash, txReceipt } = useTransactionStatus({})
 
     // Get the market data.
-    const { id } = useParams()
     const { data: marketData } = useGraphQL(MarketInfoQueryDocument, {
         id: marketRoute,
     })
@@ -113,11 +112,15 @@ const SwapAction: React.FC<{
         sortedTokens?.find((tkn) => getAddress(tkn.id) === getAddress(tokenOut))
 
     // Build the token universe
-    const { data: ytAddress } = useReadContract({
-        abi: rmmABI,
-        address: id as `0x${string}`,
-        functionName: 'YT',
-    })
+    const { data: ytAddress, failureReason: ytFailureReason } = useReadContract(
+        {
+            abi: rmmABI,
+            address: marketRoute as `0x${string}`,
+            functionName: 'YT',
+        }
+    )
+    console.log({ ytAddress, ytFailureReason })
+
     const ZERO_ADDRESS = padHex(`0x`, { size: 20 }) as `0x${string}`
     const PENDLE_NATIVE_ETH = ZERO_ADDRESS
     const universe = {
@@ -129,6 +132,7 @@ const SwapAction: React.FC<{
         yt: ytAddress as `0x${string}`,
         market: market?.id as `0x${string}`,
     }
+    console.log({ universe })
 
     // --- Prepare the action --- //
 
@@ -137,6 +141,7 @@ const SwapAction: React.FC<{
         tokenIn as `0x${string}`,
         tokenOut as `0x${string}`
     )
+    console.log({ tradeRoute })
 
     // Prepare the input amount.
     const preparedIn =
@@ -216,13 +221,16 @@ const SwapAction: React.FC<{
 
     const timestamp = Math.floor(Date.now() / 1000)
 
-    const { data: storedIndex } = useReadContract({
-        abi: parseAbi([
-            'function pyIndexStored() external view returns(uint256)',
-        ] as const),
-        address: ytAddress as `0x${string}`,
-        functionName: 'pyIndexStored',
-    })
+    const { data: storedIndex, failureReason: storedIndexFailure } =
+        useReadContract({
+            abi: parseAbi([
+                'function pyIndexStored() external view returns(uint256)',
+            ] as const),
+            address: ytAddress as `0x${string}`,
+            functionName: 'pyIndexStored',
+        })
+
+    const isSwapX = tradeRoute === TradeRoutes.SY_TO_PT
 
     const {
         data: preparedSwap,
@@ -233,11 +241,11 @@ const SwapAction: React.FC<{
         abi: rmmABI,
         address: universe.market,
         account: address as `0x${string}`,
-        functionName: 'prepareSwap',
-        args: [tokenIn, tokenOut, preparedIn as bigint, timestamp, storedIndex],
+        functionName: isSwapX ? 'prepareSwapX' : 'prepareSwapY',
+        args: [preparedIn as bigint, timestamp, storedIndex],
         query: {
             enabled:
-                !!id &&
+                !!marketRoute &&
                 !!tokenIn &&
                 !!tokenOut &&
                 !!preparedIn &&
@@ -247,11 +255,14 @@ const SwapAction: React.FC<{
         },
     })
 
+    console.log({ storedIndex, storedIndexFailure })
+
     const {
         data: preparedSwapToYT,
         status: prepareSwapToYTStatus,
         error: errorToYT,
         fetchStatus: fetchAmountOutToYTStatus,
+        failureReason: failureReasonToYT,
     } = useReadContract({
         abi: rmmABI,
         address: universe.market,
@@ -260,7 +271,7 @@ const SwapAction: React.FC<{
         args: [storedIndex, preparedIn as bigint, timestamp, toWad(100)],
         query: {
             enabled:
-                !!id &&
+                !!marketRoute &&
                 !!tokenIn &&
                 !!tokenOut &&
                 !!preparedIn &&
@@ -268,6 +279,8 @@ const SwapAction: React.FC<{
                 tradeRoute === TradeRoutes.SY_TO_YT,
         },
     })
+
+    console.log({ fetchAmountOutToYTStatus, failureReasonToYT })
 
     useEffect(() => {
         setTokenOutFetching(fetchAmountOutStatus)
@@ -277,7 +290,7 @@ const SwapAction: React.FC<{
         preparedSwap || []
 
     const amountYTOut = preparedSwapToYT ? preparedSwapToYT : 0
-    console.log({ preparedSwapToYT })
+    console.log({ preparedSwapToYT, amountYTOut })
 
     const estimatedAmountOut =
         tradeRoute === TradeRoutes.SY_TO_YT
