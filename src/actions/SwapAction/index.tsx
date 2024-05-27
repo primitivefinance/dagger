@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
 import { useAccount, useReadContract } from 'wagmi'
 import { erc20Abi, getAddress, padHex, parseAbi } from 'viem'
 import { FetchStatus } from '@tanstack/react-query'
@@ -14,7 +13,6 @@ import { formatNumber, fromWad, toWad } from '@/utils/numbers'
 import { ETH_ADDRESS, useTokens } from '@/lib/useTokens'
 import { Skeleton } from '@/components/ui/skeleton'
 import ApproveAction from '../ApproveAction'
-import { useMarketRoute } from '@/lib/useMarketRoute'
 
 type TokenUniverse = {
     native: `0x${string}`
@@ -230,7 +228,7 @@ const SwapAction: React.FC<{
             functionName: 'pyIndexStored',
         })
 
-    const isSwapX = tradeRoute === TradeRoutes.SY_TO_PT
+    const isSwapSyForPt = tradeRoute === TradeRoutes.SY_TO_PT
 
     const {
         data: preparedSwap,
@@ -241,7 +239,7 @@ const SwapAction: React.FC<{
         abi: rmmABI,
         address: universe.market,
         account: address as `0x${string}`,
-        functionName: isSwapX ? 'prepareSwapX' : 'prepareSwapY',
+        functionName: isSwapSyForPt ? 'prepareSwapSy' : 'prepareSwapPt',
         args: [preparedIn as bigint, timestamp, storedIndex],
         query: {
             enabled:
@@ -311,9 +309,10 @@ const SwapAction: React.FC<{
         key: universe.market,
         to: universe.market,
         args: triggerFlashSwap
-            ? [amountYTOut as bigint, 1n, globalProps.from, '0x1111']
-            : [preparedIn as bigint, amountOut as bigint, globalProps.from, ''],
+            ? [amountYTOut as bigint, 1n, globalProps.from]
+            : [preparedIn as bigint, amountOut as bigint, globalProps.from],
         contractName: 'rmm' as const,
+        value: tokenIn === ETH_ADDRESS ? (preparedIn as bigint) : undefined,
     }
 
     useEffect(() => {
@@ -343,7 +342,11 @@ const SwapAction: React.FC<{
     let action = null
     if (tokenIn === null || tokenOut === null || !preparedIn) {
         action = (
-            <TransactionButton disabled {...swapProps} functionName={'swapX'} />
+            <TransactionButton
+                disabled
+                {...swapProps}
+                functionName={'swapExactSyForPt'}
+            />
         )
     } else if (!approved) {
         action = (
@@ -368,17 +371,26 @@ const SwapAction: React.FC<{
                 break
             case TradeRoutes.SY_TO_PT:
                 action = (
-                    <TransactionButton {...swapProps} functionName={'swapX'} />
+                    <TransactionButton
+                        {...swapProps}
+                        functionName={'swapExactSyForPt'}
+                    />
                 )
                 break
             case TradeRoutes.PT_TO_SY:
                 action = (
-                    <TransactionButton {...swapProps} functionName={'swapY'} />
+                    <TransactionButton
+                        {...swapProps}
+                        functionName={'swapExactPtForSy'}
+                    />
                 )
                 break
             case TradeRoutes.SY_TO_YT:
                 action = (
-                    <TransactionButton {...swapProps} functionName={'swapY'} />
+                    <TransactionButton
+                        {...swapProps}
+                        functionName={'swapExactSyForYt'}
+                    />
                 )
                 break
             default:
@@ -386,7 +398,7 @@ const SwapAction: React.FC<{
                     <TransactionButton
                         disabled
                         {...swapProps}
-                        functionName={'swapX'}
+                        functionName={'swapExactSyForPt'}
                     />
                 )
         }

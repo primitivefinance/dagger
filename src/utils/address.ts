@@ -5,7 +5,7 @@ export const FALLBACK_ALT = '@shadcn'
 
 // todo: this is a pool contract that we use as a fallback for computing swap routes.
 export const FALLBACK_MARKET_ADDRESS = getAddress(
-    '0xb62a840ef9b9b5fcf39fec90fab94e760e3511bd'
+    '0x7f6d3259275d783b89d0894a61d40b10a240199c'
 )
 
 export function shortAddress(address: `0x${string}`): string {
