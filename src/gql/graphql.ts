@@ -659,11 +659,50 @@ export type PoolPage = {
   pageInfo: PageInfo;
 };
 
+export type Portfolio = {
+  __typename?: 'Portfolio';
+  id: Scalars['String']['output'];
+  positions?: Maybe<PositionPage>;
+};
+
+
+export type PortfolioPositionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<PortfolioFilter>;
+};
+
+export type PortfolioFilter = {
+  AND?: InputMaybe<Array<InputMaybe<PortfolioFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<PortfolioFilter>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type PortfolioPage = {
+  __typename?: 'PortfolioPage';
+  items: Array<Portfolio>;
+  pageInfo: PageInfo;
+};
+
 export type Position = {
   __typename?: 'Position';
   avgEntryImpliedRate: Scalars['Float']['output'];
   id: Scalars['String']['output'];
+  market: Market;
+  marketId: Scalars['String']['output'];
   netYieldDelta: Scalars['Float']['output'];
+  portfolio: Portfolio;
+  portfolioId: Scalars['String']['output'];
 };
 
 export type PositionFilter = {
@@ -678,13 +717,23 @@ export type PositionFilter = {
   avgEntryImpliedRate_not?: InputMaybe<Scalars['Float']['input']>;
   avgEntryImpliedRate_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
   id?: InputMaybe<Scalars['String']['input']>;
-  id_gt?: InputMaybe<Scalars['String']['input']>;
-  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
   id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  id_lt?: InputMaybe<Scalars['String']['input']>;
-  id_lte?: InputMaybe<Scalars['String']['input']>;
   id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  marketId?: InputMaybe<Scalars['String']['input']>;
+  marketId_gt?: InputMaybe<Scalars['String']['input']>;
+  marketId_gte?: InputMaybe<Scalars['String']['input']>;
+  marketId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  marketId_lt?: InputMaybe<Scalars['String']['input']>;
+  marketId_lte?: InputMaybe<Scalars['String']['input']>;
+  marketId_not?: InputMaybe<Scalars['String']['input']>;
+  marketId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   netYieldDelta?: InputMaybe<Scalars['Float']['input']>;
   netYieldDelta_gt?: InputMaybe<Scalars['Float']['input']>;
   netYieldDelta_gte?: InputMaybe<Scalars['Float']['input']>;
@@ -693,6 +742,14 @@ export type PositionFilter = {
   netYieldDelta_lte?: InputMaybe<Scalars['Float']['input']>;
   netYieldDelta_not?: InputMaybe<Scalars['Float']['input']>;
   netYieldDelta_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+  portfolioId?: InputMaybe<Scalars['String']['input']>;
+  portfolioId_gt?: InputMaybe<Scalars['String']['input']>;
+  portfolioId_gte?: InputMaybe<Scalars['String']['input']>;
+  portfolioId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  portfolioId_lt?: InputMaybe<Scalars['String']['input']>;
+  portfolioId_lte?: InputMaybe<Scalars['String']['input']>;
+  portfolioId_not?: InputMaybe<Scalars['String']['input']>;
+  portfolioId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type PositionPage = {
@@ -815,6 +872,8 @@ export type Query = {
   pTokens: PTokenPage;
   pool?: Maybe<Pool>;
   pools: PoolPage;
+  portfolio?: Maybe<Portfolio>;
+  portfolios: PortfolioPage;
   position?: Maybe<Position>;
   positions: PositionPage;
   principalPricesHourly?: Maybe<PrincipalPricesHourly>;
@@ -951,6 +1010,21 @@ export type QueryPoolsArgs = {
   orderBy?: InputMaybe<Scalars['String']['input']>;
   orderDirection?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<PoolFilter>;
+};
+
+
+export type QueryPortfolioArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryPortfoliosArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<PortfolioFilter>;
 };
 
 
