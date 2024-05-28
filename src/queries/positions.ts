@@ -1,11 +1,14 @@
 import { graphql } from '../gql'
 
-export const PositionsQueryDocument = graphql(`
-    query position($id: String!) {
+export const PositionQueryDocument = graphql(`
+    query positions($id: String!) {
         positions(where: { id: $id }) {
             items {
+                id
                 avgEntryImpliedRate
                 netYieldDelta
+                marketId
+                portfolioId
             }
         }
     }
