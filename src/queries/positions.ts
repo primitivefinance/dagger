@@ -1,8 +1,8 @@
 import { graphql } from '../gql'
 
 export const PositionQueryDocument = graphql(`
-    query positions($id: String!) {
-        positions(where: { id: $id }) {
+    query positions($marketId: String!) {
+        positions(where: { marketId: $marketId }) {
             items {
                 id
                 avgEntryImpliedRate
