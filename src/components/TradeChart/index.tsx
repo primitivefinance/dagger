@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useEffect, useRef, useState } from 'react'
-
+import { useAccount } from 'wagmi'
 import {
     Chart,
     LineSeries,
@@ -8,6 +8,7 @@ import {
     CandlestickSeries,
     PriceScale,
     TimeScale,
+    PriceLine,
 } from 'lightweight-charts-react-wrapper'
 
 import { useGraphQL } from '../../useGraphQL'
@@ -18,6 +19,8 @@ import {
     ImplYieldQueryDocument,
     UnderlyingYieldQueryDocument,
 } from '../../queries/prices'
+
+import { PositionQueryDocument } from '../../queries/positions'
 
 export type TradeChartProps = {
     marketId: string
@@ -103,6 +106,12 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const { data, status } = useGraphQL(MarketPriceQueryDocument, { marketId })
     const implied = useGraphQL(ImplYieldQueryDocument, { marketId })
     const underlying = useGraphQL(UnderlyingYieldQueryDocument, { marketId })
+    const account = useAccount()
+    const position = useGraphQL(PositionQueryDocument, {
+        id: !!account?.address?.concat(marketId)
+            ? account?.address?.concat(marketId).toLowerCase()
+            : '',
+    })
 
     const [yData, setYData] = useState<
         { time: string; value: number }[] | null | any
@@ -114,6 +123,9 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const [cData, setCData] = useState<HourlyPrice[] | null | any>(null)
     const [vData, setVData] = useState<HourlyVolume[] | null | any>(null)
     const [aData, setAData] = useState<HourlyAverage[] | null | any>(null)
+
+    const [positionEntry, setPositionEntry] = useState<number | null>(null)
+    const [positionSize, setPositionSize] = useState<number | null>(null)
 
     const yOptions = {
         container: {
@@ -211,7 +223,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             setVData(volData)
             setAData(avgData)
         }
-        console.log(status)
     }, [status])
 
     useEffect(() => {
@@ -225,7 +236,21 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
         }
     }, [implied.status, underlying.status])
 
-    if (!cData || !yData) return <></>
+    useEffect(() => {
+        if (
+            position.status === 'success' &&
+            !!position.data?.positions?.items[0]?.avgEntryImpliedRate
+        ) {
+            console.log(position.data.positions.items[0])
+            const value = position.data.positions.items[0].avgEntryImpliedRate * 100
+            const size = position.data.positions.items[0].netYieldDelta
+            console.log(value)
+            setPositionEntry(value)
+            setPositionSize(size)
+        }
+    }, [position.status])
+
+    if (!cData || !yData || position.status !== 'success') return <></>
     return (
         <div className="grid grid-cols-2 h-full w-full divide-x">
             <Chart {...yOptions} autoSize>
@@ -235,7 +260,19 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     lineWidth={2}
                     title="Implied Rate"
                     priceFormat={{ type: 'percent' }}
-                />
+                >
+                    {positionSize && positionEntry ? (
+                        <PriceLine
+                            price={positionEntry}
+                            lineWidth={3}
+                            color='green'
+                            axisLabelVisible={true}
+                            title={`${positionSize.toFixed(4)} stETH @ `}
+                        />
+                    ) : (
+                        <></>
+                    )}
+                </LineSeries>
                 <LineSeries
                     data={uData}
                     color="green"
