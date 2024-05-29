@@ -119,13 +119,13 @@ function OnboardForm({ setOnboardOpen }): JSX.Element {
             >
                 <FormDescription className="text-lg">
                     Hey! Welcome to Primitive. We built this app to make it easy
-                    to interact with the components of yield-bearing assets,
-                    like <i>staked ether</i>.
+                    to interact with the yield and principal components of
+                    yield-bearing assets.
                 </FormDescription>
-                <h2 className="text-lg font-bold">What to do</h2>
+                <h2 className="text-lg font-bold">What you&apos;ll do</h2>
                 <FormDescription className="text-lg">
                     Once you&apos;re onboarded to Primitive&apos;s virtual
-                    testnet, you&apos;ll be able to convert your virtualnet{' '}
+                    testnet, you&apos;ll be able to convert your virtual net{' '}
                     <i>ether</i> into <i>Standardized Yield Tokens</i>. These
                     can be traded for either tokenized yield,{' '}
                     <i>Yield tokens</i>, or the short side of the yield called{' '}

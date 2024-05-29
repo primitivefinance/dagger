@@ -27,6 +27,12 @@ import { fromExpiry } from '@/utils/dates'
 import { formatWad } from '@/utils/numbers'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { LoadingDots } from '@/components/TransactionButton'
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion'
 
 type CuratorInfo = {
     name: string
@@ -217,76 +223,95 @@ const Home: React.FC<HomeProps> = ({ children }) => {
     const [displayCards, setDisplayCards] = React.useState<boolean>(false)
     const amountMarkets = data?.markets?.items?.length
 
+    const [value, setValue] = React.useState<string>('item-1')
+
     return (
         <div className="flex flex-col gap-2xl p-xl pt-0">
-            <div className="flex flex-col gap-0 border">
-                <div className="flex flex-row items-center w-full justify-between border-b bg-muted/50 p-md">
-                    <div className="flex flex-row gap-md items-center">
-                        <h4 className="scroll-m-20">Yield Markets</h4>
-                        <h4 className="flex flex-row gap-xs items-center">
-                            (
-                            {amountMarkets ?? <Skeleton className="h-4 w-12" />}
-                            )
-                        </h4>
-                        <Button
-                            variant="transparent"
-                            size="icon"
-                            onClick={() => refetch()}
-                            disabled={isFetching || isLoading}
-                        >
-                            {isFetching ? <LoadingDots /> : <ReloadIcon />}
-                        </Button>
-                    </div>
-                    <TooltipProvider delayDuration={50}>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="tx" disabled>
-                                    <div className="flex flex-row items-center gap-1">
-                                        <svg
-                                            className="w-4 h-3"
-                                            aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke="currentColor"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="1.5"
-                                                d="M5 12h14m-7 7V5"
-                                            />
-                                        </svg>
-                                        Create pool
-                                    </div>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Coming soon</TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                </div>
+            <Accordion
+                type="single"
+                collapsible
+                value={value}
+                onValueChange={setValue}
+            >
+                <AccordionItem value="item-1" className="border-0">
+                    <div className="flex flex-row items-center w-full justify-between border bg-muted/50 p-md">
+                        <div className="flex flex-row gap-md items-center">
+                            <h4 className="scroll-m-20">Yield Markets</h4>
+                            <h4 className="flex flex-row gap-xs items-center">
+                                (
+                                {amountMarkets ?? (
+                                    <Skeleton className="h-4 w-12" />
+                                )}
+                                )
+                            </h4>
+                            <Button
+                                variant="transparent"
+                                size="icon"
+                                onClick={() => refetch()}
+                                disabled={isFetching || isLoading}
+                            >
+                                {isFetching ? <LoadingDots /> : <ReloadIcon />}
+                            </Button>
+                        </div>
 
-                {displayCards ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                        {data?.markets?.items?.map((market, i) => (
-                            <PoolCard key={i} market={market} />
-                        )) ??
-                            new Array(3).fill(0).map((_, i) => (
-                                <Skeleton key={i}>
-                                    <PoolCard />
-                                </Skeleton>
-                            ))}
+                        <div className="flex flex-row gap-md items-center justify-end">
+                            <TooltipProvider delayDuration={50}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button variant="tx" disabled>
+                                            <div className="flex flex-row items-center gap-1">
+                                                <svg
+                                                    className="w-4 h-3"
+                                                    aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        stroke="currentColor"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="1.5"
+                                                        d="M5 12h14m-7 7V5"
+                                                    />
+                                                </svg>
+                                                Create pool
+                                            </div>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Coming soon</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                            <AccordionTrigger />
+                        </div>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 gap-md">
-                        <PoolsTable
-                            data={data}
-                            isFetching={isFetching}
-                            amount={amountMarkets}
-                        />
-                    </div>
-                )}
-            </div>
+
+                    <AccordionContent>
+                        <div className="flex flex-col gap-0 border">
+                            {displayCards ? (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
+                                    {data?.markets?.items?.map((market, i) => (
+                                        <PoolCard key={i} market={market} />
+                                    )) ??
+                                        new Array(3).fill(0).map((_, i) => (
+                                            <Skeleton key={i}>
+                                                <PoolCard />
+                                            </Skeleton>
+                                        ))}
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 gap-md">
+                                    <PoolsTable
+                                        data={data}
+                                        isFetching={isFetching}
+                                        amount={amountMarkets}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
 
             {children ?? (
                 <div className="border flex flex-col gap-0 p-xl items-center justify-center h-96">

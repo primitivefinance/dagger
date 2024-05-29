@@ -52,7 +52,6 @@ function getTradeRoute(
         universe.yt &&
         getAddress(tokenOut) === getAddress(universe.yt)
     ) {
-        console.log('SY_TO_YT')
         return TradeRoutes.SY_TO_YT
     } else if (tokenIn === universe.yt) {
         return TradeRoutes.YT_TO_SY
@@ -117,7 +116,6 @@ const SwapAction: React.FC<{
             functionName: 'YT',
         }
     )
-    console.log({ ytAddress, ytFailureReason })
 
     const ZERO_ADDRESS = padHex(`0x`, { size: 20 }) as `0x${string}`
     const PENDLE_NATIVE_ETH = ZERO_ADDRESS
@@ -130,7 +128,6 @@ const SwapAction: React.FC<{
         yt: ytAddress as `0x${string}`,
         market: market?.id as `0x${string}`,
     }
-    console.log({ universe })
 
     // --- Prepare the action --- //
 
@@ -139,7 +136,6 @@ const SwapAction: React.FC<{
         tokenIn as `0x${string}`,
         tokenOut as `0x${string}`
     )
-    console.log({ tradeRoute })
 
     // Prepare the input amount.
     const preparedIn =
@@ -253,8 +249,6 @@ const SwapAction: React.FC<{
         },
     })
 
-    console.log({ storedIndex, storedIndexFailure })
-
     const {
         data: preparedSwapToYT,
         status: prepareSwapToYTStatus,
@@ -278,8 +272,6 @@ const SwapAction: React.FC<{
         },
     })
 
-    console.log({ fetchAmountOutToYTStatus, failureReasonToYT })
-
     useEffect(() => {
         setTokenOutFetching(fetchAmountOutStatus)
     }, [fetchAmountOutStatus, setTokenOutFetching])
@@ -288,7 +280,6 @@ const SwapAction: React.FC<{
         preparedSwap || []
 
     const amountYTOut = preparedSwapToYT ? preparedSwapToYT : 0
-    console.log({ preparedSwapToYT, amountYTOut })
 
     const estimatedAmountOut =
         tradeRoute === TradeRoutes.SY_TO_YT
