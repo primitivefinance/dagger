@@ -16,7 +16,7 @@ import { Button } from '../ui/button'
 import { InfoCircledIcon } from '@radix-ui/react-icons'
 import { useReadContract } from 'wagmi'
 import { erc20Abi, getAddress } from 'viem'
-import { formatWad } from '@/utils/numbers'
+import { formatNumber, formatWad } from '@/utils/numbers'
 import {
     Tooltip,
     TooltipContent,
@@ -37,8 +37,9 @@ const tooltipContent = {
         'Liquidity pool tokens (LPTs) can be redeemed for the proportional amount of pool holdings.',
     curator:
         'Curators have power over pool calibration that can impact the value of deposits.',
-    rate: 'Exchange rate from the underlying yield bearing asset to the standardized yield parent token.',
+    rate: 'Amount of stETH per Standardized Yield token (composite token).',
     autonomous: 'Algorithmic pool calibrated upon creation; cannot be altered.',
+    volume: 'Total volume of trades in the pool, converted to the underlying asset then to USD.',
 }
 
 const EmptyPoolDataRow = ({ rows = 1 }: { rows?: number }): JSX.Element => {
@@ -134,9 +135,22 @@ const PoolCell: FC<PoolCellProps> = (props: {
                     <SkeletonText />
                 )}
             </TableCell>
-            <TableCell className="text-left">
+            {/* <TableCell className="text-left">
                 {lpTokenSupply && !isFetchingLPSupply ? (
                     <span>{formatWad(lpTokenSupply)}</span>
+                ) : (
+                    <SkeletonText />
+                )}
+            </TableCell> */}
+
+            <TableCell className="text-left">
+                {poolData?.pool?.aggregateVolumeInUnderlying ? (
+                    <span>
+                        {formatNumber(
+                            poolData?.pool?.aggregateVolumeInUnderlying,
+                            'USD'
+                        )}
+                    </span>
                 ) : (
                     <SkeletonText />
                 )}
@@ -175,7 +189,7 @@ const PoolsTable: FC<{
                                 <TooltipTrigger asChild>
                                     <div className="flex flex-row items-center gap-xs hover:text-primary">
                                         <InfoCircledIcon />
-                                        Rate
+                                        stETH / SY
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -183,7 +197,7 @@ const PoolsTable: FC<{
                                 </TooltipContent>
                             </Tooltip>
                         </TableHead>
-                        <TableHead className="text-left">
+                        {/* <TableHead className="text-left">
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <div className="flex flex-row items-center gap-xs hover:text-primary">
@@ -193,6 +207,20 @@ const PoolsTable: FC<{
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     {tooltipContent.lptOutstanding}
+                                </TooltipContent>
+                            </Tooltip>
+                        </TableHead> */}
+
+                        <TableHead className="text-left">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div className="flex flex-row items-center gap-xs hover:text-primary">
+                                        <InfoCircledIcon />
+                                        Volume
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {tooltipContent.volume}
                                 </TooltipContent>
                             </Tooltip>
                         </TableHead>

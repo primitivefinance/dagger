@@ -21,6 +21,7 @@ import { useAccount, useReadContracts } from 'wagmi'
 import { ETH_ADDRESS } from '@/lib/useTokens'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { formatNumber } from '@/utils/numbers'
 
 const MarketStatCard = ({
     label,
@@ -88,6 +89,48 @@ const MarketView = (): JSX.Element => {
 
     return (
         <div className="flex flex-col gap-2xl">
+            <div className="border flex flex-col gap-0">
+                <div className="flex flex-row items-center w-full justify-between border-b bg-muted/50 p-md">
+                    <div className="flex flex-row items-center gap-sm w-1/2">
+                        <h4>Implied Yield Rates</h4>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <InfoCircledIcon />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                The implied yield rates are calculated based on
+                                the current price of the yield tokens.
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                    <div className="flex flex-row items-center gap-sm w-1/2">
+                        <h4>Implied Discount</h4>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <InfoCircledIcon />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                The price of each principal token per 1 stETH
+                                token. Principal tokens have a small discount to
+                                the current price of stETH because they do not
+                                accrue yield. They can be redeemed for a full
+                                stETH at expiry.
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                </div>
+                <div className="flex h-96 w-full items-center justify-center text-center">
+                    <TradeChart
+                        marketId={
+                            id
+                                ? id
+                                : '0x59d26a4e574e8c3c7be83697acbfed57d1793045'
+                        }
+                        isLong={false}
+                    />
+                </div>
+            </div>
+
             <div className="flex flex-row items-start gap-lg ">
                 <div className="flex flex-col gap-0 border w-full">
                     <div className="flex flex-row  w-full justify-between border-b bg-muted/50 p-md">
@@ -170,16 +213,24 @@ const MarketView = (): JSX.Element => {
                                 Long Yield
                             </Button>
 
-                            <Button
-                                size="lg"
-                                variant="info"
-                                onClick={() =>
-                                    setTokenParams(market?.syId, market?.ptId)
-                                }
-                                disabled={syBalance === 0n}
-                            >
-                                Short Yield
-                            </Button>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        size="lg"
+                                        variant="info"
+                                        onClick={() =>
+                                            setTokenParams(
+                                                market?.syId,
+                                                market?.ptId
+                                            )
+                                        }
+                                        disabled={syBalance === 0n || true}
+                                    >
+                                        Short Yield
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Coming soon</TooltipContent>
+                            </Tooltip>
 
                             {address &&
                                 (balances?.[0]?.result as bigint) > 0 && (
@@ -201,52 +252,26 @@ const MarketView = (): JSX.Element => {
                 </div>
             </div>
 
-            <div className="border flex flex-col gap-0">
-                <div className="flex flex-row items-center w-full justify-between border-b bg-muted/50 p-md">
-                    <div className="flex flex-row items-center gap-sm w-1/2">
-                        <h4>Implied Yield Rates</h4>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <InfoCircledIcon />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                The implied yield rates are calculated based on
-                                the current price of the yield tokens.
-                            </TooltipContent>
-                        </Tooltip>
-                    </div>
-                    <div className="flex flex-row items-center gap-sm w-1/2">
-                        <h4>Implied Discount</h4>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <InfoCircledIcon />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                The price of each principal token per 1 stETH
-                                token. Principal tokens have a small discount to
-                                the current price of stETH because they do not
-                                accrue yield. They can be redeemed for a full
-                                stETH at expiry.
-                            </TooltipContent>
-                        </Tooltip>
-                    </div>
-                </div>
-                <div className="flex h-96 w-full items-center justify-center text-center">
-                    <TradeChart
-                        marketId={
-                            id
-                                ? id
-                                : '0x59d26a4e574e8c3c7be83697acbfed57d1793045'
-                        }
-                        isLong={false}
-                    />
-                </div>
-            </div>
             <div className="flex flex-col gap-lg">
                 <div className="grid grid-cols-3 gap-lg">
-                    <MarketStatCard label="Volume" data="$10,000" />
-                    <MarketStatCard label="Liquidity" data="$10,000" />
-                    <MarketStatCard label="Price" data="$10,000" />
+                    <MarketStatCard
+                        label="Volume"
+                        data={formatNumber(
+                            market?.pool?.aggregateVolumeInUnderlying,
+                            'USD'
+                        )}
+                    />
+                    <MarketStatCard
+                        label="Liquidity"
+                        data={formatNumber(
+                            market?.pool?.liquidityInUnderlying,
+                            'USD'
+                        )}
+                    />
+                    <MarketStatCard
+                        label="Underlying Asset Price"
+                        data={formatNumber(market?.underlyingToUsd, 'USD')}
+                    />
                 </div>
                 <div className="grid grid-cols-3 gap-lg">
                     {address && (
