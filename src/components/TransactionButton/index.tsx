@@ -400,6 +400,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
                     functionName: props.functionName,
                     args: props.args,
                     value: props.value,
+                    gas: 2_000_000n,
                 })
             }
         >

@@ -3,6 +3,7 @@ import { useGraphQL } from '../useGraphQL'
 import { MarketInfoQueryDocument } from '../queries/markets'
 import { MarketItemFragment } from 'gql/graphql'
 import { getAddress } from 'viem'
+import { FALLBACK_MARKET_ADDRESS } from '@/utils/address'
 
 export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
@@ -13,7 +14,7 @@ export function useTokens({ id }: { id?: string }): {
     }
 } {
     const { data } = useGraphQL(MarketInfoQueryDocument, {
-        id: id ? id : '0x1791d400741E9168fF678bdeE36DB448E2D9ea28',
+        id: id ? id : FALLBACK_MARKET_ADDRESS,
     })
 
     return useMemo(() => {
