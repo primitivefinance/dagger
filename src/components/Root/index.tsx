@@ -130,14 +130,6 @@ function Root(): JSX.Element {
                                     </Link>
                                 </Button>
                             </li>
-
-                            <li
-                                className={`${loc.pathname.startsWith('/faucet') ? 'underline' : 'no-underline'}`}
-                            >
-                                <Button variant="link" asChild>
-                                    <Link to="/faucet">Get Started</Link>
-                                </Button>
-                            </li>
                         </ul>
                     </Container>
                     <div className="w-1/4 flex-row flex gap-4 items-center justify-end">
