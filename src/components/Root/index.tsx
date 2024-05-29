@@ -1,33 +1,24 @@
-import WalletConnector from '../WalletConnector'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { toHex } from 'viem'
+
+import React, { useEffect } from 'react'
 import Links from './links.json'
 import { Button } from '../ui/button'
-import React from 'react'
 import Container from '../Container'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { cn } from '@/lib/utils'
-import AccountHoldings from '../AccountHoldings'
-import TradeView from '../TradeView'
+
 import Layout from '../Layout'
 import Modal from '../Modal'
-import { Input } from '../ui/input'
+
 import { Dialog, DialogTrigger } from '../ui/dialog'
-import { useForm } from 'react-hook-form'
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '../ui/form'
+
 import FeedbackForm from '../FeedbackForm'
 
-const VERSION = 'v0.3.0'
+import { primitiveVirtualNet } from '../../App'
+import OnboardForm from '../OnboardForm'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
-const externalApplicationDisclaimer =
-    'Disclaimer: Primitive applications are currently in beta, use at your own discretion. External applications are not affiliated with Primitive.'
+const VERSION = 'v0.3.0'
 
 const Wordmark = ({ className }) => {
     return (
@@ -76,7 +67,36 @@ function Root(): JSX.Element {
     }, [scrolling])
 
     const [feedbackOpen, setFeedbackOpen] = React.useState(false)
-    const form = useForm()
+    const [onboardOpen, setOnboardOpen] = React.useState(false)
+
+    const switchToVirtualNet = async () => {
+        if (window.ethereum) {
+            window.ethereum
+                .request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                        {
+                            chainId: toHex(primitiveVirtualNet.id),
+                            chainName: primitiveVirtualNet.name.toString(),
+                            rpcUrls: [
+                                primitiveVirtualNet.rpcUrls.default.http[0].toString(),
+                            ],
+                            nativeCurrency: primitiveVirtualNet.nativeCurrency,
+                            blockExplorerUrls: [
+                                primitiveVirtualNet.blockExplorers.default.url.toString(),
+                            ],
+                        },
+                    ],
+                })
+                .catch((error: any) => {
+                    console.error(error)
+                })
+        }
+    }
+
+    const isOnboarded = () => {
+        return localStorage.getItem('onboard') !== null
+    }
 
     return (
         <div className={`font-primary min-h-screen relative`}>
@@ -139,7 +159,30 @@ function Root(): JSX.Element {
                                 <FeedbackForm />
                             </Modal>
                         </Dialog>
-                        <ConnectButton />
+                        {isOnboarded() ? (
+                            <ConnectButton />
+                        ) : (
+                            <Dialog
+                                open={onboardOpen}
+                                onOpenChange={setOnboardOpen}
+                            >
+                                <DialogTrigger asChild>
+                                    <Button variant="tx">
+                                        <p>Onboard</p>
+                                    </Button>
+                                </DialogTrigger>
+
+                                <Modal
+                                    title="Onboard"
+                                    isOpen={onboardOpen}
+                                    toggle={setOnboardOpen}
+                                >
+                                    <OnboardForm
+                                        setOnboardOpen={setOnboardOpen}
+                                    />
+                                </Modal>
+                            </Dialog>
+                        )}
                     </div>
                 </div>
             </header>

@@ -14,13 +14,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import TradeChart from '../TradeChart'
 import { useTradeRoute } from '@/lib/useTradeRoute'
 import { FALLBACK_ALT, FALLBACK_AVATAR } from '@/utils/address'
-import { formatWad } from '@/utils/numbers'
-import { fromExpiry } from '@/utils/dates'
-import TokenHoldings from '../TokenHoldings'
 import { useMarketRoute } from '@/lib/useMarketRoute'
 import { TokenBalance } from '../AccountHoldings'
 import { erc20Abi } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
+import { ETH_ADDRESS } from '@/lib/useTokens'
 
 const MarketStatCard = ({
     label,
@@ -64,7 +62,7 @@ const MarketView = (): JSX.Element => {
         args: [address],
     }
 
-    const tokens = [{ id }]
+    const tokens = [{ id }, { id: market?.syId }]
 
     const {
         data: balances,
@@ -79,6 +77,12 @@ const MarketView = (): JSX.Element => {
             enabled: !!address,
         },
     })
+
+    const syBalanceIndex = tokens.findIndex(
+        (token: { id: string }) => token.id === market?.syId
+    )
+
+    const syBalance = balances?.[syBalanceIndex]?.result as bigint
 
     return (
         <div className="flex flex-col gap-2xl">
@@ -134,11 +138,18 @@ const MarketView = (): JSX.Element => {
                                 size="lg"
                                 variant="tx"
                                 onClick={() =>
-                                    setTokenParams(
-                                        market?.pool?.tokenX?.id,
-                                        market?.pool?.tokenY?.id
-                                    )
+                                    setTokenParams(ETH_ADDRESS, market?.syId)
                                 }
+                            >
+                                Mint SY for trading
+                            </Button>
+                            <Button
+                                size="lg"
+                                variant="tx"
+                                onClick={() =>
+                                    setTokenParams(market?.syId, market?.ytId)
+                                }
+                                disabled={syBalance === 0n}
                             >
                                 Long Yield
                             </Button>
@@ -147,11 +158,9 @@ const MarketView = (): JSX.Element => {
                                 size="lg"
                                 variant="info"
                                 onClick={() =>
-                                    setTokenParams(
-                                        market?.pool?.tokenY?.id,
-                                        market?.pool?.tokenX?.id
-                                    )
+                                    setTokenParams(market?.syId, market?.ptId)
                                 }
+                                disabled={syBalance === 0n}
                             >
                                 Short Yield
                             </Button>

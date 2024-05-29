@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { http, WagmiProvider } from 'wagmi'
+import { http, useSwitchChain, WagmiProvider } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+    Chain,
     RainbowKitProvider,
     darkTheme,
     getDefaultConfig,
@@ -20,12 +21,33 @@ import { TooltipProvider } from './components/ui/tooltip'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
+export const primitiveVirtualNet = {
+    id: 1,
+    name: 'Tenderly (RMM)',
+    iconUrl: 'https://www.primitive.xyz/favicon/favicon-32x32.png',
+    iconBackground: '#000',
+    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    rpcUrls: {
+        default: {
+            http: [
+                'https://virtual.mainnet.rpc.tenderly.co/59ca971a-3818-4ad8-bded-14bdfc71739f',
+            ],
+        },
+    },
+    blockExplorers: {
+        default: {
+            name: 'tenderly',
+            url: 'https://dashboard.tenderly.co/Prim/rmm/testnet/d67a1c38-5e02-429e-bbd1-bbdb0e3e71b0',
+        },
+    },
+} as const satisfies Chain
+
 export const config = getDefaultConfig({
     appName: 'Primitive',
-    chains: [mainnet],
+    chains: [primitiveVirtualNet],
     projectId,
     transports: {
-        [mainnet.id]: http(
+        [primitiveVirtualNet.id]: http(
             'https://virtual.mainnet.rpc.tenderly.co/59ca971a-3818-4ad8-bded-14bdfc71739f'
         ),
     },
@@ -81,7 +103,7 @@ function App(): JSX.Element {
                         accentColor: '#0E4CF7',
                         borderRadius: 'small',
                     })}
-                    initialChain={mainnet}
+                    initialChain={primitiveVirtualNet}
                 >
                     <ThemeProvider
                         defaultTheme="dark"
