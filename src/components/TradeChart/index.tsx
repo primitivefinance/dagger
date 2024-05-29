@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useEffect, useRef, useState } from 'react'
-
+import { useAccount } from 'wagmi'
 import {
     Chart,
     LineSeries,
@@ -8,6 +8,7 @@ import {
     CandlestickSeries,
     PriceScale,
     TimeScale,
+    PriceLine,
 } from 'lightweight-charts-react-wrapper'
 
 import { useGraphQL } from '../../useGraphQL'
@@ -19,10 +20,17 @@ import {
     UnderlyingYieldQueryDocument,
 } from '../../queries/prices'
 
+import { PositionQueryDocument } from '../../queries/positions'
+
 export type TradeChartProps = {
     marketId: string
     isLong: boolean
 }
+export type PositionLineProps = {
+    marketId: string
+    address: string
+}
+
 type HourlyPrice = {
     time: string
     open: number
@@ -99,10 +107,43 @@ const normalizeYield = (
     return parsed
 }
 
+const PositionLine: FC<PositionLineProps> = ({ marketId, address }) => {
+    const position = useGraphQL(PositionQueryDocument, { marketId })
+    const [positionEntry, setPositionEntry] = useState<number | null>(null)
+    const [positionSize, setPositionSize] = useState<number | null>(null)
+
+    useEffect(() => {
+        if (
+            position.status === 'success' &&
+            !!position.data?.positions?.items
+        ) {
+            position.data.positions.items.map((pos) => {
+                if (pos.portfolioId === address.toLowerCase()) {
+                    const value = pos.avgEntryImpliedRate * 100
+                    const size = pos.netYieldDelta
+                    setPositionEntry(value)
+                    setPositionSize(size)
+                }
+            })
+        }
+    }, [position.status])
+    if (!positionEntry || !positionSize) return <></>
+    return (
+        <PriceLine
+            price={positionEntry}
+            lineWidth={3}
+            color="green"
+            axisLabelVisible={true}
+            title={`${positionSize.toFixed(4)} stETH @ `}
+        />
+    )
+}
+
 const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const { data, status } = useGraphQL(MarketPriceQueryDocument, { marketId })
     const implied = useGraphQL(ImplYieldQueryDocument, { marketId })
     const underlying = useGraphQL(UnderlyingYieldQueryDocument, { marketId })
+    const account = useAccount()
 
     const [yData, setYData] = useState<
         { time: string; value: number }[] | null | any
@@ -211,7 +252,6 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
             setVData(volData)
             setAData(avgData)
         }
-        console.log(status)
     }, [status])
 
     useEffect(() => {
@@ -235,7 +275,16 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     lineWidth={2}
                     title="Implied Rate"
                     priceFormat={{ type: 'percent' }}
-                />
+                >
+                    {!!account?.address ? (
+                        <PositionLine
+                            marketId={marketId}
+                            address={account.address}
+                        />
+                    ) : (
+                        <></>
+                    )}
+                </LineSeries>
                 <LineSeries
                     data={uData}
                     color="green"
