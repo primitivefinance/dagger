@@ -30,6 +30,7 @@ import TokenHoldings from '../TokenHoldings'
 import SkeletonText from '../SkeletonText'
 import { AllMarketsQuery } from 'gql/graphql'
 import { useMarketRoute } from '@/lib/useMarketRoute'
+import { FALLBACK_MARKET_ADDRESS } from '@/utils/address'
 
 const tooltipContent = {
     lptOutstanding:
@@ -153,7 +154,11 @@ const PoolsTable: FC<{
     isFetching: boolean
     amount?: number
 }> = ({ data, isFetching, amount }) => {
-    const pools = data?.markets?.items
+    const pools = data?.markets?.items?.filter((market) =>
+        market?.id
+            ? getAddress(market?.id) === getAddress(FALLBACK_MARKET_ADDRESS)
+            : true
+    )
 
     return (
         <TooltipProvider delayDuration={50}>
