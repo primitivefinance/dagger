@@ -128,7 +128,7 @@ function FeedbackForm(): JSX.Element {
                         </FormItem>
                     )}
                 />
-                <Button variant="tx" size="lg" type="submit">
+                <Button variant="tx" type="submit">
                     {loading ? <LoadingDots /> : <p>Submit</p>}
                 </Button>
             </form>
