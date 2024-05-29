@@ -19,6 +19,8 @@ import { TokenBalance } from '../AccountHoldings'
 import { erc20Abi } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
 import { ETH_ADDRESS } from '@/lib/useTokens'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { InfoCircledIcon } from '@radix-ui/react-icons'
 
 const MarketStatCard = ({
     label,
@@ -112,10 +114,11 @@ const MarketView = (): JSX.Element => {
                                 <p className="w-4xl flex-1">
                                     {market?.name ? (
                                         <>
-                                            This is a description of the market.
-                                            Lorem ipsum delorum. Lorem ipsum
-                                            delorum. Thats as much as I remember
-                                            about the latin placeholder.
+                                            This market tokenizes the individual
+                                            yield and principal components of
+                                            the yield-bearing asset <b>stETH</b>
+                                            . Once expiry is reached, the yield
+                                            tokens do not accrue more yield.
                                         </>
                                     ) : (
                                         <SkeletonText />
@@ -128,9 +131,22 @@ const MarketView = (): JSX.Element => {
 
                 <div className="flex flex-col gap-0 border w-full">
                     <div className="flex flex-row  w-full justify-between border-b bg-muted/50 p-md">
-                        <h4 className="text-muted dark:text-muted-foreground">
-                            Actions
-                        </h4>
+                        <div className="flex flex-row items-center gap-sm w-1/2">
+                            <h4 className="text-muted dark:text-muted-foreground">
+                                Actions
+                            </h4>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <InfoCircledIcon />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Convert the base asset (e.g. ETH, stETH)
+                                    into the composite token, Standardized
+                                    Yield, then trade it for either of the
+                                    component tokens, Yield or Principal.
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
                     </div>
                     <div className="flex flex-row gap-2xl p-md">
                         <div className="flex flex-row gap-md items-start">
@@ -187,8 +203,33 @@ const MarketView = (): JSX.Element => {
 
             <div className="border flex flex-col gap-0">
                 <div className="flex flex-row items-center w-full justify-between border-b bg-muted/50 p-md">
-                    <h4 className="w-1/2">Implied Yield Rates</h4>
-                    <h4 className="w-1/2">Implied Prices</h4>
+                    <div className="flex flex-row items-center gap-sm w-1/2">
+                        <h4>Implied Yield Rates</h4>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <InfoCircledIcon />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                The implied yield rates are calculated based on
+                                the current price of the yield tokens.
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                    <div className="flex flex-row items-center gap-sm w-1/2">
+                        <h4>Implied Discount</h4>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <InfoCircledIcon />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                The price of each principal token per 1 stETH
+                                token. Principal tokens have a small discount to
+                                the current price of stETH because they do not
+                                accrue yield. They can be redeemed for a full
+                                stETH at expiry.
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
                 </div>
                 <div className="flex h-96 w-full items-center justify-center text-center">
                     <TradeChart
