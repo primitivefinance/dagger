@@ -27,6 +27,7 @@ export const MarketPriceQueryDocument = graphql(`
 export const ImpliedYieldFragment = graphql(`
     fragment ImpliedYieldItem on ImpliedYield {
         id
+        time
         marketId
         value
     }
@@ -45,6 +46,7 @@ export const ImplYieldQueryDocument = graphql(`
 export const UnderlyingYieldFragment = graphql(`
     fragment UnderlyingYieldItem on UnderlyingYield {
         id
+        time
         marketId
         value
     }
