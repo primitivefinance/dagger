@@ -100,7 +100,7 @@ const normalizeYield = (
 ): { time: string; value: number }[] => {
     const parsed = rawTimeSeries.map((tck) => {
         return {
-            time: tck.id,
+            time: tck.time,
             value: tck.value * 100,
         }
     })
