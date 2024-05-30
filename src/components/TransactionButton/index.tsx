@@ -9,6 +9,12 @@ import { dfmmABI } from '@/lib/abis/dfmm'
 import { rmmABI } from '@/lib/abis/rmm'
 import { SYABI } from '@/lib/abis/sy'
 
+const functionNameToAction: { [fnName: string]: string } = {
+    ['swapExactSyForYt']: 'Buy Yield',
+    ['swapExactYtForSy']: 'Sell Yield',
+    ['approve']: 'Approve',
+}
+
 export interface TransactionButtonProps extends ButtonProps {
     from?: Address
     to: Address
@@ -279,24 +285,18 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
         transactionState: TransactionState
     }): JSX.Element => {
         const defaultState = <span>Type an amount</span>
+        const humanReadableAction = functionNameToAction?.[functionName]
         const action =
+            humanReadableAction ??
             functionName.slice(0, 1).toUpperCase() + functionName.slice(1)
 
         switch (transactionState) {
             case TransactionState.Resting:
                 return defaultState
             case TransactionState.SimulateReady:
-                return (
-                    <span>
-                        Simulate {props.functionName.toLocaleLowerCase()}
-                    </span>
-                )
+                return <span>Simulate {action}</span>
             case TransactionState.SimulateStale:
-                return (
-                    <span>
-                        Resimulate {props.functionName.toLocaleLowerCase()}
-                    </span>
-                )
+                return <span>Resimulate {action}</span>
             case TransactionState.SimulateFetching:
                 return <span>Simulating...</span>
             case TransactionState.SimulateError:

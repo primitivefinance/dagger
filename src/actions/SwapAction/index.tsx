@@ -314,7 +314,12 @@ const SwapAction: React.FC<{
         if (amountYTOut && prepareSwapToYTStatus === 'success') {
             setAmountOut(fromWad(amountYTOut as bigint).toString())
         }
+
+        if (!amountIn) {
+            setAmountOut('')
+        }
     }, [
+        amountIn,
         amountOut,
         amountOutWad,
         prepareSwapStatus,
