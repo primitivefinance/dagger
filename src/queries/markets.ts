@@ -3,6 +3,7 @@ import { graphql } from '../gql'
 export const MarketFragment = graphql(`
     fragment MarketItem on Market {
         id
+        lastImpliedRate
         name
         pool {
             aggregateVolumeInUnderlying
