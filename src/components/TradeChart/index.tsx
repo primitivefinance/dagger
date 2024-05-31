@@ -267,14 +267,18 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
 
     if (!cData || !yData) return <></>
     return (
-        <div className="grid grid-cols-2 h-full w-full divide-x">
+        <div className="grid grid-cols-1 h-full w-full divide-x">
             <Chart {...yOptions} autoSize>
                 <LineSeries
                     data={yData}
                     color="rgba(33, 150, 243, 1)"
-                    lineWidth={2}
-                    title="Implied Rate"
-                    priceFormat={{ type: 'percent' }}
+                    lineWidth={3}
+                    title="Fixed APR"
+                    priceFormat={{
+                        type: 'custom',
+                        minMove: 0.0001,
+                        formatter: (price) => price.toFixed(4) + '%',
+                    }}
                 >
                     {!!account?.address ? (
                         <PositionLine
@@ -288,39 +292,30 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                 <LineSeries
                     data={uData}
                     color="green"
-                    lineWidth={2}
-                    title="Underlying Rate"
-                    priceFormat={{ type: 'percent' }}
-                />
-                <TimeScale
-                    secondsVisible={true}
-                    timeVisible={true}
-                    barSpacing={20}
-                    rightOffset={10}
-                />
-            </Chart>
-            <Chart {...pOptions} autoSize>
-                <CandlestickSeries
-                    data={cData}
-                    title={isLong ? 'YT / stETH' : 'PT / stETH'}
+                    lineWidth={3}
+                    title="Underlying APR"
+                    priceFormat={{
+                        type: 'price',
+                        precision: 6,
+                        minMove: 0.000001,
+                    }}
                 />
                 <HistogramSeries
                     data={vData}
-                    priceFormat={{ type: 'volume' }}
-                    priceScaleId="overlay"
+                    priceFormat={{ type: 'volume', precision: 1 }}
+                    priceScaleId="side_overlay"
                     title="Volume (stETH)"
                 />
                 <PriceScale
-                    id="overlay"
+                    id="side_overlay"
                     scaleMargins={{ top: 0.8, bottom: 0 }}
                 />
                 <TimeScale
                     secondsVisible={true}
                     timeVisible={true}
                     barSpacing={20}
-                    rightOffset={10}
+                    rightOffset={15}
                 />
-                <LineSeries data={aData} color="#d1d4dc" lineWidth={2} />
             </Chart>
         </div>
     )
