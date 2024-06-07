@@ -167,6 +167,26 @@ export const rmmABI = [
     },
     {
         type: 'function',
+        name: 'computeTokenToYt',
+        inputs: [
+            { name: 'index', type: 'uint256', internalType: 'PYIndex' },
+            { name: 'token', type: 'address', internalType: 'address' },
+            { name: 'exactTokenIn', type: 'uint256', internalType: 'uint256' },
+            { name: 'blockTime', type: 'uint256', internalType: 'uint256' },
+            { name: 'initialGuess', type: 'uint256', internalType: 'uint256' },
+        ],
+        outputs: [
+            {
+                name: 'amountSyMinted',
+                type: 'uint256',
+                internalType: 'uint256',
+            },
+            { name: 'amountYtOut', type: 'uint256', internalType: 'uint256' },
+        ],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
         name: 'curator',
         inputs: [],
         outputs: [{ name: '', type: 'address', internalType: 'address' }],
@@ -413,26 +433,9 @@ export const rmmABI = [
     },
     {
         type: 'function',
-        name: 'prepareSwapPt',
+        name: 'prepareSwapPtIn',
         inputs: [
             { name: 'ptIn', type: 'uint256', internalType: 'uint256' },
-            { name: 'timestamp', type: 'uint256', internalType: 'uint256' },
-            { name: 'index', type: 'uint256', internalType: 'PYIndex' },
-        ],
-        outputs: [
-            { name: 'amountInWad', type: 'uint256', internalType: 'uint256' },
-            { name: 'amountOutWad', type: 'uint256', internalType: 'uint256' },
-            { name: 'amountOut', type: 'uint256', internalType: 'uint256' },
-            { name: 'deltaLiquidity', type: 'int256', internalType: 'int256' },
-            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
-        ],
-        stateMutability: 'view',
-    },
-    {
-        type: 'function',
-        name: 'prepareSwapSy',
-        inputs: [
-            { name: 'amountIn', type: 'uint256', internalType: 'uint256' },
             { name: 'timestamp', type: 'uint256', internalType: 'uint256' },
             { name: 'index', type: 'uint256', internalType: 'PYIndex' },
         ],
@@ -457,6 +460,23 @@ export const rmmABI = [
             { name: 'amountInWad', type: 'uint256', internalType: 'uint256' },
             { name: 'ptOutWad', type: 'uint256', internalType: 'uint256' },
             { name: 'amountIn', type: 'uint256', internalType: 'uint256' },
+            { name: 'deltaLiquidity', type: 'int256', internalType: 'int256' },
+            { name: 'strike_', type: 'uint256', internalType: 'uint256' },
+        ],
+        stateMutability: 'view',
+    },
+    {
+        type: 'function',
+        name: 'prepareSwapSyIn',
+        inputs: [
+            { name: 'amountIn', type: 'uint256', internalType: 'uint256' },
+            { name: 'timestamp', type: 'uint256', internalType: 'uint256' },
+            { name: 'index', type: 'uint256', internalType: 'PYIndex' },
+        ],
+        outputs: [
+            { name: 'amountInWad', type: 'uint256', internalType: 'uint256' },
+            { name: 'amountOutWad', type: 'uint256', internalType: 'uint256' },
+            { name: 'amountOut', type: 'uint256', internalType: 'uint256' },
             { name: 'deltaLiquidity', type: 'int256', internalType: 'int256' },
             { name: 'strike_', type: 'uint256', internalType: 'uint256' },
         ],
@@ -524,6 +544,27 @@ export const rmmABI = [
         inputs: [
             { name: 'amountIn', type: 'uint256', internalType: 'uint256' },
             { name: 'minAmountOut', type: 'uint256', internalType: 'uint256' },
+            { name: 'to', type: 'address', internalType: 'address' },
+        ],
+        outputs: [
+            { name: 'amountOut', type: 'uint256', internalType: 'uint256' },
+            { name: 'deltaLiquidity', type: 'int256', internalType: 'int256' },
+        ],
+        stateMutability: 'nonpayable',
+    },
+    {
+        type: 'function',
+        name: 'swapExactTokenForYt',
+        inputs: [
+            { name: 'token', type: 'address', internalType: 'address' },
+            { name: 'amountTokenIn', type: 'uint256', internalType: 'uint256' },
+            {
+                name: 'amountPtForFlashSwap',
+                type: 'uint256',
+                internalType: 'uint256',
+            },
+            { name: 'minSyMinted', type: 'uint256', internalType: 'uint256' },
+            { name: 'minYtOut', type: 'uint256', internalType: 'uint256' },
             { name: 'to', type: 'address', internalType: 'address' },
         ],
         outputs: [
@@ -887,6 +928,18 @@ export const rmmABI = [
             { name: 'token', type: 'address', internalType: 'address' },
             { name: 'actual', type: 'uint256', internalType: 'uint256' },
             { name: 'expected', type: 'uint256', internalType: 'uint256' },
+        ],
+    },
+    {
+        type: 'error',
+        name: 'InsufficientSYMinted',
+        inputs: [
+            { name: 'amountMinted', type: 'uint256', internalType: 'uint256' },
+            {
+                name: 'minAmountMinted',
+                type: 'uint256',
+                internalType: 'uint256',
+            },
         ],
     },
     {
