@@ -35,6 +35,11 @@ import {
     AccordionTrigger,
 } from '../ui/accordion'
 import { ArrowRightIcon, CheckIcon } from '@radix-ui/react-icons'
+import {
+    useO,
+    useOutputAmount,
+    useOutputAmountutputAmount,
+} from '@/lib/useOutputAmount'
 
 const TokenInput = ({
     token,
@@ -66,6 +71,7 @@ const TokenInput = ({
                         placeholder="0.0"
                         disabled={disabled} // todo
                         className="py-8 px-4 text-4xl"
+                        onBlur={(e) => setAmount(e.target.value)}
                     />
                 )}
             </div>
@@ -173,9 +179,9 @@ const SwapWidget: React.FC<{
                         setToken={setTokenIn}
                         amount={tokenInForm.amount}
                         setAmount={tokenInForm.setAmount}
-                        disabled={!isConnected}
                         disabledTokens={tokens.map((t) => t?.id)}
                         isFetching={tokenInForm.isFetching}
+                        disabled={false}
                     />
                     <TokenInput
                         token={tokens?.[1]}
@@ -305,13 +311,36 @@ type TokenForm = {
     setFetchStatus: (isFetching: FetchStatus) => void
 }
 
-function useTokenFormState(initialAmount = ''): TokenForm {
+function useTokenFormState(
+    initialAmount = '',
+    syncOutputAmountQuery?: boolean
+): TokenForm {
     const [amount, setAmount] = React.useState(initialAmount)
     const [isFetching, setFetchStatus] = React.useState('idle')
 
+    const { getOutputAmount, setOutputAmount } = useOutputAmount()
+
+    // Effect to initialize and synchronize the amount with the URL query parameter
+    useEffect(() => {
+        if (syncOutputAmountQuery) {
+            const outputAmount = getOutputAmount()
+            if (outputAmount !== null) {
+                setAmount(outputAmount)
+            }
+        }
+    }, [getOutputAmount, syncOutputAmountQuery])
+
+    // Function to handle amount change on input blur
+    const handleAmountChange = (newAmount: string) => {
+        setAmount(newAmount)
+        if (syncOutputAmountQuery) {
+            setOutputAmount(newAmount)
+        }
+    }
+
     return {
         amount,
-        setAmount,
+        setAmount: handleAmountChange,
         isFetching: isFetching === 'fetching',
         setFetchStatus,
     }
@@ -322,7 +351,7 @@ const TradeView = (): JSX.Element => {
 
     const { id } = useMarketRoute()
     const tokenInForm = useTokenFormState()
-    const tokenOutForm = useTokenFormState()
+    const tokenOutForm = useTokenFormState(0, true)
 
     return (
         <div className="flex flex-col gap-0 border flex-grow">

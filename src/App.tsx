@@ -18,6 +18,8 @@ import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from './components/ui/toaster'
 import Curator from './pages/curator'
 import { TooltipProvider } from './components/ui/tooltip'
+import YieldPage from './pages/yield'
+import { OutputAmountProvider } from './store/OutputAmountContext'
 
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
@@ -78,6 +80,10 @@ const router = createBrowserRouter([
                 path: '/curator/:id',
                 element: <Curator />,
             },
+            {
+                path: '/yield',
+                element: <YieldPage />,
+            },
         ],
     },
 ])
@@ -98,23 +104,26 @@ function App(): JSX.Element {
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
-                <RainbowKitProvider
-                    theme={darkTheme({
-                        accentColor: '#0E4CF7',
-                        borderRadius: 'small',
-                    })}
-                    initialChain={primitiveVirtualNet}
-                >
-                    <ThemeProvider
-                        defaultTheme="dark"
-                        storageKey="vite-ui-theme"
+                <OutputAmountProvider>
+                    <RainbowKitProvider
+                        theme={darkTheme({
+                            accentColor: '#0E4CF7',
+                            borderRadius: 'small',
+                        })}
+                        initialChain={primitiveVirtualNet}
                     >
-                        <TooltipProvider delayDuration={50}>
-                            <RouterProvider router={router} />
-                            <Toaster />
-                        </TooltipProvider>
-                    </ThemeProvider>
-                </RainbowKitProvider>
+                        <ThemeProvider
+                            defaultTheme="dark"
+                            storageKey="vite-ui-theme"
+                        >
+                            <TooltipProvider delayDuration={50}>
+                                <RouterProvider router={router} />
+
+                                <Toaster />
+                            </TooltipProvider>
+                        </ThemeProvider>
+                    </RainbowKitProvider>
+                </OutputAmountProvider>
             </QueryClientProvider>
         </WagmiProvider>
     )

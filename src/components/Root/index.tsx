@@ -98,6 +98,8 @@ function Root(): JSX.Element {
         return localStorage.getItem('onboard') !== null
     }
 
+    // todo: yield tab is hardcoded to a specific YT address.
+
     return (
         <div className={`font-primary min-h-screen relative`}>
             <header
@@ -127,6 +129,21 @@ function Root(): JSX.Element {
                                 <Button variant="link" asChild>
                                     <Link to="/" className="pl-0">
                                         Pools
+                                    </Link>
+                                </Button>
+                            </li>
+
+                            <li
+                                className={`${loc.pathname.startsWith('/yield') ? 'underline' : 'no-underline'}`}
+                            >
+                                <Button variant="link" asChild>
+                                    <Link
+                                        to={
+                                            '/yield?tokenIn=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&tokenOut=0xf3abc972a0f537c1119c990d422463b93227cd83'
+                                        }
+                                        className="pl-0"
+                                    >
+                                        Yield
                                     </Link>
                                 </Button>
                             </li>
