@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAccount, useReadContract } from 'wagmi'
-import { erc20Abi, getAddress, padHex, parseAbi } from 'viem'
+import { erc20Abi, getAddress, padHex, parseAbi, zeroAddress } from 'viem'
 import { FetchStatus } from '@tanstack/react-query'
 
 import { useGraphQL } from '../../useGraphQL'
@@ -32,6 +32,8 @@ enum TradeRoutes {
     PT_TO_SY = 'PT_TO_SY',
     SY_TO_YT = 'SY_TO_YT',
     YT_TO_SY = 'YT_TO_SY',
+    ETH_TO_YT = 'ETH_TO_YT',
+    YT_TO_ETH = 'YT_TO_ETH',
 }
 
 function getTradeRoute(
@@ -47,6 +49,13 @@ function getTradeRoute(
         return TradeRoutes.SY_TO_PT
     } else if (tokenIn === universe.pt && tokenOut === universe.sy) {
         return TradeRoutes.PT_TO_SY
+    } else if (
+        tokenIn === universe.native &&
+        tokenOut &&
+        universe.yt &&
+        getAddress(tokenOut) === getAddress(universe.yt)
+    ) {
+        return TradeRoutes.ETH_TO_YT
     } else if (
         tokenOut &&
         universe.yt &&
@@ -181,7 +190,8 @@ const SwapAction: React.FC<{
                 enabled:
                     !!preparedIn &&
                     !!stETHAddress &&
-                    tradeRoute === TradeRoutes.ETH_TO_SY,
+                    (tradeRoute === TradeRoutes.ETH_TO_SY ||
+                        tradeRoute === TradeRoutes.ETH_TO_YT),
             },
         })
 
@@ -259,8 +269,14 @@ const SwapAction: React.FC<{
         abi: rmmABI,
         address: universe.market,
         account: address as `0x${string}`,
-        functionName: 'computeSYToYT',
-        args: [storedIndex, preparedIn as bigint, timestamp, toWad(100)],
+        functionName: 'computeTokenToYt',
+        args: [
+            storedIndex,
+            tokenIn === ETH_ADDRESS ? zeroAddress : tokenIn,
+            preparedIn as bigint,
+            timestamp,
+            toWad(100),
+        ],
         query: {
             enabled:
                 !!marketRoute &&
@@ -268,7 +284,8 @@ const SwapAction: React.FC<{
                 !!tokenOut &&
                 !!preparedIn &&
                 !!storedIndex &&
-                tradeRoute === TradeRoutes.SY_TO_YT,
+                (tradeRoute === TradeRoutes.SY_TO_YT ||
+                    tradeRoute === TradeRoutes.ETH_TO_YT),
         },
     })
 
@@ -279,10 +296,11 @@ const SwapAction: React.FC<{
     const [amountInWad, amountOutWad, amountOut, deltaLiquidity, strikePrice] =
         preparedSwap || []
 
-    const amountYTOut = preparedSwapToYT ? preparedSwapToYT : 0
+    const amountYTOut = preparedSwapToYT ? preparedSwapToYT?.[1] : 0
 
     const estimatedAmountOut =
-        tradeRoute === TradeRoutes.SY_TO_YT
+        tradeRoute === TradeRoutes.SY_TO_YT ||
+        tradeRoute === TradeRoutes.ETH_TO_YT
             ? amountYTOut
             : amountOutWad
               ? amountOutWad
@@ -299,9 +317,23 @@ const SwapAction: React.FC<{
         ...globalProps,
         key: universe.market,
         to: universe.market,
-        args: triggerFlashSwap
-            ? [amountYTOut as bigint, 1n, globalProps.from]
-            : [preparedIn as bigint, amountOut as bigint, globalProps.from],
+        args:
+            tradeRoute === TradeRoutes.ETH_TO_YT
+                ? [
+                      tokenIn === ETH_ADDRESS ? zeroAddress : tokenIn,
+                      preparedIn as bigint,
+                      amountYTOut as bigint,
+                      preparedSwapToYT?.[0] as bigint,
+                      amountYTOut as bigint,
+                      globalProps.from,
+                  ]
+                : triggerFlashSwap
+                  ? [amountYTOut as bigint, 1n, globalProps.from]
+                  : [
+                        preparedIn as bigint,
+                        amountOut as bigint,
+                        globalProps.from,
+                    ],
         contractName: 'rmm' as const,
         value: tokenIn === ETH_ADDRESS ? (preparedIn as bigint) : undefined,
     }
@@ -362,6 +394,14 @@ const SwapAction: React.FC<{
                     <TransactionButton
                         {...depositProps}
                         functionName="deposit"
+                    />
+                )
+                break
+            case TradeRoutes.ETH_TO_YT:
+                action = (
+                    <TransactionButton
+                        {...swapProps}
+                        functionName={'swapExactTokenForYt'}
                     />
                 )
                 break

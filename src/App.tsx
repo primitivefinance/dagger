@@ -24,7 +24,7 @@ import { OutputAmountProvider } from './store/OutputAmountContext'
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
 export const primitiveVirtualNet = {
-    id: 1,
+    id: 753712,
     name: 'Tenderly (RMM)',
     iconUrl: 'https://www.primitive.xyz/favicon/favicon-32x32.png',
     iconBackground: '#000',
@@ -32,7 +32,7 @@ export const primitiveVirtualNet = {
     rpcUrls: {
         default: {
             http: [
-                'https://virtual.mainnet.rpc.tenderly.co/59ca971a-3818-4ad8-bded-14bdfc71739f',
+                'https://virtual.mainnet.rpc.tenderly.co/ab7a4b34-a4da-4803-8130-01cf2230dbe6',
             ],
         },
     },
@@ -50,7 +50,7 @@ export const config = getDefaultConfig({
     projectId,
     transports: {
         [primitiveVirtualNet.id]: http(
-            'https://virtual.mainnet.rpc.tenderly.co/59ca971a-3818-4ad8-bded-14bdfc71739f'
+            'https://virtual.mainnet.rpc.tenderly.co/ab7a4b34-a4da-4803-8130-01cf2230dbe6'
         ),
     },
 })
