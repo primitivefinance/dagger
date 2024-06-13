@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Button, ButtonProps } from '../ui/button'
 import { CheckIcon, ReloadIcon } from '@radix-ui/react-icons'
 import { useSimulateContract, useWriteContract } from 'wagmi'
+import { Abi, Address, StateOverride, TransactionReceipt, erc20Abi } from 'viem'
 
 import { config } from '../../App'
-import { Abi, Address, StateOverride, TransactionReceipt, erc20Abi } from 'viem'
+import { Button, ButtonProps } from '../ui/button'
 import { dfmmABI } from '@/lib/abis/dfmm'
 import { rmmABI } from '@/lib/abis/rmm'
 import { SYABI } from '@/lib/abis/sy'
@@ -171,7 +171,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
                 state === TransactionState.TriggerSimulate ||
                 state === TransactionState.TransactionReady,
             refetchInterval: false,
-            staleTime: 5 * 1000,
+            staleTime: 5 * 1000 * 60, // 5 min
         },
     })
 
@@ -181,6 +181,10 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
             onSuccess: props.setTxHash,
             onMutate: (v) => {
                 dispatch({ type: 'SIMULATE_STALE' })
+            },
+            onError: (e) => {
+                console.error(e)
+                dispatch({ type: 'TRANSACTION_ERROR' })
             },
         },
     })

@@ -80,6 +80,7 @@ export const useTransactionStatus = ({
     setTxHash: (txHash: `0x${string}`) => void
     txReceipt: any | undefined
     txHash: `0x${string}` | undefined
+    txError: any | undefined
 } => {
     const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined)
     const { toast } = useToast()
@@ -87,6 +88,7 @@ export const useTransactionStatus = ({
         data: txReceipt,
         isSuccess,
         isError,
+        failureReason,
     } = useWaitForTransactionReceipt({
         hash: txHash,
     })
@@ -112,5 +114,10 @@ export const useTransactionStatus = ({
         // This effect should only run when `isSuccess` or `isError` changes.
     }, [isSuccess, isError, txReceipt, toast, retryTx, setTxHash, txHash])
 
-    return { setTxHash, txReceipt, txHash }
+    return {
+        setTxHash,
+        txReceipt,
+        txHash,
+        txError: isError ? failureReason : undefined,
+    }
 }

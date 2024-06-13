@@ -1,24 +1,27 @@
 import React, { useEffect } from 'react'
 import { useAccount } from 'wagmi'
+import { ArrowRightIcon, CheckIcon } from '@radix-ui/react-icons'
+import { getAddress } from 'viem'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { FetchStatus } from '@tanstack/react-query'
 
 import { useGraphQL } from '../../useGraphQL'
 import { MarketInfoQueryDocument } from '../../queries/markets'
-import { Input } from '../ui/input'
 
 import { EtherscanLink, LabelWithEtherscan } from '../EtherscanLinkLabels'
 import TokenSelector from '../TokenSelector'
-import { getAddress } from 'viem'
-import { Button } from '../ui/button'
 import { useTokens } from '@/lib/useTokens'
 import { useTradeRoute } from '@/lib/useTradeRoute'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import SwapAction from '@/actions/SwapAction'
-import { Skeleton } from '../ui/skeleton'
-import { FetchStatus } from '@tanstack/react-query'
-import { FALLBACK_MARKET_ADDRESS, shortAddress } from '@/utils/address'
 import { useMarketRoute } from '@/lib/useMarketRoute'
 import useSlippagePreference from '@/lib/useSlippagePreference'
+import { useOutputAmount } from '@/lib/useOutputAmount'
+import { FALLBACK_MARKET_ADDRESS, shortAddress } from '@/utils/address'
 import { formatNumber, formatPercentage } from '@/utils/numbers'
+
+import { Input } from '../ui/input'
+import { Skeleton } from '../ui/skeleton'
+import { Button } from '../ui/button'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -34,14 +37,18 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '../ui/accordion'
-import { ArrowRightIcon, CheckIcon } from '@radix-ui/react-icons'
-import {
-    useO,
-    useOutputAmount,
-    useOutputAmountutputAmount,
-} from '@/lib/useOutputAmount'
 
-const TokenInput = ({
+type TokenInputProps = {
+    token: { id: `0x${string}`; symbol: string; name: string }
+    setToken: (tokenAddress: `0x${string}`) => void
+    amount: string
+    setAmount: (amount: string) => void
+    disabled: boolean
+    disabledTokens: Array<`0x${string}`>
+    isFetching: boolean
+}
+
+const TokenInput: React.FC<TokenInputProps> = ({
     token,
     setToken,
     amount,
@@ -87,7 +94,6 @@ const SwapWidget: React.FC<{
     tokenOutForm: TokenForm
 }> = ({ tokenInForm, tokenOutForm }): JSX.Element => {
     const loc = useLocation()
-    const { isConnected } = useAccount()
     const { getTokenIn, getTokenOut, setTokenParams } = useTradeRoute()
     const tokenIn = getTokenIn()
     const tokenOut = getTokenOut()
@@ -331,7 +337,7 @@ function useTokenFormState(
     }, [getOutputAmount, syncOutputAmountQuery])
 
     // Function to handle amount change on input blur
-    const handleAmountChange = (newAmount: string) => {
+    const handleAmountChange = (newAmount: string): void => {
         setAmount(newAmount)
         if (syncOutputAmountQuery) {
             setOutputAmount(newAmount)
@@ -351,7 +357,7 @@ const TradeView = (): JSX.Element => {
 
     const { id } = useMarketRoute()
     const tokenInForm = useTokenFormState()
-    const tokenOutForm = useTokenFormState(0, true)
+    const tokenOutForm = useTokenFormState('', true)
 
     return (
         <div className="flex flex-col gap-0 border flex-grow">

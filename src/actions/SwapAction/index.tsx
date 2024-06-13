@@ -13,6 +13,10 @@ import { formatNumber, fromWad, toWad } from '@/utils/numbers'
 import { ETH_ADDRESS, useTokens } from '@/lib/useTokens'
 import { Skeleton } from '@/components/ui/skeleton'
 import ApproveAction from '../ApproveAction'
+import {
+    useSwapArgsSyAndPt,
+    useSwapExactTokenForYtArgs,
+} from '@/lib/useSwapArgs'
 
 type TokenUniverse = {
     native: `0x${string}`
@@ -236,7 +240,7 @@ const SwapAction: React.FC<{
 
     const isSwapSyForPt = tradeRoute === TradeRoutes.SY_TO_PT
 
-    const {
+    /* const {
         data: preparedSwap,
         status: prepareSwapStatus,
         error,
@@ -257,53 +261,54 @@ const SwapAction: React.FC<{
                 (tradeRoute === TradeRoutes.SY_TO_PT ||
                     tradeRoute === TradeRoutes.PT_TO_SY),
         },
-    })
+    }) */
 
     const {
-        data: preparedSwapToYT,
-        status: prepareSwapToYTStatus,
-        error: errorToYT,
-        fetchStatus: fetchAmountOutToYTStatus,
-        failureReason: failureReasonToYT,
-    } = useReadContract({
-        abi: rmmABI,
-        address: universe.market,
-        account: address as `0x${string}`,
-        functionName: 'computeTokenToYt',
-        args: [
-            storedIndex,
-            tokenIn === ETH_ADDRESS ? zeroAddress : tokenIn,
-            preparedIn as bigint,
-            timestamp,
-            toWad(100),
-        ],
-        query: {
-            enabled:
-                !!marketRoute &&
-                !!tokenIn &&
-                !!tokenOut &&
-                !!preparedIn &&
-                !!storedIndex &&
-                (tradeRoute === TradeRoutes.SY_TO_YT ||
-                    tradeRoute === TradeRoutes.ETH_TO_YT),
-        },
+        amountOut: amtSwapOut,
+        payload: payloadSyAndPt,
+        status: prepareSyAndPtSwap,
+        fetchStatus: fetchAmountOutStatus,
+    } = useSwapArgsSyAndPt({
+        marketId: universe.market,
+        pyIndexStored: storedIndex,
+        amountIn,
+        isSwapSyForPt,
+        enabled:
+            !!storedIndex &&
+            !!preparedIn &&
+            (tradeRoute === TradeRoutes.SY_TO_PT ||
+                tradeRoute === TradeRoutes.PT_TO_SY),
     })
 
     useEffect(() => {
         setTokenOutFetching(fetchAmountOutStatus)
     }, [fetchAmountOutStatus, setTokenOutFetching])
 
-    const [amountInWad, amountOutWad, amountOut, deltaLiquidity, strikePrice] =
-        preparedSwap || []
+    const {
+        amountOut: amtYt,
+        payload: payloadYTOut,
+        status: prepareTokenToYt,
+    } = useSwapExactTokenForYtArgs({
+        marketId: universe.market,
+        pyIndexStored: storedIndex,
+        tokenIn: tokenIn as `0x${string}`,
+        amountIn,
+        enabled:
+            !!storedIndex &&
+            !!tokenIn &&
+            !!amountIn &&
+            tradeRoute === TradeRoutes.ETH_TO_YT,
+    })
 
-    const amountYTOut = preparedSwapToYT ? preparedSwapToYT?.[1] : 0
+    /*    const [amountInWad, amountOutWad, amountOut, deltaLiquidity, strikePrice] =
+        preparedSwap || [] */
 
     const estimatedAmountOut =
         tradeRoute === TradeRoutes.SY_TO_YT ||
         tradeRoute === TradeRoutes.ETH_TO_YT
-            ? amountYTOut
-            : amountOutWad
-              ? amountOutWad
+            ? amtYt
+            : amtSwapOut
+              ? amtSwapOut
               : stSharesOutRoundDown
                 ? stSharesOutRoundDown
                 : 0
@@ -317,34 +322,20 @@ const SwapAction: React.FC<{
         ...globalProps,
         key: universe.market,
         to: universe.market,
-        args:
-            tradeRoute === TradeRoutes.ETH_TO_YT
-                ? [
-                      tokenIn === ETH_ADDRESS ? zeroAddress : tokenIn,
-                      preparedIn as bigint,
-                      amountYTOut as bigint,
-                      preparedSwapToYT?.[0] as bigint,
-                      amountYTOut as bigint,
-                      globalProps.from,
-                  ]
-                : triggerFlashSwap
-                  ? [amountYTOut as bigint, 1n, globalProps.from]
-                  : [
-                        preparedIn as bigint,
-                        amountOut as bigint,
-                        globalProps.from,
-                    ],
+        args: triggerFlashSwap
+            ? [amtYt as bigint, 1n, globalProps.from]
+            : [preparedIn as bigint, amtSwapOut as bigint, globalProps.from],
         contractName: 'rmm' as const,
         value: tokenIn === ETH_ADDRESS ? (preparedIn as bigint) : undefined,
     }
 
     useEffect(() => {
-        if (amountOutWad && prepareSwapStatus === 'success') {
-            setAmountOut(fromWad(amountOutWad).toString())
+        if (amtSwapOut && prepareSyAndPtSwap === 'success') {
+            setAmountOut(fromWad(amtSwapOut).toString())
         }
 
-        if (amountYTOut && prepareSwapToYTStatus === 'success') {
-            setAmountOut(fromWad(amountYTOut as bigint).toString())
+        if (amtYt && prepareTokenToYt === 'success') {
+            setAmountOut(fromWad(amtYt as bigint).toString())
         }
 
         if (!amountIn) {
@@ -352,12 +343,11 @@ const SwapAction: React.FC<{
         }
     }, [
         amountIn,
-        amountOut,
-        amountOutWad,
-        prepareSwapStatus,
+        amtSwapOut,
+        prepareSyAndPtSwap,
         setAmountOut,
-        amountYTOut,
-        prepareSwapToYTStatus,
+        amtYt,
+        prepareTokenToYt,
     ])
 
     // Use effect to update the amount out with the deposit estimated sy shares out
@@ -398,45 +388,17 @@ const SwapAction: React.FC<{
                 )
                 break
             case TradeRoutes.ETH_TO_YT:
-                action = (
-                    <TransactionButton
-                        {...swapProps}
-                        functionName={'swapExactTokenForYt'}
-                    />
-                )
+                action = <TransactionButton {...payloadYTOut} />
                 break
             case TradeRoutes.SY_TO_PT:
-                action = (
-                    <TransactionButton
-                        {...swapProps}
-                        functionName={'swapExactSyForPt'}
-                    />
-                )
+                action = <TransactionButton {...payloadSyAndPt} />
                 break
             case TradeRoutes.PT_TO_SY:
-                action = (
-                    <TransactionButton
-                        {...swapProps}
-                        functionName={'swapExactPtForSy'}
-                    />
-                )
-                break
-            case TradeRoutes.SY_TO_YT:
-                action = (
-                    <TransactionButton
-                        {...swapProps}
-                        functionName={'swapExactSyForYt'}
-                    />
-                )
+                action = <TransactionButton {...payloadSyAndPt} />
                 break
             default:
-                action = (
-                    <TransactionButton
-                        disabled
-                        {...swapProps}
-                        functionName={'swapExactSyForPt'}
-                    />
-                )
+                action = <TransactionButton disabled {...payloadSyAndPt} />
+                break
         }
     }
 
@@ -448,8 +410,8 @@ const SwapAction: React.FC<{
             <div className="flex flex-col gap-xl bg-blue/25 p-md">
                 <div className="flex flex-col gap-xs">
                     <p>Review Transaction</p>
-                    {error ? (
-                        <p className="truncate">{error.message}</p>
+                    {prepareSyAndPtSwap === 'error' ? (
+                        <p className="truncate">Error during preparing.</p>
                     ) : amountIn ? (
                         <div className="flex flex-wrap gap-xs">
                             {!approved ? (

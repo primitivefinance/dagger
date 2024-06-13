@@ -42,3 +42,7 @@ export function daysUntilDate(expiry: number): number {
 
     return differenceInDays
 }
+
+export function timestamp(): number {
+    return Math.floor(Date.now() / 1000)
+}
