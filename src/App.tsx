@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { http, useSwitchChain, WagmiProvider } from 'wagmi'
-import { mainnet } from 'wagmi/chains'
+import { http, WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
     Chain,
@@ -13,14 +12,13 @@ import {
 import Root from './components/Root'
 import Home from './pages/home'
 import Market from './pages/market'
-import Faucet from './pages/faucet'
 import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from './components/ui/toaster'
-import Curator from './pages/curator'
 import { TooltipProvider } from './components/ui/tooltip'
 import YieldPage from './pages/yield'
 import { OutputAmountProvider } from './store/OutputAmountContext'
 
+// todo: regenerate this and put in env
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
 
 export const primitiveVirtualNet = {
@@ -71,14 +69,6 @@ const router = createBrowserRouter([
                         <Market />
                     </Home>
                 ),
-            },
-            {
-                path: '/faucet',
-                element: <Faucet />,
-            },
-            {
-                path: '/curator/:id',
-                element: <Curator />,
             },
             {
                 path: '/yield',

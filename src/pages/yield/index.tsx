@@ -1,35 +1,46 @@
 import React from 'react'
 import { getAddress } from 'viem'
 import { useAccount } from 'wagmi'
+import {
+    DoubleArrowRightIcon,
+    InfoCircledIcon,
+    PlusCircledIcon,
+    PlusIcon,
+} from '@radix-ui/react-icons'
 
 import { allMarketsQueryDocument } from '../../queries/markets'
 import { useGraphQL } from '../../useGraphQL'
-import { useTradeRoute } from '@/lib/useTradeRoute'
-import { ETH_ADDRESS } from '@/lib/useTokens'
-import { daysUntilDate, fromExpiry, fromExpiryToDate } from '@/utils/dates'
-import { FALLBACK_MARKET_ADDRESS } from '@/utils/address'
 import { ImplYieldQueryDocument } from '../../queries/prices'
-import { formatNumber, formatPercentage } from '@/utils/numbers'
 import { PositionQueryDocument } from '../../queries/positions'
-import { DoubleArrowRightIcon, InfoCircledIcon } from '@radix-ui/react-icons'
+
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
+import SectionHeader from '@/components/SectionHeader'
+import { useTradeRoute } from '@/lib/useTradeRoute'
+import { ETH_ADDRESS } from '@/lib/useTokens'
 import { useOutputAmount } from '@/lib/useOutputAmount'
+import { daysUntilDate, fromExpiryToDate } from '@/utils/dates'
+import { FALLBACK_MARKET_ADDRESS } from '@/utils/address'
+import { formatNumber, formatPercentage } from '@/utils/numbers'
+import YieldPositionsTable from '@/components/YieldPositionsTable'
 
 const PositionSummary: React.FC<{
     netYieldDelta?: number
     impliedYieldRate?: number
-}> = ({ netYieldDelta = 0, impliedYieldRate = 0 }) => {
+    color?: string
+}> = ({ netYieldDelta = 0, impliedYieldRate = 0, color }) => {
     return (
         <div className="flex flex-row gap-sm items-center">
             <Tooltip>
                 <TooltipTrigger>
                     <Badge variant="secondary">
-                        <h4>{formatNumber(netYieldDelta)}</h4>
+                        <h4 className={`${color ? `text-${color}` : ''}`}>
+                            {formatNumber(netYieldDelta)}
+                        </h4>
                     </Badge>
                 </TooltipTrigger>
                 <TooltipContent>Notional size exposure.</TooltipContent>
@@ -37,32 +48,45 @@ const PositionSummary: React.FC<{
             <Tooltip>
                 <TooltipTrigger>
                     <Badge variant="secondary">
-                        <h4>stETH</h4>
+                        <h4 className={`${color ? `text-${color}` : ''}`}>
+                            stETH
+                        </h4>
                     </Badge>
                 </TooltipTrigger>
                 <TooltipContent>Underlying yield-bearing asset.</TooltipContent>
             </Tooltip>
-            <h4>@</h4>
-            <Tooltip>
-                <TooltipTrigger>
-                    <Badge variant="secondary">
-                        <h4>{formatPercentage(impliedYieldRate)}</h4>
-                    </Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                    Implied entry APR. This rate is variable and can change.
-                </TooltipContent>
-            </Tooltip>
+            {impliedYieldRate > 0 && (
+                <>
+                    <h4>@</h4>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Badge variant="secondary">
+                                <h4>{formatPercentage(impliedYieldRate)}</h4>
+                            </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            Implied entry APR. This rate is variable and can
+                            change.
+                        </TooltipContent>
+                    </Tooltip>
+                </>
+            )}
         </div>
     )
 }
 
 const YieldPage: React.FC = () => {
+    const { address } = useAccount()
+    const { getOutputAmount } = useOutputAmount()
+    const outputAmount = Number(getOutputAmount())
+    const { setTokenParams } = useTradeRoute()
+
+    // market data
     const { data, refetch, isFetching, isLoading } = useGraphQL(
         allMarketsQueryDocument,
         { limit: 10 }
     )
-
+    const amountMarkets = data?.markets?.items?.length
     const [selectedMarket, setSelectedMarket] = React.useState<
         string | undefined
     >(FALLBACK_MARKET_ADDRESS)
@@ -70,27 +94,24 @@ const YieldPage: React.FC = () => {
     const { data: implied } = useGraphQL(ImplYieldQueryDocument, {
         marketId: selectedMarket as string,
     })
-    const market = data?.markets?.items?.find(
-        (item) => getAddress(item?.id) === getAddress(selectedMarket)
+    const market = data?.markets?.items?.find((item) =>
+        item?.id.comp(selectedMarket)
     )
-    const { getOutputAmount } = useOutputAmount()
-    const outputAmount = Number(getOutputAmount())
+    // position data
+    const { data: positionData } = useGraphQL(PositionQueryDocument, {
+        marketId: selectedMarket as string,
+    })
+
+    const filteredPositions = positionData?.positions?.items?.filter((item) =>
+        address.comp(item?.portfolioId)
+    )
+    const totalPositions = filteredPositions?.length
+    const position = filteredPositions?.[0]
 
     const impliedYieldRate =
         implied?.impliedYields?.items?.[
             implied?.impliedYields?.items?.length - 1
         ]?.value
-
-    const { setTokenParams } = useTradeRoute()
-
-    const { data: positionData } = useGraphQL(PositionQueryDocument, {
-        marketId: selectedMarket as string,
-    })
-
-    const { address } = useAccount()
-    const position = positionData?.positions?.items?.filter(
-        (item) => getAddress(item?.portfolioId) === address
-    )?.[0]
 
     const resultPosition = {
         netYieldDelta: Number(position?.netYieldDelta) + outputAmount,
@@ -98,7 +119,7 @@ const YieldPage: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col gap-2xl p-xl pt-0 mx-auto w-3/4 ">
+        <div className="flex flex-col gap-2xl p-xl pt-0 mx-auto">
             <div className="flex flex-col gap-lg">
                 <div className="flex flex-row items-center w-full justify-between border bg-blue/20 p-md">
                     <div className="flex flex-row gap-md items-center text-muted dark:text-muted-foreground">
@@ -109,12 +130,13 @@ const YieldPage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-row items-center w-full justify-between border bg-muted/50 p-md">
-                    <div className="flex flex-row gap-md items-center">
-                        <h4 className="scroll-m-20">Select Maturity</h4>
-                        <h4 className="flex flex-row gap-xs items-center"></h4>
-                    </div>
-                </div>
+                <SectionHeader
+                    title={'Select Maturity'}
+                    quantity={amountMarkets}
+                    refetch={refetch}
+                    isFetching={isFetching}
+                    isLoading={isLoading}
+                />
 
                 <div className="grid-cols-3 grid gap-md ">
                     {data?.markets?.items?.map((market) => (
@@ -163,21 +185,24 @@ const YieldPage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-row items-center w-full justify-between border bg-muted/50 p-md">
-                    <div className="flex flex-row gap-md items-center justify-between w-full">
-                        <h4 className="scroll-m-20">My Position</h4>
-                        <div className="flex flex-row gap-lg items-center">
-                            <PositionSummary
-                                netYieldDelta={position?.netYieldDelta ?? 0}
-                                impliedYieldRate={impliedYieldRate}
-                            />
-                            <DoubleArrowRightIcon />
-                            <PositionSummary
-                                netYieldDelta={resultPosition.netYieldDelta}
-                                impliedYieldRate={
-                                    resultPosition.impliedYieldRate
-                                }
-                            />
+                <div className="flex flex-col gap-0">
+                    <SectionHeader
+                        title={'My Positions'}
+                        quantity={totalPositions}
+                    />
+                    <div className="flex flex-col gap-0 border border-t-0">
+                        <div className="grid grid-cols-1 gap-md">
+                            {data && (
+                                <YieldPositionsTable
+                                    data={positionData}
+                                    isFetching={isFetching}
+                                    amount={totalPositions}
+                                    preview={{
+                                        netYieldDelta:
+                                            resultPosition.netYieldDelta,
+                                    }}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

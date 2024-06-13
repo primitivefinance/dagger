@@ -22,6 +22,7 @@ import { ETH_ADDRESS } from '@/lib/useTokens'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { InfoCircledIcon } from '@radix-ui/react-icons'
 import { formatNumber } from '@/utils/numbers'
+import SectionHeader from '../SectionHeader'
 
 const MarketStatCard = ({
     label,
