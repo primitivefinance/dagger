@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAccount } from 'wagmi'
-import { PositionsQuery } from 'gql/graphql'
+import { PositionsQuery, YieldPosition } from 'gql/graphql'
 
 import {
     Table,
@@ -17,11 +17,14 @@ import { Badge } from '../ui/badge'
 import { formatNumber, formatPercentage } from '@/utils/numbers'
 
 type YieldPositionRowProps = {
-    position: any
-    preview: { netYieldDelta: number; impliedYieldRate: number }
+    position: YieldPosition
+    preview?: { netYieldDelta: number; impliedYieldRate: number }
 }
 
-const YieldPositionRow: React.FC = ({ position, preview }) => {
+const YieldPositionRow: React.FC<YieldPositionRowProps> = ({
+    position,
+    preview,
+}) => {
     const previewDelta = preview
         ? preview.netYieldDelta - position?.netYieldDelta
         : 0
@@ -30,10 +33,10 @@ const YieldPositionRow: React.FC = ({ position, preview }) => {
         : position?.netYieldDelta
     const previewRate = preview
         ? preview.impliedYieldRate
-        : position?.impliedYieldRate
+        : position?.avgEntryImpliedRate
 
     return (
-        <TableRow key={position?.id}>
+        <TableRow key={position?.id} className="hover:bg-transparent">
             <TableCell className="text-left">
                 <Tooltip>
                     <TooltipTrigger>
@@ -64,7 +67,7 @@ const YieldPositionRow: React.FC = ({ position, preview }) => {
                         <Badge variant="secondary">
                             <h4>
                                 {formatPercentage(
-                                    position?.impliedYieldRate ?? 0
+                                    position?.avgEntryImpliedRate ?? 0
                                 )}
                             </h4>
                         </Badge>
@@ -75,18 +78,20 @@ const YieldPositionRow: React.FC = ({ position, preview }) => {
                 </Tooltip>
             </TableCell>
             <TableCell>
-                <h4>{previewDelta > 0 ? formatNumber(previewDelta) : '-'}</h4>
+                <h4 className="text-cyan">
+                    {previewDelta > 0 ? formatNumber(previewDelta) : '-'}
+                </h4>
             </TableCell>
             <TableCell>
-                <h4>
-                    {previewHoldings != position?.netYieldData
+                <h4 className="text-cyan">
+                    {previewHoldings != position?.netYieldDelta
                         ? formatNumber(previewHoldings)
                         : '-'}
                 </h4>
             </TableCell>
             <TableCell>
-                <h4>
-                    {previewRate != position?.impliedYieldRate
+                <h4 className="text-cyan">
+                    {previewRate != position?.avgEntryImpliedRate
                         ? formatPercentage(previewRate)
                         : '-'}
                 </h4>
@@ -116,22 +121,28 @@ const EmptyPositionsDataRow = ({
 }
 
 type YieldPositionsTableProps = {
-    data: PositionsQuery
-    isFetching: boolean
-    quantity?: number
-    preview?: { netYieldDelta: number }
+    data?: PositionsQuery
+    isFetching?: boolean
+    delta?: number
 }
 
 const YieldPositionsTable: React.FC<YieldPositionsTableProps> = ({
     data,
     isFetching,
-    quantity,
-    preview,
+    delta,
 }) => {
     const { address } = useAccount()
-    const positions = data?.positions?.items?.filter((item) =>
-        address.comp(item?.portfolioId)
-    )
+
+    let positions = data?.yieldPositions?.items ?? []
+    if (address)
+        positions = positions.filter((item) => address.comp(item?.portfolioId))
+
+    const preview = delta
+        ? {
+              netYieldDelta: Number(positions[0]?.netYieldDelta) + delta,
+              impliedYieldRate: positions[0]?.avgEntryImpliedRate,
+          }
+        : undefined
 
     return (
         <Table>
@@ -141,7 +152,7 @@ const YieldPositionsTable: React.FC<YieldPositionsTableProps> = ({
                     <TableHead className="text-left">Holdings</TableHead>
                     <TableHeaderWithTooltip
                         title="Rate"
-                        content="Variable apr can change."
+                        content="Variable APR."
                     />
                     <TableHeaderWithTooltip
                         title="Preview Delta"
@@ -157,9 +168,9 @@ const YieldPositionsTable: React.FC<YieldPositionsTableProps> = ({
                     />
                 </TableRow>
             </TableHeader>
-            <TableBody className="cursor-pointer">
+            <TableBody>
                 {isFetching ? (
-                    <EmptyPositionsDataRow rows={quantity ?? 1} />
+                    <EmptyPositionsDataRow rows={1} />
                 ) : (
                     positions?.map((position, i) => (
                         <YieldPositionRow
@@ -167,7 +178,7 @@ const YieldPositionsTable: React.FC<YieldPositionsTableProps> = ({
                             position={position}
                             preview={preview}
                         />
-                    )) ?? <EmptyPositionsDataRow rows={quantity ?? 1} />
+                    )) ?? <EmptyPositionsDataRow rows={1} />
                 )}
             </TableBody>
         </Table>

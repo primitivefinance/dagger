@@ -25,9 +25,11 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
         <div className="flex flex-row items-center w-full justify-between border bg-muted/50 p-md">
             <div className="flex flex-row gap-md items-center">
                 <h4 className="scroll-m-20">{title}</h4>
-                <h4 className="flex flex-row gap-xs items-center">
-                    ({quantity ?? <Skeleton className="h-4 w-12" />})
-                </h4>
+                {quantity || isFetching ? (
+                    <h4 className="flex flex-row gap-xs items-center">
+                        ({quantity ?? <Skeleton className="h-4 w-12" />})
+                    </h4>
+                ) : null}
                 {refetch && (
                     <Button
                         variant="transparent"
