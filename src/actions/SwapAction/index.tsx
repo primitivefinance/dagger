@@ -17,6 +17,7 @@ import {
     useSwapArgsSyAndPt,
     useSwapExactTokenForYtArgs,
 } from '@/lib/useSwapArgs'
+import { useMintSyArgs } from '@/lib/useMintSyArgs'
 
 type TokenUniverse = {
     native: `0x${string}`
@@ -142,6 +143,8 @@ const SwapAction: React.FC<{
         market: market?.id as `0x${string}`,
     }
 
+    console.log({ sy: universe.sy })
+
     // --- Prepare the action --- //
 
     const tradeRoute = getTradeRoute(
@@ -264,6 +267,16 @@ const SwapAction: React.FC<{
     }) */
 
     const {
+        amountOut: amtSyMinted,
+        payload: payloadSyMint,
+        status: prepareSyMint,
+    } = useMintSyArgs({
+        syAddress: universe.sy,
+        amountIn: amountIn,
+        enabled: tradeRoute === TradeRoutes.ETH_TO_SY,
+    })
+
+    const {
         amountOut: amtSwapOut,
         payload: payloadSyAndPt,
         status: prepareSyAndPtSwap,
@@ -359,13 +372,7 @@ const SwapAction: React.FC<{
 
     let action = null
     if (tokenIn === null || tokenOut === null || !preparedIn) {
-        action = (
-            <TransactionButton
-                disabled
-                {...swapProps}
-                functionName={'swapExactSyForPt'}
-            />
-        )
+        action = <TransactionButton disabled {...payloadSyAndPt} />
     } else if (!approved) {
         action = (
             <ApproveAction
@@ -380,12 +387,7 @@ const SwapAction: React.FC<{
     } else {
         switch (tradeRoute) {
             case TradeRoutes.ETH_TO_SY:
-                action = (
-                    <TransactionButton
-                        {...depositProps}
-                        functionName="deposit"
-                    />
-                )
+                action = <TransactionButton {...payloadSyMint} />
                 break
             case TradeRoutes.ETH_TO_YT:
                 action = <TransactionButton {...payloadYTOut} />

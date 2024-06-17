@@ -10,7 +10,7 @@ import { TransactionButtonProps } from '@/components/TransactionButton'
 import useSlippagePreference from './useSlippagePreference'
 import { FetchStatus } from '@tanstack/react-query'
 
-type SwapArgsReturn = {
+export type ArgsHookReturn = {
     amountOut?: bigint
     status: 'idle' | 'loading' | 'success' | 'error' | 'pending'
     fetchStatus: FetchStatus
@@ -23,7 +23,7 @@ export function useSwapArgsSyAndPt({
     amountIn,
     isSwapSyForPt,
     enabled,
-}): SwapArgsReturn {
+}): ArgsHookReturn {
     const { address } = useAccount()
     const { setTxHash, txHash, txReceipt } = useTransactionStatus({})
     const [slippage] = useSlippagePreference()
@@ -74,7 +74,7 @@ export function useSwapArgsSyAndPt({
         payload: {
             from: address as `0x${string}`,
             to: marketId as `0x${string}`,
-            contractName: 'rmm',
+            contractName: 'rmm' as const,
             functionName,
             args: [inputAmount, outputAmount, address as `0x${string}`],
             txHash,
@@ -90,7 +90,7 @@ export function useSwapExactTokenForYtArgs({
     tokenIn,
     amountIn,
     enabled,
-}): SwapArgsReturn {
+}): ArgsHookReturn {
     const { address } = useAccount()
     const { setTxHash, txHash, txReceipt } = useTransactionStatus({})
     const [slippage] = useSlippagePreference()
@@ -172,8 +172,8 @@ export function useSwapExactTokenForYtArgs({
     const payload: TransactionButtonProps = {
         from: address as `0x${string}`,
         to: marketId as `0x${string}`,
-        contractName: 'rmm',
-        functionName: 'swapExactTokenForYt',
+        contractName: 'rmm' as const,
+        functionName: 'swapExactTokenForYt' as const,
         args,
         txHash,
         txReceipt,
