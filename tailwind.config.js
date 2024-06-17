@@ -78,6 +78,11 @@ module.exports = {
                     foreground: 'hsl(var(--cyan))',
                     bright: 'hsl(var(--cyan))',
                 },
+                green: {
+                    DEFAULT: 'hsl(var(--green))',
+                    foreground: 'hsl(var(--green-foreground))',
+                    bright: 'hsl(var(--green-bright))',
+                },
             },
             borderRadius: {
                 lg: 'var(--radius)',

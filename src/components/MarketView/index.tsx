@@ -22,6 +22,7 @@ import { ETH_ADDRESS } from '@/lib/useTokens'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { InfoCircledIcon } from '@radix-ui/react-icons'
 import { formatNumber } from '@/utils/numbers'
+import SectionHeader from '../SectionHeader'
 
 const MarketStatCard = ({
     label,
@@ -154,19 +155,17 @@ const MarketView = (): JSX.Element => {
                                     Description
                                 </h4>
 
-                                <p className="w-4xl flex-1">
-                                    {market?.name ? (
-                                        <>
-                                            This market tokenizes the individual
-                                            yield and principal components of
-                                            the yield-bearing asset <b>stETH</b>
-                                            . Once expiry is reached, the yield
-                                            tokens do not accrue more yield.
-                                        </>
-                                    ) : (
-                                        <SkeletonText />
-                                    )}
-                                </p>
+                                {market?.name ? (
+                                    <p className="w-4xl flex-1">
+                                        This market tokenizes the individual
+                                        yield and principal components of the
+                                        yield-bearing asset <b>stETH</b>. Once
+                                        expiry is reached, the yield tokens do
+                                        not accrue more yield.
+                                    </p>
+                                ) : (
+                                    <SkeletonText />
+                                )}
                             </div>
                         </div>
                     </div>
