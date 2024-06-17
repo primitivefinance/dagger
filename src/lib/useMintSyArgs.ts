@@ -1,5 +1,5 @@
 import { useAccount, useReadContract } from 'wagmi'
-import { getAddress, parseAbi, zeroAddress } from 'viem'
+import { getAddress, zeroAddress } from 'viem'
 import { useEffect } from 'react'
 
 import { useTransactionStatus } from '@/components/TransactionButton/useTransactionStatus'
@@ -9,15 +9,7 @@ import { ArgsHookReturn } from './useSwapArgs'
 import useSlippagePreference from './useSlippagePreference'
 import { SYABI } from './abis/sy'
 
-const stETHABI = parseAbi([
-    'function getPooledEthByShares(uint256 _sharesAmount) external view returns(uint256)',
-    'function getSharesByPooledEth(uint256 _ethAmount) external view returns(uint256)',
-])
-
-const SY_stETHABI = parseAbi([
-    'function stETH() external view returns(address)',
-])
-
+// For SY.deposit{ETH}() calls.
 export function useMintSyArgs({
     syAddress,
     amountIn,
@@ -34,30 +26,10 @@ export function useMintSyArgs({
     const inputAmount = !isNaN(parseFloat(amountIn))
         ? toWad(parseFloat(amountIn))
         : 0n
-    let SY
+    let SY = undefined
     try {
         SY = getAddress(syAddress)
-    } catch (e) {
-        console.error(e)
-    }
-
-    /* const { data: stETHAddress } = useReadContract({
-        abi: SY_stETHABI,
-        address: syAddress,
-        functionName: 'stETH',
-        query: { enabled: !!syAddress },
-    })
-
-    const { data: stSharesOut, fetchStatus: fetchSharesOutStatus } =
-        useReadContract({
-            abi: stETHABI,
-            address: stETHAddress as `0x${string}`,
-            functionName: 'getSharesByPooledEth',
-            args: [inputAmount],
-            query: {
-                enabled: enabled && !!stETHAddress,
-            },
-        }) */
+    } catch (e) {}
 
     const PENDLE_ETH = zeroAddress as `0x${string}`
 
@@ -72,7 +44,7 @@ export function useMintSyArgs({
             functionName: prepareFunctionName,
             args: [PENDLE_ETH, inputAmount],
             query: {
-                enabled,
+                enabled: enabled && !!SY,
             },
         }
     )

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAccount, useReadContract } from 'wagmi'
-import { erc20Abi, getAddress, padHex, parseAbi, zeroAddress } from 'viem'
+import { erc20Abi, getAddress, parseAbi, zeroAddress } from 'viem'
 import { FetchStatus } from '@tanstack/react-query'
 
 import { useGraphQL } from '../../useGraphQL'
@@ -12,6 +12,7 @@ import { useTradeRoute } from '@/lib/useTradeRoute'
 import { formatNumber, fromWad, toWad } from '@/utils/numbers'
 import { ETH_ADDRESS, useTokens } from '@/lib/useTokens'
 import { Skeleton } from '@/components/ui/skeleton'
+
 import ApproveAction from '../ApproveAction'
 import {
     useSwapArgsSyAndPt,
@@ -74,15 +75,6 @@ function getTradeRoute(
     }
 }
 
-const stETHABI = parseAbi([
-    'function getPooledEthByShares(uint256 _sharesAmount) external view returns(uint256)',
-    'function getSharesByPooledEth(uint256 _ethAmount) external view returns(uint256)',
-])
-
-const SY_stETHABI = parseAbi([
-    'function stETH() external view returns(address)',
-])
-
 /**
  * Wrapper for TransactionButton component to be used for Swapping.
  *
@@ -122,28 +114,16 @@ const SwapAction: React.FC<{
         tokenOut &&
         sortedTokens?.find((tkn) => getAddress(tkn.id) === getAddress(tokenOut))
 
-    // Build the token universe
-    const { data: ytAddress, failureReason: ytFailureReason } = useReadContract(
-        {
-            abi: rmmABI,
-            address: marketRoute as `0x${string}`,
-            functionName: 'YT',
-        }
-    )
-
-    const ZERO_ADDRESS = padHex(`0x`, { size: 20 }) as `0x${string}`
-    const PENDLE_NATIVE_ETH = ZERO_ADDRESS
+    // todo: make sure tokens in ponder match these universe ones.
     const universe = {
         native: ETH_ADDRESS as `0x${string}`,
-        wrapped: ZERO_ADDRESS,
-        ib: ZERO_ADDRESS,
-        sy: market?.pool?.tokenX?.id as `0x${string}`,
-        pt: market?.pool?.tokenY?.id as `0x${string}`,
-        yt: ytAddress as `0x${string}`,
+        wrapped: market?.wrappedNativeAssetId as `0x${string}`,
+        ib: market?.ibAssetId as `0x${string}`,
+        sy: market?.syId as `0x${string}`,
+        pt: market?.ptId as `0x${string}`,
+        yt: market?.ytId as `0x${string}`,
         market: market?.id as `0x${string}`,
     }
-
-    console.log({ sy: universe.sy })
 
     // --- Prepare the action --- //
 
@@ -169,111 +149,30 @@ const SwapAction: React.FC<{
         (allowance && preparedIn && allowance >= preparedIn) ||
         tokenIn === ETH_ADDRESS
 
-    // Props on every transaction.
-    const globalProps = {
-        from: address as `0x${string}`,
-        setTxHash,
-        txReceipt,
-        txHash,
-    }
-
-    const syAddress = universe.sy
-
-    const { data: stETHAddress } = useReadContract({
-        abi: SY_stETHABI,
-        address: syAddress,
-        functionName: 'stETH',
-        query: { enabled: !!syAddress },
-    })
-
-    // Todo: gets the wstETH shares out given eth? figure exactly which is right.
-    const { data: stSharesOut, fetchStatus: fetchSharesOutStatus } =
-        useReadContract({
-            abi: stETHABI,
-            address: stETHAddress as `0x${string}`,
-            functionName: 'getSharesByPooledEth',
-            args: [preparedIn as bigint],
-            query: {
-                enabled:
-                    !!preparedIn &&
-                    !!stETHAddress &&
-                    (tradeRoute === TradeRoutes.ETH_TO_SY ||
-                        tradeRoute === TradeRoutes.ETH_TO_YT),
-            },
-        })
-
-    let stSharesOutRoundDown = stSharesOut
-
-    // Need to round down the estimated stShares out
-    if (stSharesOutRoundDown) {
-        stSharesOutRoundDown = stSharesOutRoundDown - 1n
-    }
-
-    // For depositing ETH to mint SY.
-    const depositProps = {
-        ...globalProps,
-        key: universe.sy,
-        to: universe.sy,
-        args: [
-            globalProps.from,
-            PENDLE_NATIVE_ETH,
-            preparedIn as bigint,
-            stSharesOutRoundDown as bigint,
-        ],
-        value: preparedIn as bigint,
-        contractName: 'SY' as const,
-        query: {
-            enabled:
-                !!preparedIn &&
-                !!stSharesOutRoundDown &&
-                tradeRoute === TradeRoutes.ETH_TO_SY,
-        },
-    }
-
-    const timestamp = Math.floor(Date.now() / 1000)
-
     const { data: storedIndex, failureReason: storedIndexFailure } =
         useReadContract({
             abi: parseAbi([
                 'function pyIndexStored() external view returns(uint256)',
             ] as const),
-            address: ytAddress as `0x${string}`,
+            address: universe.yt,
             functionName: 'pyIndexStored',
         })
 
     const isSwapSyForPt = tradeRoute === TradeRoutes.SY_TO_PT
-
-    /* const {
-        data: preparedSwap,
-        status: prepareSwapStatus,
-        error,
-        fetchStatus: fetchAmountOutStatus,
-    } = useReadContract({
-        abi: rmmABI,
-        address: universe.market,
-        account: address as `0x${string}`,
-        functionName: isSwapSyForPt ? 'prepareSwapSy' : 'prepareSwapPt',
-        args: [preparedIn as bigint, timestamp, storedIndex],
-        query: {
-            enabled:
-                !!marketRoute &&
-                !!tokenIn &&
-                !!tokenOut &&
-                !!preparedIn &&
-                !!storedIndex &&
-                (tradeRoute === TradeRoutes.SY_TO_PT ||
-                    tradeRoute === TradeRoutes.PT_TO_SY),
-        },
-    }) */
+    const isMintSy = tradeRoute === TradeRoutes.ETH_TO_SY
+    const isSwapYt =
+        tradeRoute === TradeRoutes.SY_TO_YT ||
+        tradeRoute === TradeRoutes.ETH_TO_YT
 
     const {
         amountOut: amtSyMinted,
         payload: payloadSyMint,
         status: prepareSyMint,
+        fetchStatus: fetchSharesOutStatus,
     } = useMintSyArgs({
         syAddress: universe.sy,
         amountIn: amountIn,
-        enabled: tradeRoute === TradeRoutes.ETH_TO_SY,
+        enabled: isMintSy,
     })
 
     const {
@@ -293,14 +192,11 @@ const SwapAction: React.FC<{
                 tradeRoute === TradeRoutes.PT_TO_SY),
     })
 
-    useEffect(() => {
-        setTokenOutFetching(fetchAmountOutStatus)
-    }, [fetchAmountOutStatus, setTokenOutFetching])
-
     const {
         amountOut: amtYt,
         payload: payloadYTOut,
         status: prepareTokenToYt,
+        fetchStatus: fetchYtOutStatus,
     } = useSwapExactTokenForYtArgs({
         marketId: universe.market,
         pyIndexStored: storedIndex,
@@ -313,42 +209,36 @@ const SwapAction: React.FC<{
             tradeRoute === TradeRoutes.ETH_TO_YT,
     })
 
-    /*    const [amountInWad, amountOutWad, amountOut, deltaLiquidity, strikePrice] =
-        preparedSwap || [] */
-
     const estimatedAmountOut =
-        tradeRoute === TradeRoutes.SY_TO_YT ||
-        tradeRoute === TradeRoutes.ETH_TO_YT
-            ? amtYt
-            : amtSwapOut
-              ? amtSwapOut
-              : stSharesOutRoundDown
-                ? stSharesOutRoundDown
+        tradeRoute === TradeRoutes.ETH_TO_SY
+            ? amtSyMinted
+            : tradeRoute === TradeRoutes.SY_TO_YT ||
+                tradeRoute === TradeRoutes.ETH_TO_YT
+              ? amtYt
+              : amtSwapOut
+                ? amtSwapOut
                 : 0
 
-    const triggerFlashSwap =
-        tradeRoute === TradeRoutes.SY_TO_YT ||
-        tradeRoute === TradeRoutes.YT_TO_SY
-
-    // For swapping on RMM.
-    const swapProps = {
-        ...globalProps,
-        key: universe.market,
-        to: universe.market,
-        args: triggerFlashSwap
-            ? [amtYt as bigint, 1n, globalProps.from]
-            : [preparedIn as bigint, amtSwapOut as bigint, globalProps.from],
-        contractName: 'rmm' as const,
-        value: tokenIn === ETH_ADDRESS ? (preparedIn as bigint) : undefined,
-    }
+    useEffect(() => {
+        if (isMintSy) {
+            setTokenOutFetching(fetchSharesOutStatus)
+        } else if (isSwapYt) {
+            setTokenOutFetching(fetchYtOutStatus)
+        } else {
+            setTokenOutFetching(fetchAmountOutStatus)
+        }
+    }, [
+        isMintSy,
+        fetchSharesOutStatus,
+        isSwapYt,
+        fetchYtOutStatus,
+        fetchAmountOutStatus,
+        setTokenOutFetching,
+    ])
 
     useEffect(() => {
-        if (amtSwapOut && prepareSyAndPtSwap === 'success') {
-            setAmountOut(fromWad(amtSwapOut).toString())
-        }
-
-        if (amtYt && prepareTokenToYt === 'success') {
-            setAmountOut(fromWad(amtYt as bigint).toString())
+        if (estimatedAmountOut) {
+            setAmountOut(fromWad(estimatedAmountOut).toString())
         }
 
         if (!amountIn) {
@@ -356,19 +246,15 @@ const SwapAction: React.FC<{
         }
     }, [
         amountIn,
+        estimatedAmountOut,
         amtSwapOut,
         prepareSyAndPtSwap,
         setAmountOut,
         amtYt,
         prepareTokenToYt,
+        amtSyMinted,
+        prepareSyMint,
     ])
-
-    // Use effect to update the amount out with the deposit estimated sy shares out
-    useEffect(() => {
-        if (stSharesOutRoundDown && tradeRoute === TradeRoutes.ETH_TO_SY) {
-            setAmountOut(fromWad(stSharesOutRoundDown).toString())
-        }
-    }, [stSharesOutRoundDown, setAmountOut, tradeRoute])
 
     let action = null
     if (tokenIn === null || tokenOut === null || !preparedIn) {

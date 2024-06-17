@@ -17,12 +17,19 @@ export type ArgsHookReturn = {
     payload: TransactionButtonProps
 }
 
+// For RMM.Swap calls.
 export function useSwapArgsSyAndPt({
     marketId,
     pyIndexStored,
     amountIn,
     isSwapSyForPt,
     enabled,
+}: {
+    marketId: string
+    pyIndexStored: bigint
+    amountIn: string
+    isSwapSyForPt: boolean
+    enabled: boolean
 }): ArgsHookReturn {
     const { address } = useAccount()
     const { setTxHash, txHash, txReceipt } = useTransactionStatus({})
@@ -46,7 +53,7 @@ export function useSwapArgsSyAndPt({
     const { data, status, error, failureReason, fetchStatus } = useReadContract(
         {
             abi: rmmABI,
-            address: marketId,
+            address: marketId as `0x${string}`,
             account: address as `0x${string}`,
             functionName: prepareFunctionName,
             args: prepareArgs,
@@ -68,7 +75,7 @@ export function useSwapArgsSyAndPt({
     }, [error, failureReason])
 
     return {
-        amountOut: outputAmount,
+        amountOut: minOutputAmount,
         status,
         fetchStatus,
         payload: {
@@ -76,7 +83,7 @@ export function useSwapArgsSyAndPt({
             to: marketId as `0x${string}`,
             contractName: 'rmm' as const,
             functionName,
-            args: [inputAmount, outputAmount, address as `0x${string}`],
+            args: [inputAmount, minOutputAmount, address as `0x${string}`],
             txHash,
             txReceipt,
             setTxHash,
@@ -90,6 +97,13 @@ export function useSwapExactTokenForYtArgs({
     tokenIn,
     amountIn,
     enabled,
+}: {
+    marketId: string
+    pyIndexStored: bigint
+    tokenIn: string | null
+    amountIn: string
+    isSwapSyForPt: boolean
+    enabled: boolean
 }): ArgsHookReturn {
     const { address } = useAccount()
     const { setTxHash, txHash, txReceipt } = useTransactionStatus({})
@@ -114,7 +128,7 @@ export function useSwapExactTokenForYtArgs({
     const { data, status, error, fetchStatus, failureReason } = useReadContract(
         {
             abi: rmmABI,
-            address: marketId,
+            address: marketId as `0x${string}`,
             account: address as `0x${string}`,
             functionName: 'computeTokenToYt',
             args: [
@@ -182,7 +196,7 @@ export function useSwapExactTokenForYtArgs({
     }
 
     return {
-        amountOut: outputAmount,
+        amountOut: minOutputAmount,
         status,
         fetchStatus,
         payload,
