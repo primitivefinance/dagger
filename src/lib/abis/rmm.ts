@@ -159,21 +159,25 @@ export const rmmABI = [
         inputs: [
             { name: 'index', type: 'uint256', internalType: 'PYIndex' },
             { name: 'exactSYIn', type: 'uint256', internalType: 'uint256' },
+            { name: 'max', type: 'uint256', internalType: 'uint256' },
             { name: 'blockTime', type: 'uint256', internalType: 'uint256' },
             { name: 'initialGuess', type: 'uint256', internalType: 'uint256' },
+            { name: 'epsilon', type: 'uint256', internalType: 'uint256' },
         ],
-        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+        outputs: [{ name: 'guess', type: 'uint256', internalType: 'uint256' }],
         stateMutability: 'view',
     },
     {
         type: 'function',
-        name: 'computeTokenToYt',
+        name: 'computeTokenToYT',
         inputs: [
             { name: 'index', type: 'uint256', internalType: 'PYIndex' },
             { name: 'token', type: 'address', internalType: 'address' },
             { name: 'exactTokenIn', type: 'uint256', internalType: 'uint256' },
+            { name: 'max', type: 'uint256', internalType: 'uint256' },
             { name: 'blockTime', type: 'uint256', internalType: 'uint256' },
             { name: 'initialGuess', type: 'uint256', internalType: 'uint256' },
+            { name: 'epsilon', type: 'uint256', internalType: 'uint256' },
         ],
         outputs: [
             {
@@ -542,8 +546,15 @@ export const rmmABI = [
         type: 'function',
         name: 'swapExactSyForYt',
         inputs: [
-            { name: 'amountIn', type: 'uint256', internalType: 'uint256' },
+            { name: 'maxSyIn', type: 'uint256', internalType: 'uint256' },
+            {
+                name: 'amountPtToFlash',
+                type: 'uint256',
+                internalType: 'uint256',
+            },
             { name: 'minAmountOut', type: 'uint256', internalType: 'uint256' },
+            { name: 'upperBound', type: 'uint256', internalType: 'uint256' },
+            { name: 'epsilon', type: 'uint256', internalType: 'uint256' },
             { name: 'to', type: 'address', internalType: 'address' },
         ],
         outputs: [
@@ -565,6 +576,8 @@ export const rmmABI = [
             },
             { name: 'minSyMinted', type: 'uint256', internalType: 'uint256' },
             { name: 'minYtOut', type: 'uint256', internalType: 'uint256' },
+            { name: 'upperBound', type: 'uint256', internalType: 'uint256' },
+            { name: 'epsilon', type: 'uint256', internalType: 'uint256' },
             { name: 'to', type: 'address', internalType: 'address' },
         ],
         outputs: [
@@ -636,13 +649,6 @@ export const rmmABI = [
         ],
         outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
         stateMutability: 'nonpayable',
-    },
-    {
-        type: 'function',
-        name: 'version',
-        inputs: [],
-        outputs: [{ name: '', type: 'string', internalType: 'string' }],
-        stateMutability: 'pure',
     },
     {
         type: 'event',

@@ -37,6 +37,9 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '../ui/accordion'
+import { Switch } from '../ui/switch'
+import AllocateAction from '@/actions/AllocateAction'
+import { Label } from '../ui/label'
 
 type TokenInputProps = {
     token: { id: `0x${string}`; symbol: string; name: string }
@@ -92,7 +95,14 @@ const TokenInput: React.FC<TokenInputProps> = ({
 const SwapWidget: React.FC<{
     tokenInForm: TokenForm
     tokenOutForm: TokenForm
-}> = ({ tokenInForm, tokenOutForm }): JSX.Element => {
+    isSwapView: boolean
+    setIsSwapView: (isSwapView: boolean) => void
+}> = ({
+    tokenInForm,
+    tokenOutForm,
+    isSwapView,
+    setIsSwapView,
+}): JSX.Element => {
     const loc = useLocation()
     const { getTokenIn, getTokenOut, setTokenParams } = useTradeRoute()
     const tokenIn = getTokenIn()
@@ -154,7 +164,18 @@ const SwapWidget: React.FC<{
     return (
         <div className="flex flex-col gap-0">
             <div className="flex flex-row gap-sm border-b bg-muted/50 p-md items-center justify-between">
-                <h4>Trade</h4>
+                <div className="flex flex-row gap-md items-center">
+                    <Label htmlFor="trade-view-switch">
+                        <h4>{isSwapView ? 'Swap' : 'Allocate'}</h4>
+                    </Label>
+
+                    <Switch
+                        id="trade-view-switch"
+                        checked={isSwapView}
+                        onCheckedChange={() => setIsSwapView(!isSwapView)}
+                        className="m-auto"
+                    />
+                </div>
 
                 <Button
                     onClick={() => {
@@ -359,18 +380,34 @@ const TradeView = (): JSX.Element => {
     const tokenInForm = useTokenFormState()
     const tokenOutForm = useTokenFormState('', true)
 
+    const [isSwapView, setIsSwapView] = React.useState(true)
+
     return (
         <div className="flex flex-col gap-0 border flex-grow">
-            <SwapWidget tokenInForm={tokenInForm} tokenOutForm={tokenOutForm} />
+            <SwapWidget
+                tokenInForm={tokenInForm}
+                tokenOutForm={tokenOutForm}
+                isSwapView={isSwapView}
+                setIsSwapView={setIsSwapView}
+            />
             {isConnected ? (
                 <>
                     <Summary marketRoute={id} />
-                    <SwapAction
-                        marketRoute={id}
-                        amountIn={tokenInForm.amount}
-                        setAmountOut={tokenOutForm.setAmount}
-                        setTokenOutFetching={tokenOutForm.setFetchStatus}
-                    />
+                    {isSwapView ? (
+                        <SwapAction
+                            marketRoute={id}
+                            amountIn={tokenInForm.amount}
+                            setAmountOut={tokenOutForm.setAmount}
+                            setTokenOutFetching={tokenOutForm.setFetchStatus}
+                        />
+                    ) : (
+                        <AllocateAction
+                            marketRoute={id}
+                            amountIn={tokenInForm.amount}
+                            setAmountOut={tokenOutForm.setAmount}
+                            setTokenOutFetching={tokenOutForm.setFetchStatus}
+                        />
+                    )}
                 </>
             ) : (
                 <ConnectToTrade />
