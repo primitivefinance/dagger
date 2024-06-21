@@ -124,7 +124,7 @@ const MarketView = (): JSX.Element => {
                         marketId={
                             id
                                 ? id
-                                : '0x59d26a4e574e8c3c7be83697acbfed57d1793045'
+                                : '0x533A549acca30F1B8f56eB320d80DfB1AbaB1883'
                         }
                         isLong={false}
                     />
