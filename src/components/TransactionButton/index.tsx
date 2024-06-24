@@ -8,6 +8,7 @@ import { Button, ButtonProps } from '../ui/button'
 import { dfmmABI } from '@/lib/abis/dfmm'
 import { rmmABI } from '@/lib/abis/rmm'
 import { SYABI } from '@/lib/abis/sy'
+import { liquidityManagerABI } from '@/lib/abis/liquidityManager'
 
 const functionNameToAction: { [fnName: string]: string } = {
     ['swapExactSyForYt']: 'Buy Yield',
@@ -18,7 +19,7 @@ const functionNameToAction: { [fnName: string]: string } = {
 export interface TransactionButtonProps extends ButtonProps {
     from?: Address
     to: Address
-    contractName?: 'dfmm' | 'erc20' | 'rmm' | 'SY'
+    contractName?: 'dfmm' | 'erc20' | 'rmm' | 'SY' | 'liquidityManager'
     functionName: string
     args: any[]
     txHash?: `0x${string}`
@@ -100,6 +101,7 @@ function transactionReducer(
     state: TransactionState,
     action: TransactionAction
 ): TransactionState {
+    console.log('Changing to state: ', action.type)
     switch (action.type) {
         case 'TRANSACTION_READY':
             return TransactionState.TransactionReady
@@ -157,14 +159,16 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
                 ? dfmmABI
                 : props.contractName === 'erc20'
                   ? erc20Abi
-                  : ({} as Abi)
+                  : props.contractName === 'liquidityManager'
+                    ? liquidityManagerABI
+                    : ({} as Abi)
 
     const simulation = useSimulateContract({
         abi,
         address: props.to,
         functionName: props.functionName,
         args: props.args,
-        value: props.value,
+        value: props.value ?? 0n,
         stateOverride: props.stateOverride,
         query: {
             enabled:
@@ -227,6 +231,7 @@ function TransactionButton(props: TransactionButtonProps): JSX.Element {
 
         if (simulation?.error) {
             dispatch({ type: 'SIMULATE_ERROR' })
+            console.log('Simulate failed with error: ')
             console.error(simulation.failureReason)
             return
         }

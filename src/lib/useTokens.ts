@@ -32,6 +32,17 @@ export function useTokens({ id }: { id?: string }): {
                 market?.marketTokens?.items.map((item) => item.token) ?? []
         )
 
+        // Add the markets themselves as tokens in the allTokens array
+        const marketsAsTokens = data.markets.items.map((market) => ({
+            id: market.id,
+            symbol: 'LP-' + market.name,
+            name: 'LP-' + market.name,
+            icon: market.icon,
+            decimals: 18,
+        }))
+
+        allTokens.push(...marketsAsTokens)
+
         // Filter out duplicates based on a combination of 'id' and 'symbol' for uniqueness
         const uniqueTokens = Array.from(
             new Map(

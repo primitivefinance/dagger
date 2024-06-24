@@ -2,11 +2,8 @@ import React, { useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { ArrowRightIcon, CheckIcon } from '@radix-ui/react-icons'
 import { getAddress } from 'viem'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { FetchStatus } from '@tanstack/react-query'
-
-import { useGraphQL } from '../../useGraphQL'
-import { MarketInfoQueryDocument } from '../../queries/markets'
 
 import { EtherscanLink, LabelWithEtherscan } from '../EtherscanLinkLabels'
 import TokenSelector from '../TokenSelector'
@@ -16,7 +13,7 @@ import SwapAction from '@/actions/SwapAction'
 import { useMarketRoute } from '@/lib/useMarketRoute'
 import useSlippagePreference from '@/lib/useSlippagePreference'
 import { useOutputAmount } from '@/lib/useOutputAmount'
-import { FALLBACK_MARKET_ADDRESS, shortAddress } from '@/utils/address'
+
 import { formatNumber, formatPercentage } from '@/utils/numbers'
 
 import { Input } from '../ui/input'
@@ -89,10 +86,17 @@ const TokenInput: React.FC<TokenInputProps> = ({
 /**
  * Fairly dumb component for selecting tokens and inputting values.
  */
-const SwapWidget: React.FC<{
+export const SwapWidget: React.FC<{
     tokenInForm: TokenForm
     tokenOutForm: TokenForm
-}> = ({ tokenInForm, tokenOutForm }): JSX.Element => {
+    isSwapView: boolean
+    setIsSwapView: (isSwapView: boolean) => void
+}> = ({
+    tokenInForm,
+    tokenOutForm,
+    isSwapView,
+    setIsSwapView,
+}): JSX.Element => {
     const loc = useLocation()
     const { getTokenIn, getTokenOut, setTokenParams } = useTradeRoute()
     const tokenIn = getTokenIn()
@@ -154,7 +158,9 @@ const SwapWidget: React.FC<{
     return (
         <div className="flex flex-col gap-0">
             <div className="flex flex-row gap-sm border-b bg-muted/50 p-md items-center justify-between">
-                <h4>Trade</h4>
+                <div className="flex flex-row gap-md items-center">
+                    <h4>{isSwapView ? 'Swap' : 'Allocate'}</h4>
+                </div>
 
                 <Button
                     onClick={() => {
@@ -204,7 +210,7 @@ const SwapWidget: React.FC<{
     )
 }
 
-const Summary = ({
+export const Summary = ({
     marketRoute,
 }: {
     marketRoute: `0x${string}`
@@ -310,14 +316,14 @@ export const ConnectToTrade = (): JSX.Element => {
     )
 }
 
-type TokenForm = {
+export type TokenForm = {
     amount: string
     setAmount: (amount: string) => void
     isFetching: boolean
     setFetchStatus: (isFetching: FetchStatus) => void
 }
 
-function useTokenFormState(
+export function useTokenFormState(
     initialAmount = '',
     syncOutputAmountQuery?: boolean
 ): TokenForm {
@@ -359,9 +365,16 @@ const TradeView = (): JSX.Element => {
     const tokenInForm = useTokenFormState()
     const tokenOutForm = useTokenFormState('', true)
 
+    const [isSwapView, setIsSwapView] = React.useState(true)
+
     return (
         <div className="flex flex-col gap-0 border flex-grow">
-            <SwapWidget tokenInForm={tokenInForm} tokenOutForm={tokenOutForm} />
+            <SwapWidget
+                tokenInForm={tokenInForm}
+                tokenOutForm={tokenOutForm}
+                isSwapView={isSwapView}
+                setIsSwapView={setIsSwapView}
+            />
             {isConnected ? (
                 <>
                     <Summary marketRoute={id} />

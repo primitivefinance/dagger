@@ -124,17 +124,7 @@ function Root(): JSX.Element {
                     <Container>
                         <ul className="flex flex-row gap-xs items-center px-xl">
                             <li
-                                className={`${loc.pathname === '/' || loc.pathname.startsWith('/pool/') ? 'underline' : 'no-underline'}`}
-                            >
-                                <Button variant="link" asChild>
-                                    <Link to="/" className="pl-0">
-                                        Pools
-                                    </Link>
-                                </Button>
-                            </li>
-
-                            <li
-                                className={`${loc.pathname.startsWith('/yield') ? 'underline' : 'no-underline'}`}
+                                className={`${loc.pathname === '/' || loc.pathname.startsWith('/yield') ? 'underline' : 'no-underline'}`}
                             >
                                 <Button variant="link" asChild>
                                     <Link
@@ -144,6 +134,36 @@ function Root(): JSX.Element {
                                         className="pl-0"
                                     >
                                         Yield
+                                    </Link>
+                                </Button>
+                            </li>
+
+                            <li
+                                className={`${loc.pathname.startsWith('/allocate') ? 'underline' : 'no-underline'}`}
+                            >
+                                <Button variant="link" asChild>
+                                    <Link to="/allocate" className="pl-0">
+                                        Allocate
+                                    </Link>
+                                </Button>
+                            </li>
+
+                            <li
+                                className={`${loc.pathname.startsWith('/market/') ? 'underline' : 'no-underline'}`}
+                            >
+                                <Button variant="link" asChild>
+                                    <Link to="/market" className="pl-0">
+                                        Markets
+                                    </Link>
+                                </Button>
+                            </li>
+
+                            <li
+                                className={`${loc.pathname.startsWith('/portfolio') ? 'underline' : 'no-underline'}`}
+                            >
+                                <Button variant="link" asChild>
+                                    <Link to="/portfolio" className="pl-0">
+                                        Portfolio
                                     </Link>
                                 </Button>
                             </li>

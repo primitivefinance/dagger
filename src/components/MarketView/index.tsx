@@ -89,7 +89,30 @@ const MarketView = (): JSX.Element => {
     const syBalance = balances?.[syBalanceIndex]?.result as bigint
 
     return (
-        <div className="flex flex-col gap-2xl">
+        <div className="flex flex-col gap-xl">
+            <div className="flex flex-col gap-lg">
+                <div className="grid grid-cols-3 gap-lg">
+                    <MarketStatCard
+                        label="Volume"
+                        data={formatNumber(
+                            market?.pool?.aggregateVolumeInUnderlying,
+                            'USD'
+                        )}
+                    />
+                    <MarketStatCard
+                        label="Liquidity"
+                        data={formatNumber(
+                            market?.pool?.liquidityInUnderlying,
+                            'USD'
+                        )}
+                    />
+                    <MarketStatCard
+                        label="Underlying Asset Price"
+                        data={formatNumber(market?.underlyingToUsd, 'USD')}
+                    />
+                </div>
+            </div>
+
             <div className="border flex flex-col gap-0">
                 <div className="flex flex-row items-center w-full justify-between border-b bg-muted/50 p-md">
                     <div className="flex flex-row items-center gap-sm w-1/2">
@@ -120,6 +143,7 @@ const MarketView = (): JSX.Element => {
                         </Tooltip>
                     </div>
                 </div>
+
                 <div className="flex h-96 w-full items-center justify-center text-center">
                     <TradeChart
                         marketId={
@@ -131,164 +155,22 @@ const MarketView = (): JSX.Element => {
                     />
                 </div>
             </div>
-
-            <div className="flex flex-row items-start gap-lg ">
-                <div className="flex flex-col gap-0 border w-full">
-                    <div className="flex flex-row  w-full justify-between border-b bg-muted/50 p-md">
-                        <h4 className="text-muted dark:text-muted-foreground">
-                            Market
-                        </h4>
-                        <h4>{market?.name ?? <SkeletonText />}</h4>
-                    </div>
-                    <div className="flex flex-row gap-2xl p-md w-full">
-                        <div className="flex flex-row gap-lg items-center w-full">
-                            <AvatarSkeletonTooltip
-                                src={market?.icon ?? FALLBACK_AVATAR}
-                                alt={market?.name ?? FALLBACK_ALT}
-                                loading={typeof market === 'undefined'}
-                                size={MARKET_AVATAR_SIZE}
-                            >
-                                {market?.name ?? <SkeletonText />}
-                            </AvatarSkeletonTooltip>
-                            <div className="flex flex-col gap-xs justify-center size-full">
-                                <h4 className="text-muted dark:text-muted-foreground">
-                                    Description
-                                </h4>
-
-                                {market?.name ? (
-                                    <p className="w-4xl flex-1">
-                                        This market tokenizes the individual
-                                        yield and principal components of the
-                                        yield-bearing asset <b>stETH</b>. Once
-                                        expiry is reached, the yield tokens do
-                                        not accrue more yield.
-                                    </p>
-                                ) : (
-                                    <SkeletonText />
-                                )}
+            <div className="grid grid-cols-3 gap-lg">
+                {address && (
+                    <MarketStatCard
+                        label="Your Liquidity Position"
+                        data={
+                            <div className="flex flex-row gap-md items-start justify-start">
+                                <TokenBalance
+                                    token={id}
+                                    balance={balances?.[0]}
+                                    disableTicker
+                                    ticker={'LP'}
+                                />
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col gap-0 border w-full">
-                    <div className="flex flex-row  w-full justify-between border-b bg-muted/50 p-md">
-                        <div className="flex flex-row items-center gap-sm w-1/2">
-                            <h4 className="text-muted dark:text-muted-foreground">
-                                Actions
-                            </h4>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <InfoCircledIcon />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    Convert the base asset (e.g. ETH, stETH)
-                                    into the composite token, Standardized
-                                    Yield, then trade it for either of the
-                                    component tokens, Yield or Principal.
-                                </TooltipContent>
-                            </Tooltip>
-                        </div>
-                    </div>
-                    <div className="flex flex-row gap-2xl p-md">
-                        <div className="flex flex-row gap-md items-start">
-                            <Button
-                                size="lg"
-                                variant="tx"
-                                onClick={() =>
-                                    setTokenParams(ETH_ADDRESS, market?.syId)
-                                }
-                            >
-                                Mint SY for trading
-                            </Button>
-                            <Button
-                                size="lg"
-                                variant="tx"
-                                onClick={() =>
-                                    setTokenParams(market?.syId, market?.ytId)
-                                }
-                                disabled={syBalance === 0n}
-                            >
-                                Long Yield
-                            </Button>
-
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        size="lg"
-                                        variant="info"
-                                        onClick={() =>
-                                            setTokenParams(
-                                                market?.syId,
-                                                market?.ptId
-                                            )
-                                        }
-                                        disabled={syBalance === 0n || true}
-                                    >
-                                        Short Yield
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Coming soon</TooltipContent>
-                            </Tooltip>
-
-                            {address &&
-                                (balances?.[0]?.result as bigint) > 0 && (
-                                    <Button
-                                        size="lg"
-                                        variant="destructive"
-                                        onClick={() =>
-                                            setTokenParams(
-                                                market?.pool?.tokenX?.id,
-                                                market?.pool?.tokenY?.id
-                                            )
-                                        }
-                                    >
-                                        Close position
-                                    </Button>
-                                )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-lg">
-                <div className="grid grid-cols-3 gap-lg">
-                    <MarketStatCard
-                        label="Volume"
-                        data={formatNumber(
-                            market?.pool?.aggregateVolumeInUnderlying,
-                            'USD'
-                        )}
+                        }
                     />
-                    <MarketStatCard
-                        label="Liquidity"
-                        data={formatNumber(
-                            market?.pool?.liquidityInUnderlying,
-                            'USD'
-                        )}
-                    />
-                    <MarketStatCard
-                        label="Underlying Asset Price"
-                        data={formatNumber(market?.underlyingToUsd, 'USD')}
-                    />
-                </div>
-                <div className="grid grid-cols-3 gap-lg">
-                    {address && (
-                        <MarketStatCard
-                            label="Your Liquidity Position"
-                            data={
-                                <div className="flex flex-row gap-md items-start justify-start">
-                                    <TokenBalance
-                                        token={id}
-                                        balance={balances?.[0]}
-                                        disableTicker
-                                        ticker={'LP'}
-                                    />
-                                </div>
-                            }
-                        />
-                    )}
-                </div>
+                )}
             </div>
         </div>
     )
