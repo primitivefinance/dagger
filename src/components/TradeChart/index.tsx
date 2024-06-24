@@ -34,6 +34,7 @@ export type PositionLineProps = {
 type Volume = {
     time: string
     value: number
+    color?: string
 }
 
 type HourlyAverage = {
@@ -57,7 +58,7 @@ const normalizePrice = (
 const normalizeVolume = (
     rawHourly: (typeof MarketPriceFragment)[],
     isLong: boolean
-): HourlyVolume[] => {
+): Volume[] => {
     const parsed = rawHourly.map((tck, i) => {
         const isGreenLong =
             !rawHourly[i - 1] || tck.open > rawHourly[i - 1].close
