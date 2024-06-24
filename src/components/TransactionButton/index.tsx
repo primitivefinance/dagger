@@ -101,6 +101,7 @@ function transactionReducer(
     state: TransactionState,
     action: TransactionAction
 ): TransactionState {
+    console.log('Changing to state: ', action.type)
     switch (action.type) {
         case 'TRANSACTION_READY':
             return TransactionState.TransactionReady

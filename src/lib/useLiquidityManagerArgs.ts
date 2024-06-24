@@ -99,7 +99,6 @@ export function useLiquidityManagerArgs({
         ? (outputAmount * toWad(1 - slippage)) / toWad(1)
         : 0n
     const lptMinted = (prepareAllocateData?.[3] as bigint) ?? 0n
-    console.log({ minOutputAmount })
 
     useEffect(() => {
         if (error || failureReason) {

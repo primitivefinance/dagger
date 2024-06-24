@@ -134,6 +134,7 @@ const AllocateAction: React.FC<{
         tokenIn as `0x${string}`,
         tokenOut as `0x${string}`
     )
+    console.log({ tradeRoute })
 
     // Prepare the input amount.
     const preparedIn =
