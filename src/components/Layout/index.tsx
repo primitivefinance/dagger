@@ -8,13 +8,13 @@ import TradeView from '../TradeView'
 const Layout: React.FC<{ children: React.ReactElement }> = ({ children }) => {
     return (
         <main className="flex pt-8 pb-12 px-8 min-h-screen">
-            <div className="w-1/4 sticky top-16 h-full z-10">
+            {/* <div className="w-1/4 sticky top-16 h-full z-10">
                 <AccountHoldings />
-            </div>
+            </div> */}
             <Container>{children}</Container>
-            <div className="w-1/4 sticky top-16 h-full z-10">
+            {/* <div className="w-1/4 sticky top-16 h-full z-10">
                 <TradeView />
-            </div>
+            </div> */}
         </main>
     )
 }

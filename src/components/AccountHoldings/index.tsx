@@ -114,7 +114,7 @@ const AccountInfo = (): JSX.Element => {
             <div className="flex flex-row gap-sm border-b bg-muted/50 p-md">
                 <h4>Portfolio</h4>
             </div>
-            <div className="flex flex-row gap-md items-center justify-between py-lg px-md">
+            <div className="flex flex-row gap-md items-center py-lg px-md w-1/3">
                 {address ? (
                     <>
                         {address && (!isConnecting || !isReconnecting) ? (
@@ -239,7 +239,7 @@ export const TokenBalance = ({
     )
 }
 
-const Holdings = (): JSX.Element => {
+const Holdings = ({ columns = 3 }: { columns: number }): JSX.Element => {
     const { address, isConnecting, isReconnecting } = useAccount()
     const {
         data: { sorted: sortedTokens },
@@ -313,7 +313,9 @@ const Holdings = (): JSX.Element => {
                 </Button>
             </div>
 
-            <div className="grid grid-cols-3 gap-sm items-center py-lg px-md">
+            <div
+                className={`grid grid-flow-col gap-sm items-center py-lg px-md`}
+            >
                 {!ethBalance ? (
                     new Array(1)
                         .fill(null)
@@ -367,7 +369,7 @@ const AccountHoldings: React.FC = (): JSX.Element => {
         <div className="flex flex-col gap-0 border">
             <TooltipProvider delayDuration={100}>
                 <AccountInfo />
-                <Holdings />
+                <Holdings columns={4} />
             </TooltipProvider>
         </div>
     )

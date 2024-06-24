@@ -16,7 +16,7 @@ import { useOutputAmount } from '@/lib/useOutputAmount'
 import { daysUntilDate, fromExpiryToDate } from '@/utils/dates'
 import { FALLBACK_MARKET_ADDRESS } from '@/utils/address'
 import { formatPercentage } from '@/utils/numbers'
-import TradeView from '@/components/TradeView'
+import AddLiquidityView from '@/components/AddLiquidityView'
 
 const EmptyPositionTable: React.FC = () => {
     return (
@@ -28,20 +28,22 @@ const EmptyPositionTable: React.FC = () => {
     )
 }
 
-type YieldCardProps = {
+type AllocateCardProps = {
     selectedMarket: string
     setSelectedMarket: (marketId: string) => void
     marketId: string
-    yieldTokenId: string
+    syTokenId: string
+    liquidityTokenId: string
     expiry: number
     avgEntryImpliedRate: number
 }
 
-const YieldCard: React.FC<YieldCardProps> = ({
+const AllocateCard: React.FC<AllocateCardProps> = ({
     selectedMarket,
     setSelectedMarket,
     marketId,
-    yieldTokenId,
+    syTokenId,
+    liquidityTokenId,
     expiry,
     avgEntryImpliedRate,
 }) => {
@@ -57,7 +59,7 @@ const YieldCard: React.FC<YieldCardProps> = ({
             className={`${bg} flex flex-col gap-sm border p-md items-center justify-center hover:cursor-pointer`}
             onClick={() => {
                 setSelectedMarket(marketId)
-                setTokenParams(ETH_ADDRESS, yieldTokenId)
+                setTokenParams(syTokenId, liquidityTokenId)
             }}
         >
             <div className="flex flex-row gap-xs items-center">
@@ -79,7 +81,7 @@ const YieldCard: React.FC<YieldCardProps> = ({
     )
 }
 
-const YieldPage: React.FC = () => {
+const AllocatePage: React.FC = () => {
     const { address } = useAccount()
     const { getOutputAmount } = useOutputAmount()
     const outputAmount = Number(getOutputAmount())
@@ -104,7 +106,7 @@ const YieldPage: React.FC = () => {
     return (
         <div className="flex flex-col gap-2xl p-xl pt-0 mx-auto">
             <div className="flex flex-col gap-lg">
-                <InfoHeader title=" Trade ETH for variable stETH yield exposure." />
+                <InfoHeader title="Provide liquidity to fixed yield markets." />
 
                 <SectionHeader
                     title={'Select Maturity'}
@@ -116,12 +118,13 @@ const YieldPage: React.FC = () => {
 
                 <div className="grid-cols-3 grid gap-md ">
                     {data?.markets?.items?.map((market) => (
-                        <YieldCard
+                        <AllocateCard
                             key={market.id}
                             selectedMarket={selectedMarket}
                             setSelectedMarket={setSelectedMarket}
                             marketId={market.id}
-                            yieldTokenId={market.ytId}
+                            syTokenId={market.syId}
+                            liquidityTokenId={market.id}
                             expiry={market.expiry}
                             avgEntryImpliedRate={
                                 implied?.impliedYields?.items?.filter((item) =>
@@ -132,16 +135,10 @@ const YieldPage: React.FC = () => {
                     ))}
 
                     <InfoCard
-                        title="Position must be sold to exit."
-                        content="Variable rates are impacted by underlying stETH yield rates."
+                        title="Adding liquidity has additional risks."
+                        content="Liquidity providers hold both tokens in the pool."
                     />
                 </div>
-
-                {/* {address ? (
-                    <div className="w-1/2 items-center justify-center">
-                        <TradeView />
-                    </div>
-                ) : null} */}
 
                 {address ? (
                     <div className="flex flex-row gap-md items-start justify-between">
@@ -160,7 +157,7 @@ const YieldPage: React.FC = () => {
                             </div>
                         </div>
                         <div className="w-1/2 items-start justify-center">
-                            <TradeView />
+                            <AddLiquidityView />
                         </div>
                     </div>
                 ) : (
@@ -171,4 +168,4 @@ const YieldPage: React.FC = () => {
     )
 }
 
-export default YieldPage
+export default AllocatePage

@@ -17,6 +17,8 @@ import { Toaster } from './components/ui/toaster'
 import { TooltipProvider } from './components/ui/tooltip'
 import YieldPage from './pages/yield'
 import { OutputAmountProvider } from './store/OutputAmountContext'
+import Allocate from './pages/allocate'
+import Portfolio from './pages/portfolio'
 
 // todo: regenerate this and put in env
 const projectId = '42c7317ebec6e24c881a534d1d6b3ba0'
@@ -60,6 +62,10 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/',
+                element: <YieldPage />,
+            },
+            {
+                path: '/market',
                 element: <Home />,
             },
             {
@@ -73,6 +79,18 @@ const router = createBrowserRouter([
             {
                 path: '/yield',
                 element: <YieldPage />,
+            },
+            {
+                path: '/allocate',
+                element: <Allocate />,
+            },
+            {
+                path: '/portfolio',
+                element: <Portfolio />,
+            },
+            {
+                path: '/portfolio/:id',
+                element: <Portfolio />,
             },
         ],
     },

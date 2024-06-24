@@ -2,11 +2,8 @@ import React, { useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { ArrowRightIcon, CheckIcon } from '@radix-ui/react-icons'
 import { getAddress } from 'viem'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { FetchStatus } from '@tanstack/react-query'
-
-import { useGraphQL } from '../../useGraphQL'
-import { MarketInfoQueryDocument } from '../../queries/markets'
 
 import { EtherscanLink, LabelWithEtherscan } from '../EtherscanLinkLabels'
 import TokenSelector from '../TokenSelector'
@@ -16,7 +13,7 @@ import SwapAction from '@/actions/SwapAction'
 import { useMarketRoute } from '@/lib/useMarketRoute'
 import useSlippagePreference from '@/lib/useSlippagePreference'
 import { useOutputAmount } from '@/lib/useOutputAmount'
-import { FALLBACK_MARKET_ADDRESS, shortAddress } from '@/utils/address'
+
 import { formatNumber, formatPercentage } from '@/utils/numbers'
 
 import { Input } from '../ui/input'
@@ -37,9 +34,6 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '../ui/accordion'
-import { Switch } from '../ui/switch'
-import AllocateAction from '@/actions/AllocateAction'
-import { Label } from '../ui/label'
 
 type TokenInputProps = {
     token: { id: `0x${string}`; symbol: string; name: string }
@@ -92,7 +86,7 @@ const TokenInput: React.FC<TokenInputProps> = ({
 /**
  * Fairly dumb component for selecting tokens and inputting values.
  */
-const SwapWidget: React.FC<{
+export const SwapWidget: React.FC<{
     tokenInForm: TokenForm
     tokenOutForm: TokenForm
     isSwapView: boolean
@@ -165,16 +159,7 @@ const SwapWidget: React.FC<{
         <div className="flex flex-col gap-0">
             <div className="flex flex-row gap-sm border-b bg-muted/50 p-md items-center justify-between">
                 <div className="flex flex-row gap-md items-center">
-                    <Label htmlFor="trade-view-switch">
-                        <h4>{isSwapView ? 'Swap' : 'Allocate'}</h4>
-                    </Label>
-
-                    <Switch
-                        id="trade-view-switch"
-                        checked={isSwapView}
-                        onCheckedChange={() => setIsSwapView(!isSwapView)}
-                        className="m-auto"
-                    />
+                    <h4>{isSwapView ? 'Swap' : 'Allocate'}</h4>
                 </div>
 
                 <Button
@@ -225,7 +210,7 @@ const SwapWidget: React.FC<{
     )
 }
 
-const Summary = ({
+export const Summary = ({
     marketRoute,
 }: {
     marketRoute: `0x${string}`
@@ -331,14 +316,14 @@ export const ConnectToTrade = (): JSX.Element => {
     )
 }
 
-type TokenForm = {
+export type TokenForm = {
     amount: string
     setAmount: (amount: string) => void
     isFetching: boolean
     setFetchStatus: (isFetching: FetchStatus) => void
 }
 
-function useTokenFormState(
+export function useTokenFormState(
     initialAmount = '',
     syncOutputAmountQuery?: boolean
 ): TokenForm {
@@ -393,21 +378,12 @@ const TradeView = (): JSX.Element => {
             {isConnected ? (
                 <>
                     <Summary marketRoute={id} />
-                    {isSwapView ? (
-                        <SwapAction
-                            marketRoute={id}
-                            amountIn={tokenInForm.amount}
-                            setAmountOut={tokenOutForm.setAmount}
-                            setTokenOutFetching={tokenOutForm.setFetchStatus}
-                        />
-                    ) : (
-                        <AllocateAction
-                            marketRoute={id}
-                            amountIn={tokenInForm.amount}
-                            setAmountOut={tokenOutForm.setAmount}
-                            setTokenOutFetching={tokenOutForm.setFetchStatus}
-                        />
-                    )}
+                    <SwapAction
+                        marketRoute={id}
+                        amountIn={tokenInForm.amount}
+                        setAmountOut={tokenOutForm.setAmount}
+                        setTokenOutFetching={tokenOutForm.setFetchStatus}
+                    />
                 </>
             ) : (
                 <ConnectToTrade />
