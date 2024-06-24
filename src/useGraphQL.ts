@@ -12,7 +12,7 @@ export function useGraphQL<TResult, TVariables>(
             request(
                 'https://rmm-indexer-production.up.railway.app/',
                 document,
-                queryKey[1] ? queryKey[1] : undefined,
+                queryKey[1] ? queryKey[1] : undefined
             ),
     })
 }
