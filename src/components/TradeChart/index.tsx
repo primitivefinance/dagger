@@ -31,15 +31,7 @@ export type PositionLineProps = {
     address: string
 }
 
-type HourlyPrice = {
-    time: string
-    open: number
-    high: number
-    low: number
-    close: number
-}
-
-type HourlyVolume = {
+type Volume = {
     time: string
     value: number
 }
@@ -52,14 +44,11 @@ type HourlyAverage = {
 const normalizePrice = (
     rawHourly: (typeof MarketPriceFragment)[],
     isLong: boolean
-): HourlyPrice[] => {
+): HourlyAverage[] => {
     const parsed = rawHourly.map((tck) => {
         return {
-            time: tck.id,
-            open: isLong ? tck.open : 1 - tck.open,
-            high: isLong ? tck.high : 1 - tck.high,
-            low: isLong ? tck.high : 1 - tck.low,
-            close: isLong ? tck.close : 1 - tck.close,
+            time: tck.time,
+            value: tck.price,
         }
     })
     return parsed
@@ -74,7 +63,7 @@ const normalizeVolume = (
             !rawHourly[i - 1] || tck.open > rawHourly[i - 1].close
         const isGreen = isLong ? isGreenLong : !isGreenLong
         return {
-            time: tck.id,
+            time: tck.time,
             value: tck.volume,
             color: isGreen ? 'rgba(0, 150, 136, 0.8)' : 'rgba(255,82,82, 0.8)',
         }
@@ -88,7 +77,7 @@ const normalizeAverage = (
 ): HourlyAverage[] => {
     const parsed = rawHourly.map((tck) => {
         return {
-            time: tck.id,
+            time: tck.time,
             value: isLong ? tck.average : 1 - tck.average,
         }
     })
