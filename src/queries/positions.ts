@@ -6,11 +6,8 @@ export const YieldPositionsQueryDocument = graphql(`
             where: { marketId: $marketId, portfolioId: $portfolioId }
         ) {
             items {
-                id
                 avgEntryImpliedRate
                 netYieldDelta
-                marketId
-                portfolioId
                 ptBalance
                 ptCurrentUSD
                 ptCurrentUnderlying
@@ -32,15 +29,12 @@ export const LiquidityPositionsQueryDocument = graphql(`
             where: { marketId: $marketId, portfolioId: $portfolioId }
         ) {
             items {
-                id
                 liquidityCurrentBalance
                 liquidityCurrentUSD
                 liquidityCurrentUnderlying
                 liquidityEntryBalance
                 liquidityEntryUSD
                 liquidityEntryUnderlying
-                marketId
-                portfolioId
             }
         }
     }
