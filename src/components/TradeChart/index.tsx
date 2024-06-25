@@ -20,7 +20,10 @@ import {
     UnderlyingYieldQueryDocument,
 } from '../../queries/prices'
 
-import { PositionQueryDocument } from '../../queries/positions'
+import {
+    PositionQueryDocument,
+    YieldPositionsQueryDocument,
+} from '../../queries/positions'
 
 export type TradeChartProps = {
     marketId: string
@@ -108,7 +111,10 @@ const normalizeYield = (
 }
 
 const PositionLine: FC<PositionLineProps> = ({ marketId, address }) => {
-    const position = useGraphQL(PositionQueryDocument, { marketId })
+    const position = useGraphQL(YieldPositionsQueryDocument, {
+        marketId,
+        portfolioId: address,
+    })
     const [positionEntry, setPositionEntry] = useState<number | null>(null)
     const [positionSize, setPositionSize] = useState<number | null>(null)
 
