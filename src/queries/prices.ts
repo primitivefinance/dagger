@@ -1,22 +1,17 @@
 import { graphql } from '../gql'
 
 export const MarketPriceFragment = graphql(`
-    fragment MarketPriceItem on YieldPricesHourly {
+    fragment MarketPriceItem on YieldPrice {
         id
-        marketId
-        open
-        close
-        high
-        low
-        average
+        time
+        value
         volume
-        count
     }
 `)
 // TODO: add sort
 export const MarketPriceQueryDocument = graphql(`
     query marketPrice($marketId: String!) {
-        yieldPricesHourlys(where: { marketId: $marketId }) {
+        yieldPrices(where: { marketId: $marketId }) {
             items {
                 ...MarketPriceItem
             }
