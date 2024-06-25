@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi'
 import { allMarketsQueryDocument } from '../../queries/markets'
 import { useGraphQL } from '../../useGraphQL'
 import { ImplYieldQueryDocument } from '../../queries/prices'
-import { PositionQueryDocument } from '../../queries/positions'
+import { YieldPositionsQueryDocument } from '../../queries/positions'
 
 import YieldPositionsTable from '@/components/YieldPositionsTable'
 import InfoCard from '@/components/InfoCard'
@@ -93,8 +93,9 @@ const YieldPage: React.FC = () => {
         { limit: 10 }
     )
     // position data
-    const { data: positionData } = useGraphQL(PositionQueryDocument, {
+    const { data: positionData } = useGraphQL(YieldPositionsQueryDocument, {
         marketId: selectedMarket as string,
+        portfolioId: address as string,
     })
     // yield data
     const { data: implied } = useGraphQL(ImplYieldQueryDocument, {
