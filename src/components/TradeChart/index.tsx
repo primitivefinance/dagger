@@ -1,14 +1,12 @@
 import type { FC } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import {
     Chart,
     LineSeries,
     HistogramSeries,
-    CandlestickSeries,
     PriceScale,
     TimeScale,
-    PriceLine,
 } from 'lightweight-charts-react-wrapper'
 
 import { useGraphQL } from '../../useGraphQL'
@@ -20,11 +18,6 @@ import {
     UnderlyingYieldQueryDocument,
 } from '../../queries/prices'
 
-import {
-    PositionQueryDocument,
-    YieldPositionsQueryDocument,
-} from '../../queries/positions'
-
 export type TradeChartProps = {
     marketId: string
     isLong: boolean
@@ -34,20 +27,13 @@ export type PositionLineProps = {
     address: string
 }
 
-type HourlyPrice = {
-    time: string
-    open: number
-    high: number
-    low: number
-    close: number
-}
-
-type HourlyVolume = {
+type Volume = {
     time: string
     value: number
+    color?: string
 }
 
-type HourlyAverage = {
+type Price = {
     time: string
     value: number
 }
@@ -55,14 +41,11 @@ type HourlyAverage = {
 const normalizePrice = (
     rawHourly: (typeof MarketPriceFragment)[],
     isLong: boolean
-): HourlyPrice[] => {
+): Price[] => {
     const parsed = rawHourly.map((tck) => {
         return {
-            time: tck.id,
-            open: isLong ? tck.open : 1 - tck.open,
-            high: isLong ? tck.high : 1 - tck.high,
-            low: isLong ? tck.high : 1 - tck.low,
-            close: isLong ? tck.close : 1 - tck.close,
+            time: tck.time,
+            value: tck.value,
         }
     })
     return parsed
@@ -71,28 +54,15 @@ const normalizePrice = (
 const normalizeVolume = (
     rawHourly: (typeof MarketPriceFragment)[],
     isLong: boolean
-): HourlyVolume[] => {
+): Volume[] => {
     const parsed = rawHourly.map((tck, i) => {
         const isGreenLong =
             !rawHourly[i - 1] || tck.open > rawHourly[i - 1].close
         const isGreen = isLong ? isGreenLong : !isGreenLong
         return {
-            time: tck.id,
+            time: tck.time,
             value: tck.volume,
             color: isGreen ? 'rgba(0, 150, 136, 0.8)' : 'rgba(255,82,82, 0.8)',
-        }
-    })
-    return parsed
-}
-
-const normalizeAverage = (
-    rawHourly: (typeof MarketPriceFragment)[],
-    isLong: boolean
-): HourlyAverage[] => {
-    const parsed = rawHourly.map((tck) => {
-        return {
-            time: tck.id,
-            value: isLong ? tck.average : 1 - tck.average,
         }
     })
     return parsed
@@ -110,46 +80,10 @@ const normalizeYield = (
     return parsed
 }
 
-const PositionLine: FC<PositionLineProps> = ({ marketId, address }) => {
-    const position = useGraphQL(YieldPositionsQueryDocument, {
-        marketId,
-        portfolioId: address,
-    })
-    const [positionEntry, setPositionEntry] = useState<number | null>(null)
-    const [positionSize, setPositionSize] = useState<number | null>(null)
-
-    useEffect(() => {
-        if (
-            position.status === 'success' &&
-            !!position.data?.positions?.items
-        ) {
-            position.data.positions.items.map((pos) => {
-                if (pos.portfolioId === address.toLowerCase()) {
-                    const value = pos.avgEntryImpliedRate * 100
-                    const size = pos.netYieldDelta
-                    setPositionEntry(value)
-                    setPositionSize(size)
-                }
-            })
-        }
-    }, [position.status])
-    if (!positionEntry || !positionSize) return <></>
-    return (
-        <PriceLine
-            price={positionEntry}
-            lineWidth={3}
-            color="green"
-            axisLabelVisible={true}
-            title={`${positionSize.toFixed(4)} stETH @ `}
-        />
-    )
-}
-
 const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const { data, status } = useGraphQL(MarketPriceQueryDocument, { marketId })
     const implied = useGraphQL(ImplYieldQueryDocument, { marketId })
     const underlying = useGraphQL(UnderlyingYieldQueryDocument, { marketId })
-    const account = useAccount()
 
     const [yData, setYData] = useState<
         { time: string; value: number }[] | null | any
@@ -158,14 +92,13 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
         { time: string; value: number }[] | null | any
     >(null)
 
-    const [cData, setCData] = useState<HourlyPrice[] | null | any>(null)
-    const [vData, setVData] = useState<HourlyVolume[] | null | any>(null)
-    const [aData, setAData] = useState<HourlyAverage[] | null | any>(null)
+    const [pData, setPData] = useState<Price[] | null | any>(null)
+    const [vData, setVData] = useState<Volume[] | null | any>(null)
 
     const yOptions = {
         container: {
             style: {
-                width: '100%',
+                width: '50%',
                 height: '100%',
             },
         },
@@ -204,7 +137,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     const pOptions = {
         container: {
             style: {
-                width: '100%',
+                width: '50%',
                 height: '100%',
             },
         },
@@ -242,21 +175,12 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
     }
     useEffect(() => {
         if (status === 'success') {
-            const priceData = normalizePrice(
-                data.yieldPricesHourlys.items,
-                isLong
-            )
-            const volData = normalizeVolume(
-                data.yieldPricesHourlys.items,
-                isLong
-            )
-            const avgData = normalizeAverage(
-                data.yieldPricesHourlys.items,
-                isLong
-            )
-            setCData(priceData)
+            const priceData = normalizePrice(data.principalPrices.items, isLong)
+            const volData = normalizeVolume(data.principalPrices.items, isLong)
             setVData(volData)
-            setAData(avgData)
+            console.log(volData)
+            setPData(priceData)
+            console.log(priceData)
         }
     }, [status])
 
@@ -271,62 +195,68 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
         }
     }, [implied.status, underlying.status])
 
-    if (!cData || !yData) return <></>
+    if (!uData || !yData || !vData || !pData) return <></>
     return (
-        <div className="grid grid-cols-2 h-full w-full divide-x">
+        <div className="flex flex-row h-full w-full">
             <Chart {...yOptions} autoSize>
                 <LineSeries
                     data={yData}
                     color="rgba(33, 150, 243, 1)"
-                    lineWidth={2}
-                    title="Implied Rate"
-                    priceFormat={{ type: 'percent' }}
-                >
-                    {!!account?.address ? (
-                        <PositionLine
-                            marketId={marketId}
-                            address={account.address}
-                        />
-                    ) : (
-                        <></>
-                    )}
-                </LineSeries>
+                    lineWidth={3}
+                    title="Market APR"
+                    priceFormat={{
+                        type: 'custom',
+                        minMove: 0.0001,
+                        formatter: (price) => price.toFixed(3) + '%',
+                    }}
+                ></LineSeries>
                 <LineSeries
                     data={uData}
                     color="green"
-                    lineWidth={2}
-                    title="Underlying Rate"
-                    priceFormat={{ type: 'percent' }}
+                    lineWidth={3}
+                    title="Underlying APR"
+                    priceFormat={{
+                        type: 'price',
+                        precision: 6,
+                        minMove: 0.000001,
+                    }}
                 />
+
                 <TimeScale
                     secondsVisible={true}
                     timeVisible={true}
                     barSpacing={20}
-                    rightOffset={10}
+                    rightOffset={15}
                 />
             </Chart>
             <Chart {...pOptions} autoSize>
-                <CandlestickSeries
-                    data={cData}
-                    title={isLong ? 'YT / stETH' : 'PT / stETH'}
-                />
+                <LineSeries
+                    data={pData}
+                    color="rgba(33, 150, 243, 1)"
+                    lineWidth={3}
+                    title="PT / stETH"
+                    priceFormat={{
+                        type: 'custom',
+                        minMove: 0.0001,
+                        formatter: (price) => price.toFixed(4) + ' stETH',
+                    }}
+                ></LineSeries>
                 <HistogramSeries
                     data={vData}
-                    priceFormat={{ type: 'volume' }}
-                    priceScaleId="overlay"
+                    priceFormat={{ type: 'volume', precision: 1 }}
+                    priceScaleId="side_overlay"
                     title="Volume (stETH)"
                 />
                 <PriceScale
-                    id="overlay"
+                    id="side_overlay"
                     scaleMargins={{ top: 0.8, bottom: 0 }}
                 />
                 <TimeScale
                     secondsVisible={true}
                     timeVisible={true}
                     barSpacing={20}
-                    rightOffset={10}
+                    rightOffset={15}
                 />
-                <LineSeries data={aData} color="#d1d4dc" lineWidth={2} />
             </Chart>
         </div>
     )

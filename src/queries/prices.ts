@@ -1,7 +1,7 @@
 import { graphql } from '../gql'
 
 export const MarketPriceFragment = graphql(`
-    fragment MarketPriceItem on YieldPrice {
+    fragment MarketPriceItem on PrincipalPrice {
         id
         time
         value
@@ -11,7 +11,11 @@ export const MarketPriceFragment = graphql(`
 // TODO: add sort
 export const MarketPriceQueryDocument = graphql(`
     query marketPrice($marketId: String!) {
-        yieldPrices(where: { marketId: $marketId }) {
+        principalPrices(
+            where: { marketId: $marketId }
+            orderBy: "time"
+            orderDirection: "asc"
+        ) {
             items {
                 ...MarketPriceItem
             }
@@ -30,7 +34,11 @@ export const ImpliedYieldFragment = graphql(`
 
 export const ImplYieldQueryDocument = graphql(`
     query implYield($marketId: String!) {
-        impliedYields(where: { marketId: $marketId }) {
+        impliedYields(
+            where: { marketId: $marketId }
+            orderDirection: "asc"
+            orderBy: "time"
+        ) {
             items {
                 ...ImpliedYieldItem
             }
@@ -49,7 +57,11 @@ export const UnderlyingYieldFragment = graphql(`
 
 export const UnderlyingYieldQueryDocument = graphql(`
     query underlyingYield($marketId: String!) {
-        underlyingYields(where: { marketId: $marketId }) {
+        underlyingYields(
+            where: { marketId: $marketId }
+            orderDirection: "asc"
+            orderBy: "time"
+        ) {
             items {
                 ...UnderlyingYieldItem
             }
