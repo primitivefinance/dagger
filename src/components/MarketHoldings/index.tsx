@@ -1,7 +1,7 @@
-import React, { useCallback, useAccount } from 'react'
+import React, { useCallback } from 'react'
 
 import { shortAddress } from '@/utils/address'
-
+import { useAccount } from 'wagmi'
 import {
     Tooltip,
     TooltipContent,
@@ -36,7 +36,7 @@ type MarketToken = {
     symbol: string
 }
 
-export type MarketData = {
+export type MarketProps = {
     name: string
     address: `0x${string}`
     expiry: number
@@ -132,8 +132,6 @@ const YieldPosition = ({ id }: { id: string }): JSX.Element => {
         id,
     })
     const position = data?.yieldPositions.items[0]
-
-    console.log(data)
     if (isFetching || !position) return <>Loading</>
     return (
         <div className="flex flex-col gap-0">
@@ -169,20 +167,20 @@ const YieldPosition = ({ id }: { id: string }): JSX.Element => {
     )
 }
 
-const MarketInfo = ({
+const MarketPositions = ({
     marketData,
+    address,
 }: {
-    marketData: MarketData
+    marketData: MarketProps
+    address: `0x${string}`
 }): JSX.Element => {
-    const account = '0x687deb45decb0ff4aa0b2d46725f5d1d5a8e3d22'
     const positions = useGraphQL(PositionsInMarketQueryDocument, {
         marketId: marketData.address,
-        portfolioId: account,
+        portfolioId: address,
     })
-
     const isPosition =
-        positions?.data?.yieldPositions.items[0].id ||
-        positions?.data?.liquidityPositions.items[0].id
+        !!positions?.data?.yieldPositions?.items[0]?.id ||
+        !!positions?.data?.liquidityPositions?.items[0]?.id
             ? true
             : false
 
@@ -202,7 +200,7 @@ const MarketInfo = ({
                 )}
                 {positions?.data?.liquidityPositions.items[0].id ? (
                     <LiquidityPosition
-                        id={positions.data?.yieldPositions.items[0].id}
+                        id={positions.data?.liquidityPositions.items[0].id}
                     />
                 ) : (
                     <></>
@@ -215,13 +213,14 @@ const MarketHoldings: React.FC = (): JSX.Element => {
     const { data, isFetching } = useGraphQL(allMarketsQueryDocument, {
         limit: 100,
     })
-    if (isFetching) return <>Loading</>
+    const { address } = useAccount()
+    if (isFetching || !address) return <></>
     return (
         <div className="flex flex-col gap-0 border">
             <TooltipProvider delayDuration={100}>
                 {data?.markets.items.map((mkt, i) => {
                     return (
-                        <MarketInfo
+                        <MarketPositions
                             key={i}
                             marketData={{
                                 name: mkt.name,
@@ -230,6 +229,7 @@ const MarketHoldings: React.FC = (): JSX.Element => {
                                 ibAsset: mkt.ibAssetId,
                                 nativeAsset: mkt.nativeAssetId,
                             }}
+                            address={address}
                         />
                     )
                 })}
