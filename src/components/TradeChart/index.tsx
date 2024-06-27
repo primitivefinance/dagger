@@ -238,7 +238,7 @@ const TradeChart: FC<TradeChartProps> = ({ marketId, isLong = false }) => {
                     priceFormat={{
                         type: 'custom',
                         minMove: 0.0001,
-                        formatter: (price) => price.toFixed(4) + ' stETH',
+                        formatter: (price) => price.toFixed(4),
                     }}
                 ></LineSeries>
                 <HistogramSeries

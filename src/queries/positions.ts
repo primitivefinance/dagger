@@ -1,10 +1,8 @@
 import { graphql } from '../gql'
 
 export const YieldPositionsQueryDocument = graphql(`
-    query yieldPositions($marketId: String!, $portfolioId: String!) {
-        yieldPositions(
-            where: { marketId: $marketId, portfolioId: $portfolioId }
-        ) {
+    query yieldPositions($id: String!) {
+        yieldPositions(where: { id: $id }) {
             items {
                 avgEntryImpliedRate
                 netYieldDelta
@@ -24,10 +22,8 @@ export const YieldPositionsQueryDocument = graphql(`
 `)
 
 export const LiquidityPositionsQueryDocument = graphql(`
-    query liquidityPositions($marketId: String!, $portfolioId: String!) {
-        liquidityPositions(
-            where: { marketId: $marketId, portfolioId: $portfolioId }
-        ) {
+    query liquidityPositions($id: String!) {
+        liquidityPositions(where: { id: $id }) {
             items {
                 liquidityCurrentBalance
                 liquidityCurrentUSD
@@ -35,6 +31,25 @@ export const LiquidityPositionsQueryDocument = graphql(`
                 liquidityEntryBalance
                 liquidityEntryUSD
                 liquidityEntryUnderlying
+            }
+        }
+    }
+`)
+
+export const PositionsInMarketQueryDocument = graphql(`
+    query positions($marketId: String!, $portfolioId: String!) {
+        liquidityPositions(
+            where: { marketId: $marketId, portfolioId: $portfolioId }
+        ) {
+            items {
+                id
+            }
+        }
+        yieldPositions(
+            where: { marketId: $marketId, portfolioId: $portfolioId }
+        ) {
+            items {
+                id
             }
         }
     }
