@@ -82,7 +82,7 @@ const AllocateCard: React.FC<AllocateCardProps> = ({
 }
 
 const AllocatePage: React.FC = () => {
-    const { address } = useAccount()
+    const address = '0x687deb45decb0ff4aa0b2d46725f5d1d5a8e3d22'
     const { getOutputAmount } = useOutputAmount()
     const outputAmount = Number(getOutputAmount())
     const [selectedMarket, setSelectedMarket] = React.useState<
